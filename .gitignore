@@ -1,0 +1,6 @@
+_cache
+_site
+.tags
+.tags_sorted_by_file
+README.md
+LICENSE

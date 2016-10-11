@@ -2,8 +2,8 @@
 layout: post
 title: "初入Python"
 # description: This is test
-# published: false
-date: 2016-10-11 9:10:00
+published: true
+date: 2016-10-10
 author: 大师兄
 share: true
 comments: true
@@ -14,7 +14,7 @@ tags:
 # categories: 
 # - Script
 # - Backend2
-toc: true
+# toc: true
 # permalink: 
 
 ---
@@ -22,6 +22,7 @@ toc: true
 ![Python]({{ site.baseurl}}/images/2016-10-11-mind-Python.png)
 
 <!-- ![My helpful screenshot]({{ site.baseurl | prepend:site.url}}/images/Python.png){: .center-image }*iPhone 5 portrait* -->
+
 ### 参考资料来源：
 [The Python Tutorial](https://docs.python.org/3/tutorial/index.html)
 [A Byte of Python](https://python.swaroopch.com/)

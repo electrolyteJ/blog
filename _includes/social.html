@@ -40,7 +40,14 @@
   
    {% if site.social.zhihu %}
     <li>
-      <a title="{{ site.social.zhihu }} zhihu" href="https://www.zhihu.com/people/{{ site.social.zhihu }} " target="_blank"><i class="fa fa- fa-2x"></i></a>
+      <a title="{{ site.social.zhihu }} zhihu" href="https://www.zhihu.com/people/{{ site.social.zhihu }} " target="_blank">
+        <!-- <span class="fa-stack fa-lg"> -->
+          <!-- <i class="fa   fa-inverse  fa-2x">知</i> -->
+          <i class="fa   fa-stop-circle  fa-2x">知</i>
+          <!-- <i class="fa fa-check-circle fa-2x"></i> -->
+          <!-- <i class="fa fa-stack-1x fa-circle-o"></i> -->
+        <!-- </span> -->
+      </a>
     </li>
   {% endif %}
   {% if site.social.weibo %}

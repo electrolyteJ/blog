@@ -4,7 +4,7 @@ title: "初入Python"
 description: 这是我第一次学习后端的知识，为此做了一次总结。
 published: true
 date: 2016-10-10
-author: 大师兄
+author: 未知
 share: true
 comments: true
 

@@ -3,7 +3,7 @@ layout: post
 title: Rebuild Future
 description: 我像一个好奇的路人，一脚踏进命运给我开启的一扇门.
 author: 未知
-data: 2016-04-19 22:50:00
+date: 2016-04-19 22:50:00
 tag: 
 - Other
 share: true
@@ -34,7 +34,7 @@ commets: true
         + [ ] MySQL
 
         3.网络：
-        + [ ]   网络协议
+        + [x]   网络协议
         
         4.设计模式：
         + [ ]   数据结构
@@ -44,7 +44,7 @@ commets: true
         + [ ] Linux的基本知识（进程、内存、磁盘等管理）
 
         6.编译系统：
-        + [ ] Makefile（(Linux（Android）系统使用）
+        + [x] Makefile（(Linux（Android）系统使用）
         + [ ] Gradle(Android应用使用)
         + [ ] 编译原理（JIT、AOT、解释型、编译型）
 

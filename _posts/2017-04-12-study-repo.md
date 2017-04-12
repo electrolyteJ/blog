@@ -1,13 +1,12 @@
 ---
 layout: post
 title: Android源码解析之repo仓库
-description: 用什么语言都可以封装git的命令，那为什么是python ？
+description: 用什么语言都可以封装git的命令，那为什么是python ?
 author: 未知
 date: 2017-04-04
 share: true
 comments: true
 tag: Python
-toc: true
 ---
 <!-- MarkdownTOC -->
 
@@ -16,7 +15,8 @@ toc: true
 - [_3.Content_{:.header2-font}](#3contentheader2-font)
   - [_Repo仓库_{:.header3-font}](#repo仓库header3-font)
   - [_Manifest仓库_{:.header3-font}](#manifest仓库header3-font)
-  - [*projects仓库集*{:.header3-font}](#projects仓库集header3-font)
+  - [*Projects仓库集*{:.header3-font}](#projects仓库集header3-font)
+  - [*创建分支*{:.header3-font}](#创建分支header3-font)
 - [*4.参考资料*{:.header2-font}](#4参考资料header2-font)
 
 <!-- /MarkdownTOC -->
@@ -28,7 +28,7 @@ toc: true
 &emsp;&emsp;repo就是通过Python封装git命令的应用。什么是[repo](https://source.android.com/source/developing.html)？简单来说就是对AOSP含有git仓库的各个项目的批处理。repo应用包括repo仓库（仓库也可以叫做项目）、manifest仓库、projectsc仓库集这三个核心。repo仓库都是一些Python文件，manifest仓库只有一个存放AOSP各个子项目元数据的xml文件。projects仓库集是AOSP各个子项目对应的git仓库。
 *下面用一张图片表示一下。*
 
-![architecture]({{site.baseurl}}/images/2017-04-12-repo_architecture.png)
+![architecture]({{site.baseurl}}/images/2017-04-12/2017-04-12-repo_architecture.png)
 
 补充一点，git是允许repository和working directory分布在不同的目录下的。所以就会看到AOSP的working directory在项目根目录而.git目录在.repo/projects目录
 
@@ -36,7 +36,7 @@ toc: true
 
 &emsp;&emsp;先来草率的分析一下,拉取一套AOSP代码应该按照如下流程：
 
-```bash
+{%highlight bash linenos%}
 mkdir testsource  #创建AOSP目录。用于存放.repo应用和源码
 cd testsource
 repo init   -u  https://android.googlesource.com/platform/manifest -b android-4.0.1_r1
@@ -47,7 +47,7 @@ repo start master --all
       cmd     #创建并且切换到新分支上
 
 repo仓库初始化--->manifest仓库初始化--->project仓库集初始化--->创建并切换到新分支上
-```
+{%endhighlight%}
 
 &emsp;&emsp;从数据流自上而下看：
 
@@ -55,7 +55,7 @@ repo仓库初始化--->manifest仓库初始化--->project仓库集初始化--->�
 
 &emsp;&emsp;在Python中使用的是optparse模块（后续将被argparse模块取代）解析命令行，所以optparse模块相当于数据转换中心将repo命名行转成git命令行
 
-![repo init]({{site.baseurl}}/images/2017-04-12-repo_init_help.png)
+![repo init]({{site.baseurl}}/images/2017-04-12/2017-04-12-repo_init_help.png)
 
 ### _Repo仓库_{:.header3-font}
 
@@ -287,7 +287,7 @@ def _Init(args, gitc_init=False):
 
 在这之前我们来看看git对远程仓库的操作图
 
-![git operation flowchart]({{site.baseurl}}/images/2017-04-12-git_operation_flowchart.png)
+![git operation flowchart]({{site.baseurl}}/images/2017-04-12/2017-04-12-git_operation_flowchart.png)
 
 
 _Clone函数的代码如下：
@@ -326,7 +326,7 @@ def _Clone(url, local, quiet, clone_bundle):
 ``创建git仓库(git init)---> 初始化http网络  ----> 配置远程仓库url地址、分支名(git config)   ---> fetch记录从remote repository到local repository（git fetch）``
 
 
-&emsp;&emsp;在有网络的条件下可以从远程仓库克隆代码，但是如果离线了怎么办？git给我们提供了一种bundle文件。
+&emsp;&emsp;在有网络的条件下可以从远程仓库克隆代码，但是如果离线了怎么办？git给我们提供了一种bundle机制。
 _DownloadBundle函数的代码如下:
 
 {%highlight python linenos%}
@@ -360,12 +360,10 @@ def _DownloadBundle(url, local, quiet):
     except urllib.error.HTTPError as e:
       if e.code in [401, 403, 404, 501]:
         return False
-      _print('fatal: Cannot get %s' % url, file=sys.stderr)
-      _print('fatal: HTTP error %s' % e.code, file=sys.stderr)
+      ...
       raise CloneFailure()
     except urllib.error.URLError as e:
-      _print('fatal: Cannot get %s' % url, file=sys.stderr)
-      _print('fatal: error %s' % e.reason, file=sys.stderr)
+      ...
       raise CloneFailure()
     try:
       if not quiet:
@@ -381,7 +379,7 @@ def _DownloadBundle(url, local, quiet):
     dest.close()
 {%endhighlight%}
 &emsp;&emsp;在使用git fetch获取remote repository记录到local repository之前，其实代码的来源还可以从bundle获取。生成bundle之前需要在有网络的条件下，将远程仓库的记录存储在bundle中。
-&emsp;&emsp;最后会调用_ImportBundle函数导入数据。这种导入方式的应用场景在于环境处于脱机状态，便可以从其他的机器拷贝一份bundle导入到自己的仓库中。_ImportBundle函数是对_Fetch函数进行包装,其中最为重要的就是第三个参数，指定了要导入到local repository的数据来源路径，可以是网络的url的仓库名，也可以是本地的bundle文件路径
+&emsp;&emsp;最后会调用_ImportBundle函数导入数据。这种导入方式的应用场景在于环境处于脱机状态，便可以从其他的机器拷贝一份bundle导入到自己的仓库中。_ImportBundle函数是对_Fetch函数进行包装,其中最为重要的就是第三个参数，指定了要导入到local repository的数据来源路径，可以是网络的 url 的仓库名，也可以是本地的bundle路径
 
 _Checkout函数
 
@@ -408,10 +406,10 @@ def _Checkout(cwd, branch, rev, quiet):
     raise CloneFailure()
 {% endhighlight python %}
 
-&emsp;&emsp;该函数对git chechout的底层函数进行封装，功能和git checkout切分支是一样的，至此我们的_Init函数就就执行完了，并且得到了repo仓库了那么接下来就是要得到manifest仓库了
+&emsp;&emsp;该函数对git chechout的底层函数进行封装，功能和git checkout切分支是一样的，至此我们的_Init函数就执行完了，并且得到了repo仓库了那么接下来就是要得到manifest仓库了
 
 ```python
-...
+  ...
   ver_str = '.'.join(map(str, VERSION))
   me = [sys.executable, repo_main,
         '--repo-dir=%s' % rel_repo_dir,
@@ -422,7 +420,7 @@ def _Checkout(cwd, branch, rev, quiet):
   me.extend(extra_args)
   try:
     os.execv(sys.executable, me)
-...
+  ...
 ```
 
 ### _Manifest仓库_{:.header3-font}
@@ -436,7 +434,7 @@ def _Checkout(cwd, branch, rev, quiet):
 - repo模块内部定义的版本号
 - repo模块的绝对路径
 
-供直接或间接以Command为基类的衍生类的成员函数Execute调用.repo/repo/subcmds/*.py模块
+经过repo模块添加的信息用来检查是否有可用的repo和执行main模块，这是命令行的前部分，而后半部分（init -u xxxx -b xxx）供直接或间接以Command为基类的衍生类的成员函数Execute调用放置在.repo/repo/subcmds/目录下的*.py模块。repo脚本能执行的命令都是放在该目录下的，一个Python文件对应一个repo命令。比如："repo init"表示要执行的模块在.repo/repo/subcmds/init.py。
 
 _Main函数的代码如下：
 
@@ -490,7 +488,7 @@ if __name__ == '__main__':
   _Main(sys.argv[1:])
 {%endhighlight%}
 
-&emsp;&emsp;_Main函数的重点部分在于repo调用_Repo类中的_Run函数，而前期也如repo和main两个模块一样做一些必要的检查。修剪命令的_PruneOptions函数、解析命令的parse_args函数(opt"--"之前的内容，argv"--"之后的内容)、检查repo脚本版本的_CheckWrapperVersion函数、检查.repo目录是否存在的_CheckRepoDir函数。
+&emsp;&emsp;_Main函数的重点部分在于repo调用_Repo类中的成员函数_Run，而前期也如repo和main两个模块一样做一些必要的检查。修剪命令行的_PruneOptions函数、解析命令的parse_args函数(opt为"--"之前的内容，argv"为--"之后的内容)、检查repo模块版本的_CheckWrapperVersion函数、检查 .repo目录是否存在的_CheckRepoDir函数。
 
 _Repo类的代码如下：
 
@@ -568,10 +566,10 @@ class _Repo(object):
 
     return result
 {%endhighlight%}
-&emsp;&emsp;_Repo类的有两个成员变量：repodir、commands和一个类变量all_commands，其中的all_commands的值是一些命令的类名，通过包subcmds初始化代码，将包subcmds下的模块名首字母转化为大写其余字母不变，就是命令的类名。在结合Run函数，可以知道，该类主要用于分发被解析后的cmd在包subcmds下所对应的模块里面的类（比如：init指令--->from init import Init）。
-&emsp;&emsp;_Repo类的成员函数_Run主要是初始化XmlManifest，和调用Command类的成员函数Execute。
+&emsp;&emsp;_Repo类有两个成员变量repodir、commands和一个类变量all_commands，其中all_commands字典的值是一些repo脚本能够执行命令的类名。那这些值是怎么来的呢 ？ 在 ``from subcmds import all_commands`` 时，就会初始化subcmds包，将subcmds目录下所有模块名的首字母转化为大写其余字母不变，就成了命令的类名。再结合成员函数_Run，可以知道，该类的作用在于，将解析后的cmd分发到包subcmds下所对应的模块里面的类（比如：init指令--->subcmds/init.py里面的Init类）。
+&emsp;&emsp;_Repo类的成员函数_Run主要是初始化XmlManifest，获取某个指令独有OptionParse并解析指令，调用Command类的成员函数Execute。
 
-其中XmlManifest类用于管理.repo，XmlManifest类的代码如下：
+其中XmlManifest类用于管理 .repo，XmlManifest类的代码如下：
 
 ```python
 class XmlManifest(object):
@@ -593,7 +591,6 @@ class XmlManifest(object):
       gitdir   = os.path.join(repodir, 'manifests.git'),
       worktree = os.path.join(repodir, 'manifests'))
 ```
-
 XmlManifest类在manifest_xml模块里面，XmlManifest类的主要成员变量有：
 
   + repodir:.repo目录的绝对路径
@@ -602,7 +599,7 @@ XmlManifest类在manifest_xml模块里面，XmlManifest类的主要成员变量�
   + repoProject： .repo目录下的repo仓库
   + manifestProject：.repo目录下的manifest仓库
 
-类中还提供了对.repo的属性值和及其操作的成员函数。所以不难看出该类就是对.repo目录的管理工具。我们在继续看一下该类中重要的成员变量repoProject、manifestProject，都是MetaProject类的对象.
+类中还提供了对.repo的属性值和对属性值操作的成员函数，比如加载数据到XmlManifest对象(_Load成员函数)和重置数据(_Unload成员函数)，创建manifest.xml链接文件（Link成员函数），获取projects目录下的仓库对象（GetProjectsWithName，GetProjectPaths成员函数）。所以不难看出该类就是对.repo目录的管理工具。我们在继续看一下该类中重要的成员变量repoProject、manifestProject，都是MetaProject类的对象.
 
 MetaProject类的代码如下
 
@@ -633,7 +630,8 @@ class MetaProject(Project):
 - remote：远程仓库
 - relpath：创建新仓库的相对于.repo目录的路径
 - revisionExpr： 分支
-MetaProject和Projects是一样的，不过为了体现这两个仓库（repo仓库和manifest仓库）在AOSP项目整个仓库集的重要性，才会有这样的命名。
+ 
+MetaProject和Project对于仓库的操作逻辑差不多一样，不过为了体现这两个仓库（repo仓库和manifest仓库）在AOSP项目整个仓库集的重要性，才会有这样的命名。
 
 
 Project类的代码如下：
@@ -744,13 +742,40 @@ class Project(object):
     # project containing repo hooks.
     self.enabled_repo_hooks = []
 {%endhighlight%}
-&emsp;&emsp;Project是用来描述AOSP项目某一个仓库（或者说项目）,其中有几个重要的值是来源于manifest.xml,   ``name,revisionExpr,rebase,groups,sync_c,sync_s,upstream``      这几个值对应到manifest.xml中某个标签的属性值。所以AOSP项目的仓库信息都在manifest.xml,除了repo仓库和manifest仓库
+&emsp;&emsp;Project是用来描述AOSP项目某一个仓库（或者说项目）,其中有几个重要的值是来源于manifest.xml,   ``name,revisionExpr,rebase,groups,sync_c,sync_s,upstream``      这几个值对应到manifest.xml中某个标签的属性值，后续我们在克隆projects仓库集会讲解manifest标签和属性的用途。所以AOSP项目的仓库信息都在manifest.xml,除了repo仓库和manifest仓库，这些信息是在我们使用"repo sync"时会用到。
 
-&emsp;&emsp;现在我们回到成员函数_Run的流程中，XmlManifest类已经构造完了，接下来就是调用Execute。
+&emsp;&emsp;现在我们回到成员函数_Run的流程中，XmlManifest类已经构造完了。``cmd.OptionParser.parse_args(argv)``  ,再去获取每个指令独有的OptionParser并且解析指令  ``init -u xxxx -b xxx`` 
 
-&emsp;&emsp;Command类是所有指令（init、sync、start）的基类，其成员函数Execute被指令override，故调用成员函数Execute就可以执行某个指令对应的成员函数Execute。所以，执行到这一行(result = cmd.Execute(copts, cargs))的时候,就是整个架构的分水岭了。下面的图片是对前面的总结。
+OptionParser属性函数的代码如下：
 
-![repo _Repo#_Run flowchart]({{site.baseurl | prepend:site.url}}/images/2017-04-12-repo__Repo_Run_flowchart.png){:.white-bg-image}
+```python
+class Command(object):
+  """Base class for any command line action in repo.
+  """
+  ...
+ @property
+  def OptionParser(self):
+    if self._optparse is None:
+      try:
+        me = 'repo %s' % self.NAME
+        usage = self.helpUsage.strip().replace('%prog', me)
+      except AttributeError:
+        usage = 'repo %s' % self.NAME
+      self._optparse = optparse.OptionParser(usage=usage)
+      self._Options(self._optparse)
+    return self._optparse
+  ...
+  def _Options(self, p):
+    """Initialize the option parser.
+    """
+```
+Command的衍生类重写了基类的_Options，定义了属于自己的options,先留个坑后面讲到"repo sync"的时候再分析。
+
+创建完XmlManifest类，解析命令行后，接下来就是调用Execute。
+
+&emsp;&emsp;Command类是所有命令（init、sync、start）的基类，其成员函数Execute被其衍生类重写，故调用成员函数Execute就可以执行某个命令对应的成员函数Execute。所以，执行到这一行  ``result = cmd.Execute(copts, cargs)``  的时候,就是整个架构的分水岭了。下面的图片是对前面的总结。
+
+![repo _Repo#_Run flowchart]({{site.baseurl}}/images/2017-04-12/2017-04-12-repo__Repo_Run_flowchart.png){:.white-bg-image}
 
 
 接下来就是执行init模块中Init类的成员函数Execute：
@@ -783,7 +808,7 @@ class Init(InteractiveCommand, MirrorSafeCommand):
 
     self._DisplayResult()
 ```
-&emsp;&emsp;Init类的成员函数Execute的重点在于两个成员函数_SyncManifest和_LinkManifest，前者会克隆出manifest仓库，后者会通过os模块symlink函数生成链接文件manifest.xml。
+&emsp;&emsp;Init类的成员函数Execute的重点在于两个成员函数_SyncManifest和_LinkManifest，前者会克隆出manifest仓库并且切换到可用的分支上，后者会通过os模块symlink函数生成链接文件manifest.xml。
 
 _SyncManifest函数的代码如下：
 
@@ -837,7 +862,7 @@ class Init(InteractiveCommand, MirrorSafeCommand):
         print('fatal: cannot create default in manifest', file=sys.stderr)
         sys.exit(1)
 {%endhighlight%}
-&emsp;&emsp;Init类的成员函数_SyncManifest会克隆一个仓库，流程一般如下：git init--->git fetch--->git checkout branch_name。对应的Project类成员函数就是_InitGitDir，Sync_NetworkHalf，Sync_LocalHalf,是不是很熟悉，跟克隆repo仓库的流程是一样的，其实repo仓库、manifest仓库、projects仓库集这些仓库克隆出来的方式是一样的。
+&emsp;&emsp;Init类的成员函数_SyncManifest会克隆一个仓库，流程一般如下： ``git init--->git fetch--->git checkout branch_name``  。对应的Project类成员函数就是_InitGitDir，Sync_NetworkHalf，Sync_LocalHalf,是不是很熟悉，跟克隆repo仓库的流程是一样的，其实repo仓库、manifest仓库、projects仓库集这些仓库克隆出来的方式是一样的。
 
 
 ```python
@@ -855,7 +880,7 @@ class Project(object):
      ...
 ```
 
-&emsp;&emsp;其中类_GitGetByExec的对象封装了操作仓库的命令。比如git init。但是却找不到成员函数init，原来成员函数init时动态定义的。关键的地方就在于_GitGetByExec类的成员函数_getattr_。
+&emsp;&emsp;_InitGitDir，初始化的仓库为manifest.git,manifest目录下的.git仓库是manifest的复制品，通过Project类的成员函数_InitWorkTree创建。接着再说类_GitGetByExec，_GitGetByExec的对象bare_objdir封装了操作仓库的命令。比如git init。但是却找不到成员函数init，原来成员函数init是动态定义的。关键的地方就在于_GitGetByExec类的成员函数_getattr_。
 
 _GitGetByExec类的成员函数__getattr__代码如下:
 
@@ -876,8 +901,7 @@ class Project(object):
         ...
         if config is not None:
           if not git_require((1, 7, 2)):
-            raise ValueError('cannot set config on command line for %s()'
-                             % name)
+            ...
           for k, v in config.items():
             cmdv.append('-c')
             cmdv.append('%s=%s' % (k, v))
@@ -890,8 +914,7 @@ class Project(object):
                        capture_stdout=True,
                        capture_stderr=True)
         if p.Wait() != 0:
-          raise GitError('%s %s: %s' %
-                         (self._project.name, name, p.stderr))
+          ...
         r = p.stdout
         try:
           r = r.decode('utf-8')
@@ -902,7 +925,8 @@ class Project(object):
         return r
       return runner
 {%endhighlight%}
-&emsp;&emsp;_GitGetByExec类通过成员函数__getattr__可以向工厂一样生产一些执行git命令的成员函数。既然仓库已经初始化好了，那么接下来就是fetch仓库了。
+&emsp;&emsp;runner闭包用来处理调用者提供的参数，比如bare_git.describe(project.GetRevisionId())中的"project.GetRevisionId()",对应的git命令就是  `` git  describe  args  ``
+所以_GitGetByExec类通过成员函数__getattr__可以向工厂一样生产一些执行git命令的成员函数。既然仓库已经初始化好了，那么接下来就是fetch仓库了。
 
 Sync_NetworkHalf成员函数的代码如下：
 
@@ -950,6 +974,7 @@ class Project(object):
     """Perform only the local IO portion of the sync process.
        Network access is not required.
     """
+    self._InitWorkTree(force_sync=force_sync)
     ...
     revid = self.GetRevisionId(all_refs)
 
@@ -1066,6 +1091,9 @@ class Project(object):
 
 &emsp;&emsp;Project类的成员函数Sync_LocalHalf内部流程较为复杂，这里我们只讲checkout到一个干净的分支。
 
+- _InitWorkTree成员函数：初始化manifest工作目录下的.git仓库
+- _Checkout成员函数：通过"git checkout"切换分支。
+
 _LinkManifest成员函数的代码如下：
 
 ```python
@@ -1084,15 +1112,278 @@ class Init(InteractiveCommand, MirrorSafeCommand):
       print('fatal: %s' % str(e), file=sys.stderr)
       sys.exit(1)
 ```
-&emsp;&emsp;成员函数_LinkManifest最终会调用os.symlink，创建manifest目录下default.xml的链接文件manifest.xml，这样方便访问manifest.xml文件
+&emsp;&emsp;成员函数_LinkManifest最终会调用os.symlink，创建manifest工作目录下default.xml的链接文件manifest.xml到 .repo目录下，这样方便访问manifest.xml文件
 
-### *projects仓库集*{:.header3-font}
+### *Projects仓库集*{:.header3-font}
 
+&emsp;&emsp;执行完repo init就获取到了repo仓库和manifest仓库了，接下来就要通过manifest.xml链接文件中的AOSP各个项目的元数据，获取projects仓库集。先来看看其内容：
 
+{%highlight xml %}
+<?xml version="1.0" encoding="UTF-8"?>  
+<manifest>  
+  
+  <remote  name="aosp"  
+           fetch=".."  
+           review="https://android-review.googlesource.com/" />  
+  <default revision="refs/tags/android-4.2_r1"  
+           remote="aosp"  
+           sync-j="4" />  
+  
+  <project path="build" name="platform/build" >  
+    <copyfile src="core/root.mk" dest="Makefile" />  
+  </project>  
+  <project path="abi/cpp" name="platform/abi/cpp" />  
+  <project path="bionic" name="platform/bionic" />  
+  ......  
+  
+</manifest> 
+{%endhighlight%}
+&emsp;&emsp;想了解更多的manifest.xml可以查看.repo/repo/docs/manifest-format.txt。这里我们只做简单了解
+manifest.xml定义了四种标签：
 
+- remote：该标签描述的是远程仓库信息。其中的fetch值相当于url路径的前缀。就好比 ``git@github.com:HawksJamesf/blog.git``  中的 ``git@github.com:`` ，标明了服务器。属性review用于code review服务器地址。
+- default：属性revision表明了AOSP项目使用的开发分支，属性sync-j表明了拉取代码时使用的cpu核数
+- project: 描述了相对于远程仓库的位置和相对于AOSP根目录的目录名字。比如想要获取build仓库，远程仓库的url为    ``https://android.googlesource.com/platform``，那么该仓库的对应的远程仓库的url就是   ``https://android.googlesource.com/platform/build``
+- copyfile: 属性src为某个文件在远程仓库的位置，属性dest为本地仓库的位置。 
 
+&emsp;&emsp;执行  `` repo sync -j 8  ``  命令行，流程就跟执行repo init是一样的，到了main模块里面的_Repo类的成员函数_Run调用cmd.Execute(copts, cargs)这个风水岭，才会执行属于sync模块的代码。但是关于copts，cargs参数的如何获取，我们还得先看cmd.OptionParser.parse_args(argv)。
 
+_Options成员函数的代码如下：
 
+{%highlight python linenos%}
+class Sync(Command, MirrorSafeCommand):
+  ...
+  def _Options(self, p, show_smart=True):
+    try:
+      self.jobs = self.manifest.default.sync_j
+    except ManifestParseError:
+      self.jobs = 1
+
+    ...
+    p.add_option('-l', '--local-only',
+                 dest='local_only', action='store_true',
+                 help="only update working tree, don't fetch")
+    p.add_option('-n', '--network-only',
+                 dest='network_only', action='store_true',
+                 help="fetch only, don't update working tree") 
+    ...
+    p.add_option('-m', '--manifest-name',
+                 dest='manifest_name',
+                 help='temporary manifest to use for this sync', metavar='NAME.xml')
+    ...
+    p.add_option('-u', '--manifest-server-username', action='store',
+                 dest='manifest_server_username',
+                 help='username to authenticate with the manifest server')
+    p.add_option('-p', '--manifest-server-password', action='store',
+                 dest='manifest_server_password',
+                 help='password to authenticate with the manifest server')
+    p.add_option('--fetch-submodules',
+                 dest='fetch_submodules', action='store_true',
+                 help='fetch submodules from server')
+    ...
+    
+    if show_smart:
+      p.add_option('-s', '--smart-sync',
+                   dest='smart_sync', action='store_true',
+                   help='smart sync using manifest from the latest known good build')
+      p.add_option('-t', '--smart-tag',
+                   dest='smart_tag', action='store',
+                   help='smart sync using manifest from a known tag')
+
+    g = p.add_option_group('repo Version options')
+    g.add_option('--no-repo-verify',
+                 dest='no_repo_verify', action='store_true',
+                 help='do not verify repo source code')
+    g.add_option('--repo-upgraded',
+                 dest='repo_upgraded', action='store_true',
+                 help=SUPPRESS_HELP)
+{%endhighlight%}
+&emsp;&emsp;在分析repo init时已经说用，Command的衍生类override成员函数_Options，才能得到独有的OptionParser。还记得  ``repo command line --->optparse--->git command line``这个流程吗 ? 每种命令都有其对应的OptionParser，这样才能做到各个命令模块有自己处理repo command line的逻辑。紧接着把解析后的值传给成员函数Execute。
+
+Execute成员函数的代码如下：
+
+{%highlight python linenos%}
+class Sync(Command, MirrorSafeCommand):
+  ...
+  def Execute(self, opt, args):
+    ...
+
+    manifest_name = opt.manifest_name
+    ...
+
+    rp = self.manifest.repoProject
+    rp.PreSync()
+
+    mp = self.manifest.manifestProject
+    mp.PreSync()
+
+    ...
+
+    if not opt.local_only:
+      mp.Sync_NetworkHalf(quiet=opt.quiet,
+                          current_branch_only=opt.current_branch_only,
+                          no_tags=opt.no_tags,
+                          optimized_fetch=opt.optimized_fetch)
+
+    if mp.HasChanges:
+      syncbuf = SyncBuffer(mp.config)
+      mp.Sync_LocalHalf(syncbuf)
+      if not syncbuf.Finish():
+        sys.exit(1)
+      self._ReloadManifest(manifest_name)
+      if opt.jobs is None:
+        self.jobs = self.manifest.default.sync_j
+
+    ...
+    all_projects = self.GetProjects(args,
+                                    missing_ok=True,
+                                    submodules_ok=opt.fetch_submodules)
+
+    self._fetch_times = _FetchTimes(self.manifest)
+    if not opt.local_only:
+      to_fetch = []
+      now = time.time()
+      if _ONE_DAY_S <= (now - rp.LastFetch):
+        to_fetch.append(rp)
+      to_fetch.extend(all_projects)
+      to_fetch.sort(key=self._fetch_times.Get, reverse=True)
+
+      fetched = self._Fetch(to_fetch, opt)
+      _PostRepoFetch(rp, opt.no_repo_verify)
+      if opt.network_only:
+        # bail out now; the rest touches the working tree
+        return
+
+      # Iteratively fetch missing and/or nested unregistered submodules
+      previously_missing_set = set()
+      while True:
+        ...
+        all_projects = self.GetProjects(args,
+                                        missing_ok=True,
+                                        submodules_ok=opt.fetch_submodules)
+        missing = []
+        for project in all_projects:
+          if project.gitdir not in fetched:
+            missing.append(project)
+        if not missing:
+          break
+        # Stop us from non-stopped fetching actually-missing repos: If set of
+        # missing repos has not been changed from last fetch, we break.
+        missing_set = set(p.name for p in missing)
+        if previously_missing_set == missing_set:
+          break
+        previously_missing_set = missing_set
+        fetched.update(self._Fetch(missing, opt))
+
+    ...
+
+    if self.UpdateProjectList():
+      sys.exit(1)
+
+    ...
+    for project in all_projects:
+      ...
+      if project.worktree:
+        project.Sync_LocalHalf(syncbuf, force_sync=opt.force_sync)
+    ...
+
+    ...
+{%endhighlight%}
+&emsp;&emsp;前期会有一些更新检查repo仓库和manifest仓库的工作，后期就会拉去projects仓库集，那么下面我们就来粗糙的理解执行成员函数Execute的流程：
+
+- 一开始获取manifest仓库和repo仓库的对象，然后都会调用之前分析过的PreSync，如果opt.local_only不存在，就会调用Sync_NetworkHalf成员函数更新manifest仓库。紧接着如果manifest本地仓库相对于远程仓库有变化，就会调用Sync_LocalHalf做一些merge或者rebase操作，然后调用ReloadManifest成员函数重新从manifest.xml载入数据到对象。
+- 接下来就是_Fetch成员函数，其中除了manifest仓库，其他的仓库都会更新。如果开启的合数大于1的话就会创建新的线程，防止主线程阻塞，其中关于线程同步机制可以查看[这里](http://www.laurentluce.com/posts/python-threads-synchronization-locks-rlocks-semaphores-conditions-events-and-queues/)。而获取projects仓库集，主要使用的是Project类的成员函数Sync_NetworkHalf，接着调用_PostRepoFetch函数判断repo仓库是否有变化，如果是，则调用Sync_LocalHalf成员函数做一些merge或者rebase操作。
+- 紧接着通过GetProjects成员函数从 .repo/projects目录下得到AOSP所有仓库对象的列表，不包括repo仓库和manifest仓库，这样就可以调用Sync_LocalHalf成员函数。如果参数args指定了具体的仓库（即repo sync project_name），那么GetProjects成员函数就只能得到指定的仓库。获取仓库的方式有两种：一种_GetProjectByPath，另一种是GetProjectsWithName。
+
+&emsp;&emsp;至此，repo仓库、manifest仓库、projects仓库集连同其对应的工作目录都已经初始化完成。那么是不是就可以开始开发呢 ？ 其实接下来还要为AOSP项目的仓库创建一个新的开发分支，只有这样我们才能够在分支上面提交、上传自己的代码。也只有这样当我们发布了一个版本就可以给这个版本打上一个tag。当项目可以量产时，就可以在这个分支基础上创建出一个量产分支，并上传到服务器。
+
+### *创建分支*{:.header3-font}
+``repo start master --all`` 其实挺好理解这个命令行的，就是  ``git checkout -b name`` 命令行的批量操作。留个坑，以后填吧。
+
+{%highlight python linenos%}
+class Start(Command):
+  ...
+  def _Options(self, p):
+    p.add_option('--all',
+                 dest='all', action='store_true',
+                 help='begin branch in all projects')
+
+  def Execute(self, opt, args):
+    if not args:
+      self.Usage()
+
+    nb = args[0]
+    if not git.check_ref_format('heads/%s' % nb):
+      print("error: '%s' is not a valid name" % nb, file=sys.stderr)
+      sys.exit(1)
+
+    err = []
+    projects = []
+    if not opt.all:
+      projects = args[1:]
+      if len(projects) < 1:
+        projects = ['.',]  # start it in the local project by default
+
+    all_projects = self.GetProjects(projects,
+                                    missing_ok=bool(self.gitc_manifest))
+
+    # This must happen after we find all_projects, since GetProjects may need
+    # the local directory, which will disappear once we save the GITC manifest.
+    if self.gitc_manifest:
+      gitc_projects = self.GetProjects(projects, manifest=self.gitc_manifest,
+                                       missing_ok=True)
+      for project in gitc_projects:
+        if project.old_revision:
+          project.already_synced = True
+        else:
+          project.already_synced = False
+          project.old_revision = project.revisionExpr
+        project.revisionExpr = None
+      # Save the GITC manifest.
+      gitc_utils.save_manifest(self.gitc_manifest)
+
+      # Make sure we have a valid CWD
+      if not os.path.exists(os.getcwd()):
+        os.chdir(self.manifest.topdir)
+
+    pm = Progress('Starting %s' % nb, len(all_projects))
+    for project in all_projects:
+      pm.update()
+
+      if self.gitc_manifest:
+        gitc_project = self.gitc_manifest.paths[project.relpath]
+        # Sync projects that have not been opened.
+        if not gitc_project.already_synced:
+          proj_localdir = os.path.join(self.gitc_manifest.gitc_client_dir,
+                                       project.relpath)
+          project.worktree = proj_localdir
+          if not os.path.exists(proj_localdir):
+            os.makedirs(proj_localdir)
+          project.Sync_NetworkHalf()
+          sync_buf = SyncBuffer(self.manifest.manifestProject.config)
+          project.Sync_LocalHalf(sync_buf)
+          project.revisionId = gitc_project.old_revision
+
+      # If the current revision is a specific SHA1 then we can't push back
+      # to it; so substitute with dest_branch if defined, or with manifest
+      # default revision instead.
+      branch_merge = ''
+      if IsId(project.revisionExpr):
+        if project.dest_branch:
+          branch_merge = project.dest_branch
+        else:
+          branch_merge = self.manifest.default.revisionExpr
+
+      if not project.StartBranch(nb, branch_merge=branch_merge):
+        err.append(project)
+    pm.end()
+
+    if err:
+      for p in err:
+        print("error: %s/: cannot start %s" % (p.relpath, nb),
+              file=sys.stderr)
+      sys.exit(1)
+{%endhighlight%}
 
 
 

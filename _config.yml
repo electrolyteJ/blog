@@ -11,11 +11,11 @@ url: https://hawksjamesf.github.io
 baseurl: '/blog'
 
 share:
-  facebook: true
-  twitter: true
-  gplus: true
+  # facebook: true
+  # twitter: true
+  # gplus: true
   linkedin: true
-  pinterest: true
+  # pinterest: true
   email: true
 
 social:

@@ -17,7 +17,7 @@ tag: Python
   - [_Manifest仓库_{:.header3-font}](#manifest仓库header3-font)
   - [*Projects仓库集*{:.header3-font}](#projects仓库集header3-font)
   - [*创建分支*{:.header3-font}](#创建分支header3-font)
-- [*4.参考资料*{:.header2-font}](#4参考资料header2-font)
+- [*4.Reference*{:.header2-font}](#4referenceheader2-font)
 
 <!-- /MarkdownTOC -->
 
@@ -1233,7 +1233,6 @@ class Sync(Command, MirrorSafeCommand):
       self._ReloadManifest(manifest_name)
       if opt.jobs is None:
         self.jobs = self.manifest.default.sync_j
-
     ...
     all_projects = self.GetProjects(args,
                                     missing_ok=True,
@@ -1387,7 +1386,8 @@ class Start(Command):
 
 
 
-## *4.参考资料*{:.header2-font}
+## *4.Reference*{:.header2-font}
 [Android Open Source Project](https://source.android.com/source/developing)
+[repo仓库源码](https://github.com/HawksJamesf/python-experimental)
 [Android源代码仓库及其管理工具Repo分析](http://blog.csdn.net/luoshengyang/article/details/18195205)
 

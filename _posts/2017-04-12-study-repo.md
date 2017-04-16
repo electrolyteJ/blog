@@ -3,7 +3,7 @@ layout: post
 title: Android源码解析之repo仓库
 description: 用什么语言都可以封装git的命令，那为什么是python ?
 author: 未知
-date: 2017-04-04
+date: 2017-04-12
 share: true
 comments: true
 tag: Python
@@ -12,7 +12,7 @@ tag: Python
 
 - [*1.Summary*{:.header2-font}](#1summaryheader2-font)
 - [*2.About Repo*{:.header2-font}](#2about-repoheader2-font)
-- [_3.Content_{:.header2-font}](#3contentheader2-font)
+- [_3.Introduction_{:.header2-font}](#3introductionheader2-font)
   - [_Repo仓库_{:.header3-font}](#repo仓库header3-font)
   - [_Manifest仓库_{:.header3-font}](#manifest仓库header3-font)
   - [*Projects仓库集*{:.header3-font}](#projects仓库集header3-font)
@@ -32,7 +32,7 @@ tag: Python
 
 补充一点，git是允许repository和working directory分布在不同的目录下的。所以就会看到AOSP的working directory在项目根目录而.git目录在.repo/projects目录
 
-##  _3.Content_{:.header2-font}
+##  _3.Introduction_{:.header2-font}
 
 &emsp;&emsp;先来草率的分析一下,拉取一套AOSP代码应该按照如下流程：
 

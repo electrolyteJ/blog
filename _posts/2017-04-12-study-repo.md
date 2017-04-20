@@ -1389,5 +1389,6 @@ class Start(Command):
 ## *4.Reference*{:.header2-font}
 [Android Open Source Project](https://source.android.com/source/developing)
 [repo仓库源码](https://github.com/HawksJamesf/python-experimental)
+[清华大学提供的AOSP](https://mirrors.tuna.tsinghua.edu.cn/help/AOSP/)
 [Android源代码仓库及其管理工具Repo分析](http://blog.csdn.net/luoshengyang/article/details/18195205)
 

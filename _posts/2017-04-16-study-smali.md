@@ -23,7 +23,7 @@ tag:
 &emsp;&emsp;了解了这些内容，就可以简单的判断smali就是一款用于Dalvik虚拟机的汇编器，其反汇编器叫做baksmali，所以apktool其实是smali/baksmali的封装，兼具汇编和反汇编的功能。并且smali汇编器的语法是基于jasmin汇编器的语法。那为什么两者的语法时却有点不同 ？ 最终归结于虚拟机的不同导致的，官方虚拟机是基于内存中的堆栈实现，而Dalvik虚拟机是基于寄存器实现。但是jasmin语言的理念被保留了下来。
 
 ## *3.Introduction*{:.header2-font}
-有空再来填坑，先提供写资料看看。
+资料看完了，有空再来填坑。
 
 - 数据类型、类的字段（field）和方法（method）定义：可以查看官方提供的[链接](https://github.com/JesusFreke/smali/wiki/TypesMethodsAndFields)
 - 用来存放数据的寄存器，可以查看官方提供的[链接](https://github.com/JesusFreke/smali/wiki/Registers)

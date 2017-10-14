@@ -1,5 +1,7 @@
 _cache
 _site
+.DS_Store
+.vscode/
 .tags
 .tags_sorted_by_file
 README.md

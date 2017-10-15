@@ -26,6 +26,7 @@ social:
   # lastfm: ''
   zhihu: 'wei-zhi-end'
   weibo: 'weizhiend'
+  douban: 'weizhiend'
   rss: feed.xml
 
 # Google Analytics key, leave blank to ignore

@@ -11,9 +11,19 @@ tag:
 - Groovy
 ---
 ## *1.Summary*{:.header2-font}
-&emsp;&emsp
+&emsp;&emsp;
 ## *2.About*{:.header2-font}
-&emsp;&emsp
+&emsp;&emsp;
 ## *3.Intoduction*{:.header2-font}
-&emsp;&emsp
+&emsp;&emsp;
 ## *4.Reference*{:.header2-font}
+
+
+[Groovy官网](http://www.groovy-lang.org/learn.html)
+
+
+
+[深入理解Android之Gradle](http://blog.csdn.net/innost/article/details/48228651)
+
+[Gradle的官网](https://gradle.org/)
+[Build Overview](http://tools.android.com/build)

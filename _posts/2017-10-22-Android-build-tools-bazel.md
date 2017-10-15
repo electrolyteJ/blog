@@ -1,6 +1,6 @@
 ---
 layout: post
-title: TensorFlow源码解析之构建系统Bazel
+title: TensorFlow源码解析之构建工具Bazel
 description: 
 author: 未知
 date: 2017-10-22
@@ -10,9 +10,9 @@ tag:
 - Build System
 ---
 ## *1.Summary*{:.header2-font}
-&emsp;&emspBazel is a build tool which coordinates builds and runs tests
+&emsp;&emsp;Bazel is a build tool which coordinates builds and runs tests
 ## *2.About*{:.header2-font}
-&emsp;&emsp
+&emsp;&emsp;
 ## *3.Intoduction*{:.header2-font}
-&emsp;&emsp
+&emsp;&emsp;
 ## *4.Reference*{:.header2-font}

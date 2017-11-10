@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Android源码解析之Account机制
+title: AOSP(SYS) --- Account机制
 description: 
 author: 未知
 date: 2017-05-14
@@ -8,7 +8,8 @@ share: true
 comments: true
 tag:
 - HTTP
-- Protocol
+- Network
+- AOSP(SYS)
 ---
 ## *1.Summary*{:.header2-font}
 &emsp;&emsp;
@@ -18,7 +19,7 @@ tag:
 资料看完了，有空再来填坑。
 
 
-![authentication flowchart]({{site.baseurl}}/images/2017-05-14/2017-05-14-authentication_flowchart.png){:.white-bg-image}
+![authentication flowchart]({{site.baseurl}}/asset/2017-05-14/2017-05-14-authentication_flowchart.png){:.white-bg-image}
 
 
 

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: (翻译AOSP)Android源码解析之AOSP新的构建系统
+title: 翻译AOSP/AOSP(SYS) --- 新的构建系统
 description: 使用Blueprint语言描述编译过程
 author: 未知
 date: 2017-9-23
@@ -8,8 +8,8 @@ share: true
 comments: true
 tag:
 - Build Tools
-- Blueprint/Soong
 - Translation
+- AOSP(SYS)
 ---
 ## *1.Summary*{:.header2-font}
 &emsp;&emsp;想法简单就是想练练翻译水平。正好用看到这么一篇文章[翻译 | 使用 Soong 来进行 Android 模块的构建](http://www.10tiao.com/html/685/201704/2649516116/1.html)，所以自己也来试试。

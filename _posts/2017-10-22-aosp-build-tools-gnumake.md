@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Android源码解析之构建工具GNU make
+title: AOSP(SYS) --- 构建工具GNU make
 description: 使用Makefile语言描述编译过程
 author: 未知
 date: 2017-10-11
@@ -8,7 +8,7 @@ share: true
 comments: true
 tag:
 - Build Tools
-- Makefile
+- AOSP(SYS)
 ---
 ## *1.Summary*{:.header2-font}
 &emsp;&emsp;在阅读GNU make构建工具相关资料的时候，一直在思考几个问题，

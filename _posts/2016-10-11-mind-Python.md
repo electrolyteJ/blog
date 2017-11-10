@@ -10,7 +10,6 @@ comments: true
 
 tags: 
 - Python
-- Backend
 # categories: 
 # - Script
 # - Backend2
@@ -19,7 +18,7 @@ tags:
 
 ---
 
-![Python]({{ site.baseurl}}/images/2016-10-11-mind-Python.png)
+![Python]({{ site.baseurl}}/asset/2016-10-11-mind-Python.png)
 
 <!-- ![My helpful screenshot]({{ site.baseurl | prepend:site.url}}/images/Python.png){: .center-image }*iPhone 5 portrait* -->
 

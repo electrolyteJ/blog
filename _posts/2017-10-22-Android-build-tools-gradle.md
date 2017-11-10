@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Android源码解析之构建工具Gradle
+title: AOSP(APP) --- 构建工具Gradle
 description: 使用Grovy语言描述编译过程
 author: 未知
 date: 2017-10-22
@@ -8,7 +8,7 @@ share: true
 comments: true
 tag:
 - Build Tools
-- Groovy
+- AOSP(APP)
 ---
 ## *1.Summary*{:.header2-font}
 &emsp;&emsp;

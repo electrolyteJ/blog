@@ -11,8 +11,8 @@ url: https://hawksjamesf.github.io
 baseurl: '/blog'
 
 share:
-  # facebook: true
-  # twitter: true
+  facebook: true
+  twitter: true
   # gplus: true
   linkedin: true
   # pinterest: true
@@ -24,10 +24,11 @@ social:
   linkedin:
   # instagram: ''
   # lastfm: ''
+  rss: feed.xml
   zhihu: 'wei-zhi-end'
   weibo: 'weizhiend'
   douban: 'weizhiend'
-  rss: feed.xml
+  
 
 # Google Analytics key, leave blank to ignore
 google_analytics_key:

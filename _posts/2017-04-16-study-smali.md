@@ -1,7 +1,7 @@
 ---
 layout: post
-title: Android源码解析之Smali语言（1）
-description: 这是一篇了解是什么Smali，学会Smali能做什么的初学者文章。
+title: Smali语言（1）
+description: 这是一篇了解什么是Smali，学会Smali能做什么的文章。
 author: 未知
 date: 2017-04-16
 share: true

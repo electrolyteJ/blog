@@ -2,7 +2,7 @@
 layout: post
 title: Android源码解析之Contacts应用
 description: 了解Contacts应用，可以让我们更得心应手的去操作数据库数据
-author: 未知
+author: 电解质
 date: 2017-04-30
 share: true
 comments: true

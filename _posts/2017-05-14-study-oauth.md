@@ -2,7 +2,6 @@
 layout: post
 title: AOSP(SYS) --- Account机制
 description: 
-author: 未知
 date: 2017-05-14
 share: true
 comments: true

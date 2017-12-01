@@ -2,7 +2,6 @@
 layout: post
 title: AOSP(SYS) --- 构建工具GNU make
 description: 使用Makefile语言描述编译过程
-author: 未知
 date: 2017-10-11
 share: true
 comments: true

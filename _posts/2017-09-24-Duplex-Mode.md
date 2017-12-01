@@ -2,7 +2,6 @@
 layout: post
 title: 网络制式（Duplex Mode）
 description: 
-author: 未知
 date: 2017-09-24
 share: true
 comments: true

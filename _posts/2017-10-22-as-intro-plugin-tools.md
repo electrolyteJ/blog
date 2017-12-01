@@ -2,7 +2,6 @@
 layout: post
 title: (理论篇)AOSP(APP) --- Android Studio插件工具
 description: 介绍Android Studio插件工具的原理
-author: 未知
 date: 2017-10-22
 share: true
 comments: true

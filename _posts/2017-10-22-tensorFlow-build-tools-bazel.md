@@ -2,7 +2,6 @@
 layout: post
 title: TensorFlow --- 构建工具Bazel
 description: 
-author: 未知
 date: 2017-10-22
 share: true
 comments: true

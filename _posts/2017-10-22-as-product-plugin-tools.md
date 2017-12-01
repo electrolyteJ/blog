@@ -2,7 +2,6 @@
 layout: post
 title: (实践篇)AOSP(APP) --- Android Studio插件工具
 description: 教你写Android Studio插件工具
-author: 未知
 date: 2017-10-22
 share: true
 comments: true

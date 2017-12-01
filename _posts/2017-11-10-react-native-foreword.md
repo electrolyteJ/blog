@@ -2,7 +2,6 @@
 layout: post
 title: React Native --- 前言
 description: 这是一篇计划文，描述了我们如何学习React Native
-author: 未知
 date: 2017-11-10
 share: true
 comments: true

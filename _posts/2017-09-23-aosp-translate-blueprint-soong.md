@@ -2,7 +2,6 @@
 layout: post
 title: 翻译AOSP/AOSP(SYS) --- 新的构建系统
 description: 使用Blueprint语言描述编译过程
-author: 未知
 date: 2017-9-23
 share: true
 comments: true

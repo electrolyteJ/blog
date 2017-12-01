@@ -2,7 +2,6 @@
 layout: post
 title: AOSP(APP) --- 构建工具Gradle
 description: 使用Grovy语言描述编译过程
-author: 未知
 date: 2017-10-22
 share: true
 comments: true

@@ -2,7 +2,6 @@
 layout: post
 title: AOSP(SYS) --- repo工具
 description: 用什么语言都可以封装git的命令，那为什么是python ?
-author: 未知
 date: 2017-04-12
 share: true
 comments: true

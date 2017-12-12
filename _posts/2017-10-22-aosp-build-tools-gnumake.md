@@ -59,7 +59,7 @@ target … : prerequisites …
 &emsp;&emsp;当然Makefile语言也会有变量、函数。这个文章就不详细讲解Makefile语法了，因为已经有好多人都写过相关的文章，可以参考权威的”[GNU make](http://www.gnu.org/software/make/manual/html_node/index.html?cm_mc_uid=45784307156114982261855&cm_mc_sid_50200000=1506734444)“,如果看不懂英文或者看英文吃力，可以参考这个中文文章”[跟我一起写Makefile](http://wiki.ubuntu.org.cn/%E8%B7%9F%E6%88%91%E4%B8%80%E8%B5%B7%E5%86%99Makefile)“。还有我最喜欢的博主老罗对Makefile的理解“[Android编译系统简要介绍和学习计划](http://blog.csdn.net/luoshengyang/article/details/18466779)”
 
 ### **make在Android平台的运用**{:.header3-font}
-&emsp;&emsp;为了加快AOSP项目的编译速度，Android团队在N版本添加了ninja构建工具，ninja构建工具相对于make构建工具更底层。通过开源项目kati(kati是项目名，但是最终编译生成的程序名却是叫做ckati，后续我们将使用ckati这个名字)将Makefile文件翻译成ninja文件。make和ninja的关系就像cmake和make。还有一点要注意的，由于7.1以后部分使用的是Soong、Buleprint这套构建工具，将bp文件转换成ninja文件，所以Makefile文件和Buleprint文件是混合使用的，分析Makefile文件要小心一点。不过Blueprint、Soong这套构建工具代替make、kati这套构建工具只是时间问题。想了解Buleprint、Soong这套构建工具可以参考这一篇[Android源码解析之AOSP新的构建系统]({{site.baseurl}}/blog/2017-09-23/2017-09-23-translate-blueprint-soong)。 那么我们就来大致了解一下这个转换的流程
+&emsp;&emsp;为了加快AOSP项目的编译速度，Android团队在N版本添加了ninja构建工具，ninja构建工具相对于make构建工具更底层。通过开源项目kati(kati是项目名，但是最终编译生成的程序名却是叫做ckati，后续我们将使用ckati这个名字)将Makefile文件翻译成ninja文件。make和ninja的关系就像cmake和make。还有一点要注意的，由于7.1以后部分使用的是Soong+Buleprint这套构建工具，将bp文件转换成ninja文件，所以Makefile文件和Buleprint文件是混合使用的，分析Makefile文件要小心一点。不过Blueprint+Soong这套构建工具代替make、kati这套构建工具只是时间问题。想了解Buleprint+Soong这套构建工具可以参考这一篇[Android源码解析之AOSP新的构建系统]({{site.baseurl}}/blog/2017-09-23/2017-09-23-translate-blueprint-soong)。 那么我们就来大致了解一下这个转换的流程
 
 build/core/main.mk
 {%highlight makefile %}

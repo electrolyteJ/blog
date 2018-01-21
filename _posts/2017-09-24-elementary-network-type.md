@@ -1,12 +1,12 @@
 ---
 layout: post
-title: 网络制式（Duplex Mode）
+title: 网络制式
 description: 
 date: 2017-09-24
 share: true
 comments: true
 tag:
-- Network
+- 基础知识
 ---
 
 ## *Intoduction*{:.header2-font}

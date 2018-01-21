@@ -1,14 +1,14 @@
 ---
 layout: post
-title: AOSP(SYS) --- Account机制
+title: Android的Account机制
 description: 
 date: 2017-05-14
 share: true
 comments: true
 tag:
-- HTTP
-- Network
+- Android高级工程师
 - AOSP(SYS)
+
 ---
 ## *1.Summary*{:.header2-font}
 &emsp;&emsp;

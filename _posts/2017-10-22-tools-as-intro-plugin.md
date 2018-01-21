@@ -1,18 +1,19 @@
 ---
 layout: post
-title: TensorFlow --- 构建工具Bazel
-description: 
+title: 【理论篇】 Android Studio插件工具
+description: 介绍Android Studio插件工具的原理
 date: 2017-10-22
 share: true
 comments: true
 tag:
-- Build Tools
-- AI
+- Tools
+# - AOSP(APP)
 ---
 ## *1.Summary*{:.header2-font}
-&emsp;&emsp;Bazel is a build tool which coordinates builds and runs tests
+&emsp;&emsp;敬请期待
 ## *2.About*{:.header2-font}
 &emsp;&emsp;
 ## *3.Intoduction*{:.header2-font}
 &emsp;&emsp;
 ## *4.Reference*{:.header2-font}
+

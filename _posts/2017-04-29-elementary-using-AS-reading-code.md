@@ -1,13 +1,13 @@
 ---
 layout: post
-title: AOSP(SYS) --- 使用Android Studio阅读AOSP源码
-description: 为什么推荐使用Android Studio阅读AOSP ？ 这一篇文章将会为我们解答
+title:  使用Android Studio阅读AOSP源码
+description: 为什么推荐使用Android Studio阅读AOSP ？ 这一篇文章将会解答
 date: 2017-04-29
 share: true
 comments: true
 tag:
-- Tools
-- AOSP(SYS)
+- 基础知识
+# - AOSP(SYS)
 ---
 
 ## *1.Summary*{:.header2-font}

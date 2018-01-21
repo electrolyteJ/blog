@@ -1,13 +1,12 @@
 ---
 layout: post
-title: Smali语言（1）
+title: Smali语言
 description: 这是一篇了解什么是Smali，学会Smali能做什么的文章。
 date: 2017-04-16
 share: true
 comments: true
 tag:
-- Smali
-- Assembler/Disassember
+- 逆向工程
 ---
 ## *1.Summary*{:.header2-font}
 &emsp;&emsp;如果你遇到没有源码的应用，又要对其代码进行修改，那么会使用Smali这门汇编语言就很有必要了。而在没办法修改源代码，通过修改字节码（或者机器码）对应的反汇编代码，去改变应用逻辑的做法，就叫做插桩。那些工作内容会用到插桩这门技术呢? 可以看一下这篇文章[基于原厂ROM移植MIUI](http://www.miui.com/thread-409543-1-1.html)。

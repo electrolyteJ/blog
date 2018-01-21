@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "初入Python"
+title: 初入Python
 description: 这是我第一次学习后端的知识，为此做了一次总结。
 published: true
 date: 2016-10-10
@@ -8,7 +8,7 @@ share: true
 comments: true
 
 tags: 
-- Python
+- 基础知识
 # categories: 
 # - Script
 # - Backend2

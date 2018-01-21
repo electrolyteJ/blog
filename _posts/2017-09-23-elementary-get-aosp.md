@@ -1,12 +1,13 @@
 ---
 layout: post
-title: AOSP(SYS) --- 获取和编译AOSP
-description: 如果有兴趣研究AOSP源码的可以查看这一片文章
+title: 用正确的姿势下载和编译AOSP
+description: 如果有兴趣在自己的Mac电脑下载和编译一套Android源码的话，可以查看这一篇文章，帮助你跳过一些坑
 date: 2017-09-23
 share: true
 comments: true
 tag:
-- AOSP(SYS)
+- 基础知识
+# - AOSP(SYS)
 ---
 
 
@@ -78,7 +79,7 @@ brew install xz
 如果后续还有问题在继续写，continue。。。
 
 ### *其他*{:.header3-font}
-如果编译完成，想使用Android Studio阅读源码可以观看这一篇文章[Android源码解析之Android Studio]({{site.baseurl}}/blog/2017-04-29/study-AS)
+如果编译完成，想使用Android Studio阅读源码可以观看这一篇文章[使用Android Studio阅读AOSP源码]({{site.baseurl}}/2017-04-29/elementary-using-AS-reading-code)
 
 
 

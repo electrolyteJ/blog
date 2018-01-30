@@ -21,6 +21,19 @@ tag:
 
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-01-30-location-system-framework-arich.png)
 
+&emsp;&emsp;这个架构其实很好理解，应用层通过注册监听器来接受底层上报的定位数据，而定位数据的来源很多，可以是高精度的gps，可以network，也可以是passive。除了可以获取定位数据，还可以获取gps的测绘数据，以及gps其他信息。由于网络定位的优化算法都是服务厂商自己在搞，涉及到商业利益不便开源，所以我们在Android Location API中很少看到除了gps其他的定位服务API。Android团队为了保护服务厂商的利益，就像当时的HAL层出现一样，在Location的framework层提供了很多的XxxProxy类，然后通过ServiceWatcher连接到服务厂商自己的进程，从而规避了服务厂商暴露源码的风险。
+
+&emsp;&emsp;不光是网络定位的实现交给了服务厂商，就连地理围栏、地理编码，也就是地图有关的都交给了服务厂商，所以我们在架构中看到了很多的XxxProxy类。唯一gps的源码我们是可以研究的。不过GnssLocationProvider类很值得我们去学习。
+
+- 定义了一个内部类ProviderHandler用来处理底层上报的消息，
+- 将协议方面的代码让Native层去实现
+- 使用了[exponential backoff算法](https://en.wikipedia.org/wiki/Exponential_backoff)
+- 注册了监听Geofence的接口
+
+GnssLocationProvider类的这几个特质我们也可以在让网络定位的Provider拥有。
+
+&emsp;&emsp;对于Native层其实没有什么好讲的，因为我之前也学习过Telephony的HAL层，深知如果是一名ROM开发者，那么学习HAL层是很有必要的，但是如果是一名App开发者，就没有必要了。不过对于framework-native层倒是可以学习一下，jni的开发模式也是需要学习的。我已经看了React Native的jni开发模式，有时间在把笔记整理好上传到博客。
+
 
 ## *4.Reference*{:.header2-font}
 [Android 系统中 Location Service 的实现与架构](https://www.ibm.com/developerworks/cn/opensource/os-cn-android-location/)

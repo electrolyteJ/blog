@@ -64,13 +64,13 @@ MTK给出了它们在open sky,有6颗卫星SNR》40db的条件下的测量数据
 对于这些定位方式如果有兴趣的话可以参考这一篇文章[室内定位（总结：种类，方法，特点）](http://www.cnblogs.com/lesliexong/p/7050360.html), 由于本文的重点是讲解Location系统，上面的内容只是作为一个背景知识，所以不进行深入挖掘。
 
 
-在Android的Location框架API里，为开发者提供了三种位置提供者：gps(GPS, AGPS)、network(CellID, WiFi MACID)、passive(从其他的软件获取)
+在Android的Location API里，为开发者提供了三种位置提供者：gps(GPS, AGPS)、network(CellID, WiFi MACID)、passive(从其他的软件获取)
 
 下面我们就来罗列一下学习计划
 
 - [x] [Location系统---入门]({{site.baseurl}}/2018-01-25/location-system-elementary)
-- [ ] [Location系统---框架概述]({{site.baseurl}}/2018-01-25/location-system-framework)
-- [ ] [Location系统---启动流程]({{site.baseurl}}/2018-01-25/location-system-launch)
+- [x] [Location系统---架构概述]({{site.baseurl}}/2018-01-30/location-system-arich)
+- [x] [Location系统---启动流程]({{site.baseurl}}/2018-01-29/location-system-launch)
 - [ ] [Location系统---Map]({{site.baseurl}}/2018-01-25/location-system-map)
 - [ ] [Location系统---项目实战]({{site.baseurl}}/2018-01-25/location-system-practice)
 

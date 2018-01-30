@@ -460,9 +460,9 @@ A_GLONASS_POS_PROTOCOL_SELECT = 0
 &emsp;&emsp;看完这一些配置文件，又是一批概念，提供一个文章有空再来看看[Location based services with
 GPS, GLONASS, Galileo and OTDOA](https://cdn.rohde-schwarz.com/pws/dl_downloads/dl_common_library/dl_news_from_rs/208/NEWS_208_english_Location_Based_Servives.pdf),主要是讲gps协议层。
 
-&emsp;&emsp;接下来我们继续跟随SET_REQUEST的处理逻辑,最后通过 `startNavigating(singleShot);`和` stopNavigating();`控制gps开启关闭，当开启之后，hal层的新数据上报到framework-jni层,framework-jni层继续上报到framework-java层，而这些回调接口会在哪里被注册了 ？
+&emsp;&emsp;接下来我们继续跟随SET_REQUEST的处理逻辑,最后通过 `startNavigating(singleShot);`和` stopNavigating();`控制gps开启关闭，当开启之后，hal层的新数据上报到framework-native层,framework-native层继续上报到framework-java层，而这些回调接口会在哪里被注册了 ？
 
-&emsp;&emsp;当framework-java层中的GnssLocationProvider类初始化时，通过`static { class_init_native(); }`代码初始化framework-jni层的com_android_server_location_GnssLocationProvider.cpp，初始化的时候保存了framework-java层的回调接口，以供合适的时候上报framework-jni层数据给framework-java层。
+&emsp;&emsp;当framework-java层中的GnssLocationProvider类初始化时，通过`static { class_init_native(); }`代码初始化framework-native层的com_android_server_location_GnssLocationProvider.cpp，初始化的时候保存了framework-java层的回调接口，以供合适的时候上报framework-native层数据给framework-native层。
 
 frameworks/base/services/core/jni/com_android_server_location_GnssLocationProvider.cpp
 ```cpp

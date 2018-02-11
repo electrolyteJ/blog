@@ -3,7 +3,7 @@ layout: post
 title: Android架构中的组件化
 description: 这一篇将会解答组件化、插件化的区别
 author: 电解质
-date: 2018-02-09
+date: 2018-02-09 22:50:00
 share: true
 comments: true
 tag: 

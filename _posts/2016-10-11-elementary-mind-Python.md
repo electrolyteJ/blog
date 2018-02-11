@@ -3,7 +3,7 @@ layout: post
 title: 初入Python
 description: 这是我第一次学习后端的知识，为此做了一次总结。
 published: true
-date: 2016-10-10
+date: 2016-10-10 22:50:00
 share: true
 comments: true
 

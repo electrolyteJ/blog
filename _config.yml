@@ -44,6 +44,7 @@ disqus: HawksJamesf
 comments: true 
 
 permalink: /:year-:month-:day/:title
+# permalink: /:year/:month/:title
 
 # Enable for using pages, more details are here: http://jekyllrb.com/docs/pagination/
 #paginate: 3
@@ -59,3 +60,6 @@ kramdown:
 
 exclude: ['README.md', 'LICENSE']
 encoding: utf-8
+timezone: Asia/Shanghai
+future: true
+date_formater: "%a, %b %d %Y, %R"

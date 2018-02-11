@@ -1,8 +1,8 @@
 ---
 layout: post
 title: 网络制式
-description: 
-date: 2017-09-24
+description: 一篇对于网络制式的粗糙汇总
+date: 2017-09-24 22:50:00
 share: true
 comments: true
 tag:

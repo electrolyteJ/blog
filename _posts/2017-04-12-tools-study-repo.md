@@ -2,7 +2,7 @@
 layout: post
 title: repo工具
 description: 用什么语言都可以封装git的命令，那为什么是python ?
-date: 2017-04-12
+date: 2017-04-12 22:50:00
 share: true
 comments: true
 tag: 

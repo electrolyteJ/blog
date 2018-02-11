@@ -2,7 +2,7 @@
 layout: post
 title: 用正确的姿势下载和编译AOSP
 description: 如果有兴趣在自己的Mac电脑下载和编译一套Android源码的话，可以查看这一篇文章，帮助你跳过一些坑
-date: 2017-09-23
+date: 2017-09-23 22:50:00
 share: true
 comments: true
 tag:

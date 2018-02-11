@@ -2,7 +2,7 @@
 layout: post
 title: 文件下载系统 --- DownloadProvider
 description: DownloadProvider是Android团队开发的文件下载系统，让我们来看看它是如何设计的
-date: 2018-01-23
+date: 2018-01-23 22:50:00
 share: true
 comments: true
 tag:

@@ -18,8 +18,8 @@ tag:
 |2G|CDMA|GSM|GSM
 |3G|CDMA2000|WCDMA|TD-SCDMA
 |4G|LTE（FDD/TDD）|LTE(FDD/TDD）|LTE(TD)
+{:.inner-borders}
 
-<br/>
 
 先来说说国内的，三大运营商都知道是中电信、中移动、中联通。
 
@@ -41,6 +41,7 @@ tag:
 |2G|CDMA|CDMA|GSM|GSM
 |3G|CDMA2000（CDMA-EVDO）|CDMA2000（CDMA-EVDO）|CDMA2000（CDMA-EVDO）|WCDMA
 |4G|LTE（FDD）|LTE（FDD）|LTE（TDD）|LTE（FDD）
+{:.inner-borders}
 
 ### *拉丁美洲的运营商网络制式*{:.header3-font}
 拉丁美洲最大的运营商是美洲移动通信公司，也是世界之最。旗下的下子公司Telcel（GSM/WCDMA）、Telmex、Claro、Embratel、Simple Mobile、Net、TracFone。对于其网络制式没什么好讲的,2G制式有CDMA、GSM；3G制式有CDMA2000、WCDMA。其中的Telcel是相当厉害的，市场份额70%

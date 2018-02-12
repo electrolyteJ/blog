@@ -732,7 +732,6 @@ ProviderPropertiesUnbundled PROPERTIES = ProviderPropertiesUnbundled.create(
 
 这个就是优化的算法。
 
-&emsp;&emsp;接着回到ILocationProvider的setRequest方法调用，这下我们就可以轻松的知道LocationProviderProxy通过binder将请求发送给网络端的服务
-，而网络端的ILocationProvider接口就是接受者。
+&emsp;&emsp;接着回到ILocationProvider的setRequest方法调用，这下我们就可以轻松的知道LocationProviderProxy通过binder将请求发送给网络端的服务，而网络端的ILocationProvider接口就是接受者。
 ## *4.Reference*{:.header2-font}
 Android Open Source Project

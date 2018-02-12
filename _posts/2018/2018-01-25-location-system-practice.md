@@ -12,7 +12,7 @@ tag:
 * TOC
 {:toc}
 ## *1.Summary*{:.header2-font}
-&emsp;&emsp;正在吐血开发中，尽请期待
+&emsp;&emsp;正在吐血酝酿中，敬请期待
 ## *2.About*{:.header2-font}
 &emsp;&emsp;
 ## *3.Intoduction*{:.header2-font}

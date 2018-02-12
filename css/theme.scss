@@ -82,11 +82,6 @@ blockquote {
   font-size: 1em;
 }
 
-.center-image
-{
-  margin: 0 auto;
-  display: block;
-}
 .white-bg-image
 {
   background-color: #ffffff;
@@ -403,6 +398,7 @@ table.inner-borders {
 .content{
   padding-bottom: 250px;
 }
+//********************************************************
 
 .key {
   font-size: 1.0em;
@@ -414,6 +410,28 @@ table.inner-borders {
   padding: 0px 5px;
 }
 
+
+.center-image
+{
+  margin: 0 auto;
+  display: block;
+}
+.filename{
+  padding: 0px;
+  margin: 0px;
+  background-color: #292929;
+  color: lightgrey;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  margin-bottom: 0px;
+  padding-left: 1em;
+  font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+  border-left: 0px;
+  bottom: -2px;
+  position: relative;
+  padding-bottom: 2px;
+}
+//********************************************************
 .left-sidebar{
   float: left
 }

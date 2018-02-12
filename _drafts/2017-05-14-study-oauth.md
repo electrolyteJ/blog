@@ -6,8 +6,7 @@ date: 2017-05-14
 share: true
 comments: true
 tag:
-- Android高级工程师
-- AOSP(SYS)
+- Android Senior Engineer
 
 ---
 ## *1.Summary*{:.header2-font}

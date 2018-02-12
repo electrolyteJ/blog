@@ -8,7 +8,6 @@ comments: true
 tag:
 - Build Tools
 - Translation
-- AOSP(SYS)
 ---
 ## *1.Summary*{:.header2-font}
 &emsp;&emsp;想法简单就是想练练翻译水平。正好用看到这么一篇文章[翻译 | 使用 Soong 来进行 Android 模块的构建](http://www.10tiao.com/html/685/201704/2649516116/1.html)，所以自己也来试试。

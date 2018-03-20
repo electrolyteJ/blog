@@ -220,7 +220,8 @@ private void startOtherServices() {
 
 这里我列举出来ActivityManagerService对象被调用的地方，其中我们需要知道的就四个阶段
 
-- startService
+- 构造ActivityManagerService
+- start
 - setSystemServiceManager
 - setInstaller
 - systemReady

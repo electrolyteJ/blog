@@ -21,7 +21,7 @@ tag:
 ## *2.About*{:.header2-font}
 &emsp;&emsp;DownloadProvider是Android团队开发的一款文件下载系统，提供给任何的应用使用。如果你的应用没有集成自己的文件下载系统的话，那么这一款刚好值得一用。如果没有使用过或者不熟练，可以参考这一篇文章[DownloadManager的使用](http://www.trinea.cn/android/android-downloadmanager/)。DownloadManager是一个提供给开发者的操作DownloadProvider的接口。这款文件下载系统，主要用到了关系型数据库来做数据存储（packages/providers/DownloadProvider），利用sharedUserId让DownloadProvider应用运行在media进程，可以让开发者跨进程调用，还有实现断点续传等特性
 知道了这些知识之后，来啃点源码看看如何设计文件下载系统。
-## *3.Intoduction*{:.header2-font}
+## *3.Introduction*{:.header2-font}
 &emsp;&emsp;接下来，我准备先从数据层来分析，然后在自上而下，从用户角度分析
 
 ### *DataBase ORM*{:.header3-font}

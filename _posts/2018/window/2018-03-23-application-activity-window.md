@@ -12,7 +12,7 @@ tag:
 * TOC
 {:toc}
 
-## *1.Intoduction*{:.header2-font}
+## *1.Introduction*{:.header2-font}
 
 ### *attach*{:.header3-font}
 

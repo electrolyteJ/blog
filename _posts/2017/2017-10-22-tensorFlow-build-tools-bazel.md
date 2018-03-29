@@ -13,6 +13,6 @@ tag:
 &emsp;&emsp;正在吐血酝酿中，敬请期待
 ## *2.About*{:.header2-font}
 &emsp;&emsp;
-## *3.Intoduction*{:.header2-font}
+## *3.Introduction*{:.header2-font}
 &emsp;&emsp;
 ## *4.Reference*{:.header2-font}

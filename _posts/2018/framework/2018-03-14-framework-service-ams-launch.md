@@ -13,7 +13,7 @@ tag:
 &emsp;&emsp;
 ## *2.About*{:.header2-font}
 &emsp;&emsp;
-## *3.Intoduction*{:.header2-font}
+## *3.Introduction*{:.header2-font}
 
 AMS启动流程中主要的方法也就是下面的三个：
 - ActivityManagerService构造方法

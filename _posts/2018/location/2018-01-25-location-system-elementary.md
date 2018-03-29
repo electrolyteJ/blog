@@ -17,7 +17,7 @@ tag:
 ## *2.About*{:.header2-font}
 &emsp;&emsp;这一篇主要讲的是API的基本使用，以及一些定位的概念，不会涉及太深的实现原理。由于现如今定位库有很多，比如google、百度、高德、腾讯，已经拿到许可证的滴滴也在做自己的定位系统。然而Android提供的定位框架却更加值得我们去阅读学习，毕竟是开源项目。所以这里的API都是Android API，而不是google在Android开发者文档推荐自己的google API。
 
-## *3.Intoduction*{:.header2-font}
+## *3.Introduction*{:.header2-font}
 &emsp;&emsp;要想使用定位，就必须通过`getSystemService(Context.LOCATION_SERVICE)`获得LocationManager对象，通过LocationManager对象可以做下面三件事
 
 - 通过确定使用哪个LocationProvider去获取定位数据

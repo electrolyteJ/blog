@@ -26,7 +26,7 @@ tag:
 &emsp;&emsp;对于插件化，主要是通过hook framework层或者虚拟机加载dex的流程来动态加载apk或者dex从而实现业务的解耦，已经实时增加，比如动态换肤、热修复。不过对于这种行为对原来的流程有很大的破坏性，而不如像gradle这样的构建工具能够给我们提供稳定的callback来的安心。所以插件化对于Android生态算是一种恶。对于这种黑科技，我倒不是很喜欢，而组件化确实是一个福音。
 
 &emsp;&emsp;对于组件化，这里讲的是业务组件化。通过组件化，可以将业务进行拆分，这样业务就独立了，再通过路由将各个组件串联起来。除了是业务解耦，还能让组件在调试时以apk的方式打包，这样可以调高开发效率。
-## *3.Intoduction*{:.header2-font}
+## *3.Introduction*{:.header2-font}
 
 说了这么多，还是让我们来看看代码怎么写的。结合[SimpleWeather](https://github.com/HawksJamesf/SimpleWeather)这个项目来看，这个项目是我自己的开源项目，是一个轻量级App，主要关注架构一个App需要哪些技术点，欢迎您的star/fork/pr。
 

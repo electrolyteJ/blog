@@ -15,7 +15,7 @@ tag:
 &emsp;&emsp;有空写
 ## *2.About*{:.header2-font}
 &emsp;&emsp;有空写
-## *3.Intoduction*{:.header2-font}
+## *3.Introduction*{:.header2-font}
 
 &emsp;&emsp;SystemServer启动流程中涉及到很多的服务，由于我们重点关注AMS、PKMS、WMS所以就让我们讲这三个服务吧。
 ### *SystemServer启动流程*{:.header3-font}

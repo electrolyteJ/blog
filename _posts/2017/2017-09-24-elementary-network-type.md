@@ -9,7 +9,7 @@ tag:
 - 基础知识
 ---
 
-## *Intoduction*{:.header2-font}
+## *Introduction*{:.header2-font}
 
 ### *中国的三大运营商网络制式*{:.header3-font}
 

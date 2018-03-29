@@ -24,7 +24,7 @@ tag:
 &emsp;&emsp;最后回答第三个问题，make相对于其他构建工具的历史来的悠久，其稳定性自然不言而喻。它是c/c++项目的必备工具，由于c/c++的语言特性导致很多大型项目的底层都离不开它，致使像“ Android Open Source Project ”这样的大型项目使用make来完成这个系统的编译、打包等工作 。就连阮一峰也在博文中推荐使用make来构建Node.js这种大型项目，参考这个[使用 Make 构建网站](http://www.ruanyifeng.com/blog/2015/03/build-website-with-make.html)
 ## *2.About*{:.header2-font}
 &emsp;&emsp;make是一个构建工具，我们要书写Makefile文件，才能让这个工具按照规则执行，所以讲解Makefile是这篇文章的核心。本文是GNU make，所以Makefile语言格式跟其他的make工具有点区别，不过我们主要是了解其精髓，掌握GNU make也就自然会达到触类旁通的效果。
-## *3.Intoduction*{:.header2-font}
+## *3.Introduction*{:.header2-font}
 &emsp;&emsp;想要快速学习make这个构建工具，就需要从“熟悉Makefile的语法”和“Makefile在大型项目的使用“这两个方面来入手。
 
 ### **初步认识Makefile语言**{:.header3-font}

@@ -14,7 +14,7 @@ tag:
 ## *1.Summary*{:.header2-font}
 &emsp;&emsp;Window在Android中是非常重要的，围绕其实现的系统也是非常的复杂，但是Android团队通过封装其Framework层接口，向外提供了WindowManager，能让开发者简单而又快速的add自己的view。不过对于想更加深入理解像应用窗口、子窗口、系统窗口如何被coding出来的程序员来说，阅读Activity、Dialog、Toast等是非常有用的。
 
-## *2.Intoduction*{:.header2-font}
+## *2.Introduction*{:.header2-font}
 
 
 ### *type*{:.header3-font}

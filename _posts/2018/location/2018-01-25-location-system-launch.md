@@ -15,7 +15,7 @@ tag:
 &emsp;&emsp;不想写
 ## *2.About*{:.header2-font}
 &emsp;&emsp;不想写
-## *3.Intoduction*{:.header2-font}
+## *3.Introduction*{:.header2-font}
 
 更新数据的开始都是源于requestLocationUpdates或者requestSingleUpdate接口，那么接下来让我们来看看下面的解析吧。
 ### *Application层*{:.header3-font}

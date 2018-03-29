@@ -14,7 +14,7 @@ tag:
 ## *2.About*{:.header2-font}
 &emsp;&emsp;Gradle是一个基于Ant构建工具，用Groovy DSL描述依赖关系的jar包。我们都知道早期的Android开发使用的是Eclipse,而Eclipse的构建工具使用的是Ant，用XML描述依赖关系，而XML存在太多的弊端，不如动态语言。所以动态语言Groovy代替了XML，最后集成为Gradle。而Groovy的诞生正是由于Java在后端某些地方不足，对于配置信息处理比较差，所以Apache开发了这门语言并且开源了代码。各家公司也对其进行了大量使用，其中LinkedIn公司开源了许多的Gradle插件，有兴趣的可以下载源码看看。Gradle的使用场景也很多，单元测试，自动化集成，依赖库管理等。既然说到了Java在后端的应用，必然要说道Android端的Java，与之搭配的就是最近很火的Kotlin，Kotlin也是一门动态语言，而且Kotlin和Groovy一样也可以写build.gradle文件，它们都是基于JVM的动态语言，都可以使用DSL去描述项目依赖关系。讲到这里我不禁佩服JVM生态，除了Kotlin、Groovy，还有Scala、 Clojure等,通过这些不同的语言可以去写不同层级的代码，而最后都是字节码。
 
-## *3.Intoduction*{:.header2-font}
+## *3.Introduction*{:.header2-font}
 &emsp;&emsp;我们会介绍DSL、Gradle相关知识。
 
 ### *Groovy DSL*{:.header3-font}

@@ -42,7 +42,7 @@ AT.mH(H)|main (UI线程)
 
 2.ApplicationThread
 &emsp;&emsp;ApplicationThread(IApplicationThread.Stub)为ActivityThread接收来自于服务端的响应，四大组件就是通过ApplicationThread接收了服务端的消息，从而实现了其调度。
-## *3.Intoduction*{:.header2-font}
+## *3.Introduction*{:.header2-font}
 
 ### *Activity*{:.header3-font}
 

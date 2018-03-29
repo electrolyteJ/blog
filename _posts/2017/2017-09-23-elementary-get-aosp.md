@@ -17,7 +17,7 @@ tag:
 
 ## *2.About*{:.header2-font}
 &emsp;&emsp;其实AOSP官方已经有详细的教程不过针对的是Linux（Ubuntu版本），MacOS并没有。所以本文针对的是在macOS环境下获取和编译AOSP。可是在Linux和macOS中获取和编译AOSP操作步骤是一样的，只是存在一些库版本或者库类型问题。这里推荐AOSP官网的["Downloading and Building"](https://source.android.com/source/requirements)文章供初学者学习，需要自带梯子。外面的世界还是不错的，有一些只能通过肢体语言来表达情感的内容还是值得一看的。如果看不懂英文，没关系，我这里在推荐几个中文的网站，如：[中科大](https://lug.ustc.edu.cn/wiki/mirrors/help/aosp)、[清华](https://mirrors.tuna.tsinghua.edu.cn/help/AOSP/)。我用的是中科大的镜像。知道怎么获取和编译AOSP之后，接下来就开始分析会遇到有哪些坑吧。说个提问话，如果不知道什么是repo的话可以看看这一篇文章[Android源码解析之repo仓库]({{site.baseurl}}/2017-04/study-repo)
-## *3.Intoduction*{:.header2-font}
+## *3.Introduction*{:.header2-font}
 &emsp;&emsp;通过观看了上面提供的的资料之后，我们终于知道了怎么来获取和编译AOSP。下面主要从两方面入手：获取AOSP的过程和编译AOSP的过程
 
 配置环境：

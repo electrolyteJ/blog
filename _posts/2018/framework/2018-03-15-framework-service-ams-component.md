@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Framework层的服务 --- AMS管理四大组件
-description: 来一起聊聊AMS管理四大组件
+description: 图解四大组件
 author: 电解质
 date: 2018-03-15
 tag:
@@ -48,20 +48,46 @@ AT.mH(H)|main (UI线程)
 
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-15-launch-activity.png)
 
-这是一张整体的启动流程图片，能让我们大致理解了整个流程中几个重要的角色的职能。接下来我们细致讲解一下Application层和Framework层各个角色。
+启动流程：
+1.调用者进程通过AMS这个Framework端Binder将启动另一个Activity的信息传给SystemServer进程。
+2.ActivityStarter处理了这些intent和flag等信息之后，然后交给ActivityStackSupervisior/ActivityStack去处理被调用进程的Activity进栈。如果被调用者进程存在，就会使用ApplicationThread这个Application端Binder通知已存在的被调用者进程启动Activity。如果被调用者进程不存在，就会使用Socket通知Zygote进程fork出一个进程，用来承载即将启动的Activity。
+3.在新的进程里面会创建ActivityThread对象，完成开启主线程loop、ApplicationThread依附在AMS、初始化Context、Application等工作，并且通过Classload加载Activity，创建Activity对象，完成Activity生命周期的调用。
 
-在应用层，Activity的生命周期如下：
+&emsp;&emsp;接下来我们细致讲解一下Application层和Framework层各个角色。
 
-![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-15-launch-activity-3.png)
-
-我们可以看到，在performResume方法也就是Activity的resume阶段之后才会将View通过addView呈现在屏幕上。所以唯有handleResumeActivity执行完，View才是可见的。也就是Activity#onResum的方法中，View并不是可见的，而应该是Resumed，才可见。
-
-在Framework层，ActivityStackSupervisor起着管理Stack的责任，而ActivityStack起着担当着管理Activity的责任。
-
-来一张图看看
+先来一张图熟悉一下Framework层的启动流程，认识一下几个重要的角色
 
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-15-launch-activity-2.png){:.white-bg-image}
 
+ActivityStarter：决定了intent和flag如何打开Activity和关联task、stack
+
+ActivityStack：管理者Activity
+
+ActivityStack管理Activity生命周期相关的几个方法。
+
+- startActivityLocked()
+- resumeTopActivityLocked()
+- completeResumeLocked()
+- startPausingLocked()
+- completePauseLocked()
+- stopActivityLocked()
+- activityPausedLocked()
+- finishActivityLocked()
+- activityDestroyedLocked()
+
+ActivityStackSupervisor：由于多屏功能的出现，就需要ActivityStackSupervisor这么一个类来管理ActivityStack。
+
+下面就是管理Activity的关系图了。
+
+
+![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-15-launch-activity-4.png){:.white-bg-image}
+
+
+&emsp;&emsp;在应用层，Activity的生命周期如下：
+
+![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-15-launch-activity-3.png)
+
+我们可以看到，在performResume方法也就是Activity的resume阶段之后才会将View通过addView呈现在屏幕上。所以唯有handleResumeActivity执行完，View才是可见的。也就是Activity#onResum的方法中，View并不是可见的，而应该是Resumed才可见。
 
 ### *Service*{:.header3-font}
 
@@ -71,12 +97,22 @@ Service的启动流程
 
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-15-launch-service-start2.png){:.white-bg-image}
 
+启动流程：
+1.调用者进程通过AMS这个Framework端Binder将启动另一个Service的信息传给SystemServer进程。
+2.ActiveService会处理即将启动的Service的信息。如果被调用者进程存在，就会使用ApplicationThread这个Application端Binder通知已存在的被调用者进程启动Service。如果被调用者进程不存在，就会使用Socket通知Zygote进程fork出一个进程，用来承载即将启动的Service。
+3.在新的进程里面会创建ActivityThread对象，完成开启主线程loop、ApplicationThread依附在AMS、初始化Context、Application等工作，并且通过Classload加载Service，创建Service对象，完成Service生命周期的调用。
+
 
 Service的绑定流程
 
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-15-launch-service-bind1.png)
 
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-15-launch-service-bind2.png){:.white-bg-image}
+
+启动流程：
+1.调用者进程通过AMS这个Framework端Binder将绑定另一个Service的信息传给SystemServer进程。
+2.ActiveService会处理即将启动的Service的信息。如果被调用者进程存在，就会使用ApplicationThread这个Application端Binder通知已存在的被调用者进程启动Service。如果被调用者进程不存在，就会使用Socket通知Zygote进程fork出一个进程，用来承载即将启动的Service。
+3.在新的进程里面会创建ActivityThread对象，完成开启主线程loop、ApplicationThread依附在AMS、初始化Context、Application等工作，并且通过Classload加载Service，创建Service对象，紧接着通过AMS将正在绑定的Service对客户端提供的Binder接口传给Application端的InnerConnection这个Binder，InnerConnection会让ServiceDispatcher这个派发人去分发Binder，从而实现了绑定的工作。
 
 ### *BroadcastReceiver*{:.header3-font}
 
@@ -89,8 +125,20 @@ Service的绑定流程
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-15-launch-broadcastreceiver-2.png){:.white-bg-image}
 
 
+启动流程：
+1.调用者进程通过AMS这个Framework端Binder将广播的信息传给SystemServer进程。
+2.BroadcastQueue通过内部类BroadcastHandler向已经注册广播的应用发送消息，要么通过for循环发送普通广播，要么通过方法递归发送有序广播。如果被调用者进程存在，就会使用ApplicationThread这个Application端Binder通知已存在的被调用者进程接受广播。如果被调用者进程不存在，就会使用Socket通知Zygote进程fork出一个进程，用来承载即将接受广播的Receiver。
+3.在新的进程里面会创建ActivityThread对象，完成开启主线程loop、ApplicationThread依附在AMS、初始化Context、Application等工作，并且通过Classload加载BroadcastReceiver，创建BroadcastReceiver对象，完成BroadcastReceiver生命周期的调用。
+
+
 ### *ContentProvider*{:.header3-font}
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-15-launch-contentprovider.png)
+
+
+<!-- 启动流程：
+1.调用者进程通过AMS这个Framework端Binder将广播的信息传给SystemServer进程。
+2.BroadcastQueue通过内部类BroadcastHandler向已经注册广播的应用发送消息，要么通过for循环发送普通广播，要么通过方法递归发送有序广播。如果被调用者进程存在，就会使用ApplicationThread这个Application端Binder通知已存在的被调用者进程接受广播。如果被调用者进程不存在，就会使用Socket通知Zygote进程fork出一个进程，用来承载即将接受广播的Receiver。
+3.在新的进程里面会创建ActivityThread对象，完成开启主线程loop、ApplicationThread依附在AMS、初始化Context、Application等工作，并且通过Classload加载BroadcastReceiver，创建BroadcastReceiver对象，完成BroadcastReceiver生命周期的调用。 -->
 
 <!-- ## *4.Reference*{:.header2-font} -->
 

@@ -10,10 +10,10 @@ tag:
 - Translation
 ---
 ## *1.Summary*{:.header2-font}
-&emsp;&emsp;想法简单就是想练练翻译水平。正好用看到这么一篇文章[翻译 | 使用 Soong 来进行 Android 模块的构建](http://www.10tiao.com/html/685/201704/2649516116/1.html)，所以自己也来试试。
+&emsp;&emsp;想法简单就是想练练翻译水平。正好看到这么一篇文章[翻译 | 使用 Soong 来进行 Android 模块的构建](http://www.10tiao.com/html/685/201704/2649516116/1.html)，所以自己也来试试。
 ## *2.About*{:.header2-font}
 Blueprint+Soong这套构建工具将替代老的构建工具make+kati,想要认识make+kati的话可以参考这一篇文章[AOSP(SYS) --- 构建工具GNU make]({{site.baseurl}}/blog/2017-10-22/2017-10-22-aosp-build-tools-gnumake)。这里简单说一下他们的关系和区别。使用kati将Makefile文件转换成Ninja files，然后用Ninja编译，而Soong是把Blueprint文件转换为Ninja文件。而make和Buleprint都用用于解析它们自己的格式文件。make对应Makefile语言，Blueprint使用的是同bazel一样的语言BUILD，就连BUCK也是来源于bazel
-## *3.Intoduction*{:.header2-font}
+## *3.Introduction*{:.header2-font}
 ### *3.1 Blueprint*{：.header3-font}
 build/blueprint/README.md
 

@@ -1,7 +1,7 @@
 ---
 layout: post
-title: 初入kotlin
-description: 这是一片kotlin入门文章
+title: 初入Kotlin
+description: 这是一篇Kotlin入门文章
 author: 电解质
 date: 2018-07-22 22:50:00
 share: true

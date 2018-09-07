@@ -60,6 +60,7 @@ kramdown:
 
 exclude: ['README.md', 'LICENSE']
 encoding: utf-8
-timezone: Asia/Shanghai
+# timezone: Asia/Shanghai
+timezone: "+800"
 future: true
 date_formater: "%a, %b %d %Y, %R"

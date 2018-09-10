@@ -12,9 +12,9 @@ tag:
 * TOC
 {:toc}
 ## *1.Summary*{:.header2-font}
-&emsp;&emsp;有空写
+&emsp;&emsp;熟悉软件的启动过程能让我们快速了解整个系统运作流程，这是入门学习一样新事物的绝佳路径，所以，让我们来了解一下Android系统framework层是如何被启动的。
 ## *2.About*{:.header2-font}
-&emsp;&emsp;有空写
+&emsp;&emsp;由于这一篇文章我们只关注framework-java层，所以SystemServer是我们要攻克的类。SystemServer是system_server进程的启动入口类，而system_server进程承载着整个framework-java层，负责与application层交互。SystemServer类会启动大都是我们熟知的类，比如ActivityManagerService、PackageManagerService、WindowManagerService，这些类都是一些binder，用来进行和application层的某个应用进程通信。为了让system_server进程常驻内存中，会开启一个looper。该looper存在于system_server进程的主线程，用来切换工作线程的任务到主线程。比如WindowManagerService$H类。
 ## *3.Introduction*{:.header2-font}
 
 &emsp;&emsp;SystemServer启动流程中涉及到很多的服务，由于我们重点关注AMS、PKMS、WMS所以就让我们讲这三个服务吧。
@@ -26,7 +26,7 @@ tag:
 
 那么接下来让我们从main方法开始看吧。
 
-&emsp;&emsp;由zygote fork出SystemServer进程，那么必然会调用SystemServer的main方法
+&emsp;&emsp;由zygote fork出system_server进程，那么必然会调用SystemServer的main方法
 
 ```java
     public static void main(String[] args) {
@@ -80,13 +80,14 @@ tag:
     }
 ```
 &emsp;&emsp;在run方法中主要会有下面的一些主要初始化
-- 加载so库
-- 初始化context
-- 初始化service管理者
-- 初始化服务
+- 初始化配置文件（*.prop）
+- 加载so库(libandroid_servers)
+- 初始化Context
+- 初始化Service管理者
+- 初始化众多的Service
 - 启动looper
 
-对于这些初始化我们并没有必要都去看，只要看初始化Context和服务。
+对于这些初始化我们并没有必要都去看，只要关注初始化的Context和Service。
 
 ### *初始化初始化Context*{:.header3-font}
 ```java
@@ -99,8 +100,7 @@ tag:
         systemUiContext.setTheme(DEFAULT_SYSTEM_THEME);
     }
 ```
-&emsp;&emsp;通过systemMain创建了一个framework层的ActivityThread对象,不同于每个应用中的ActivityThread，ActivityThread#attach的参数为true。
-
+&emsp;&emsp;在这里我们能够看到调用了ActivityThread的systemMain静态方法去初始化了一个ActivityThread对象，不同于每个应用中的ActivityThread。那么哪里不同呢？为什么framework层要有这样一个ActivityThread对象。这里就不买关子了，framework层给ActivityThread#attach传递的参数为true，应用层传递的是false，这样我们就知道framework层有些东西不能给application层使用，来看看是什么代码。
 ```java
 private void attach(boolean system) {
         sCurrentActivityThread = this;
@@ -129,10 +129,23 @@ private void attach(boolean system) {
         ...
 }
 ```
-&emsp;&emsp;这里我们就可以知道framework层的ActivityThread创建了用于和应用沟通的Instrumentation和一个默认的Application。
-&emsp;&emsp;创建完了ActivityThread，接着就会创建framework层的Context和SystemUi应用的Context，主要是调用createSystemContext和createSystemUiContext方法，并且设置了主题的默认值。
+&emsp;&emsp;这里我们就可以知道framework层主要做了这些事：
+- 创建一个ActivityThread对象（初始化Instrumentation对象、Application对象、application类的Context对象）
+- 创建一个system类的Context对象
+- 创建一个systemui类的Context对象。我们都知道Context提供了一系列的全局方法，比如启动Service、BroadcastReceiver等。
 
-### *初始化服务*{:.header3-font}
+&emsp;&emsp;Context的分类activityContext、applicationContext、systemuiContext、systemContext
+
+```java
+Context分类         |ContextImpl container, ActivityThread mainThread,LoadedApk packageInfo, String splitName,     Binder activityToken, UserHandle user, int flags,ClassLoader classLoader)
+Activity           |                 null,                mainThread,          packageInfo, activityInfo.splitName,      activityToken,           null,         0,             classLoader
+Service/Application|                 null,                mainThread,          packageInfo,                   null,               null,           null,         0,                 null
+Provider           |                 this,               mMainThread,                   pi,                   null,     mActivityToken,           user,      flags,                null
+systemuiContext    |                 null, systemContext.mMainThread,          packageInfo,                   null,               null,           null,         0,                 null
+systemContext      |                 null,                mainThread,          packageInfo,                   null,               null,           null,         0,                 null
+```
+
+### *初始化众多的Service*{:.header3-font}
 &emsp;&emsp;服务被分为三种：
 - 开机服务（ActivityManagerService、PackageManagerService、PowerManagerService、LightsService、RecoverySystemService、DeviceIdentifiersPolicyService、DisplayManagerService、UserManagerService等）
 - 核心服务（DropBoxManagerService、UsageStatsService、BatteryService、WebViewUpdateService等）

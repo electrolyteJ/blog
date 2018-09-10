@@ -138,11 +138,16 @@ AMS启动流程中主要的方法也就是下面的三个：
     }
 ```
 
-从AMS的构造器我们就可以看到主要做一些初始化的工作，初始化一些HandlerThread用于异步处理耗时消息，让主线程能够正常运行；初始化处理四大组件的类，ActivityStackSupervisor、ActiveService、BroadcastQueue等。还有一个点就是AMS的职责还包括对进程的管理.通过updateOomAdjLocked、updateLruProcessLocked、updateProcessForegroundLocked等方法将进程分为四种。
-- foreground process 
-- visible process
-- service process 
-- cached process
+从AMS的构造器我们就可以看到主要做一些初始化的工作
+- 初始化一些HandlerThread用于异步处理耗时消息，比如`mHandlerThread是ActivityManagerService`线程，mProcStartHandlerThread是`ActivityManagerService:procStart`线程;
+- 初始化一些Handler，比如mHandler(MainHandler)是个运行在ActivityManagerServicer线程的类,mUiHandler(UiHandler)是个运行在android.ui线程的类，mProcStartHandler(Handler)；
+- 初始化处理四大组件的类，ActivityStackSupervisor、ActiveService、BroadcastQueue等;
+- AMS的职责还包括对进程和电量的管理.通过updateOomAdjLocked、updateLruProcessLocked、updateProcessForegroundLocked等方法将进程分为四种.
+
+    - foreground process 
+    - visible process
+    - service process 
+    - cached process
 
 ### *start方法*{:.header3-font}
 
@@ -168,8 +173,7 @@ AMS启动流程中主要的方法也就是下面的三个：
     }
 ```
 
-&emsp;&emsp;start方法中最为主要的就是启动线程ProcessCpuThread，在AMS的构造过程中，就初始化了ProcessCPUThread对象。通过CountDownLatch类挂起主线程，是为了让CpuTracker线程初始化完后才能才能在主线程做一些数据操作。
-
+&emsp;&emsp;start方法中最为主要的就是启动线程ProcessCpuThread，在AMS的构造过程中，就初始化了ProcessCPUThread对象。通过CountDownLatch#await方法判断count值如果不为0，则阻塞主线程，然后在mProcessCpuThread线程中(线程名为：CpuTracker)中将count值减少1，致使被主线程继续执行任务。
 ```java
 mProcessCpuThread = new Thread("CpuTracker") {
             @Override

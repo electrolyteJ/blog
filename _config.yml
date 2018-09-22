@@ -1,6 +1,6 @@
 # Jekyll configuration
 
-name: 电解质的鸡窝
+name: 电解质在写字
 description: 
 
 # Url is currently only used only for the RSS feed in feed.xml
@@ -60,6 +60,7 @@ kramdown:
 
 exclude: ['README.md', 'LICENSE']
 encoding: utf-8
-timezone: Asia/Shanghai
+# timezone: Asia/Shanghai
+timezone: "+800"
 future: true
 date_formater: "%a, %b %d %Y, %R"

@@ -10,9 +10,9 @@ tag:
 * TOC
 {:toc}
 ## *1.Summary*{:.header2-font}
-&emsp;&emsp;
+&emsp;&emsp;ActivityManagerService类是framework层的核心，对下它调度着cpu、电量、内存、进程的管理者，对上它调度着四大组件，让app使用者能够轻松简单的切换界面。由于其职能的复杂，所以需要管理的事务也就多了。
 ## *2.About*{:.header2-font}
-&emsp;&emsp;
+&emsp;&emsp;只有了解了ActivityManagerService的启动流程，我们才能够更加深入的体会其内部构造。所以启动流程是我们深入的第一步。接下来让我们来看看ActivityManagerService的启动流程。
 ## *3.Introduction*{:.header2-font}
 
 AMS启动流程中主要的方法也就是下面的三个：
@@ -138,11 +138,17 @@ AMS启动流程中主要的方法也就是下面的三个：
     }
 ```
 
-从AMS的构造器我们就可以看到主要做一些初始化的工作，初始化一些HandlerThread用于异步处理耗时消息，让主线程能够正常运行；初始化处理四大组件的类，ActivityStackSupervisor、ActiveService、BroadcastQueue等。还有一个点就是AMS的职责还包括对进程的管理.通过updateOomAdjLocked、updateLruProcessLocked、updateProcessForegroundLocked等方法将进程分为四种。
-- foreground process 
-- visible process
-- service process 
-- cached process
+从AMS的构造器我们就可以看到主要做一些初始化的工作
+- 初始化一些HandlerThread用于异步处理耗时消息，比如`mHandlerThread是ActivityManagerService`线程，mProcStartHandlerThread是`ActivityManagerService:procStart`线程;
+- 初始化一些Handler，比如mHandler(MainHandler)是个运行在ActivityManagerServicer线程的类,mUiHandler(UiHandler)是个运行在android.ui线程的类，mProcStartHandler(Handler)；
+- 初始化处理四大组件的类，ActivityStackSupervisor、ActiveService、BroadcastQueue等;
+- 初始化cpu和电量的处理类；
+- AMS的职责还包括对进程管理。通过updateOomAdjLocked、updateLruProcessLocked、updateProcessForegroundLocked等方法将进程分为四种.
+
+    - foreground process 
+    - visible process
+    - service process 
+    - cached process
 
 ### *start方法*{:.header3-font}
 
@@ -162,14 +168,14 @@ AMS启动流程中主要的方法也就是下面的三个：
             mProcessCpuInitLatch.await();
         } catch (InterruptedException e) {
             Slog.wtf(TAG, "Interrupted wait during start", e);
-            Thread.currentThread().interrupt();
+            Thread.
+            ().interrupt();
             throw new IllegalStateException("Interrupted wait during start");
         }
     }
 ```
 
-&emsp;&emsp;start方法中最为主要的就是启动线程ProcessCpuThread，在AMS的构造过程中，就初始化了ProcessCPUThread对象。通过CountDownLatch类挂起主线程，是为了让CpuTracker线程初始化完后才能才能在主线程做一些数据操作。
-
+&emsp;&emsp;start方法中最为主要的就是启动线程ProcessCpuThread，在AMS的构造过程中，就初始化了ProcessCPUThread对象。通过CountDownLatch#await方法判断count值如果不为0，则阻塞主线程，然后在mProcessCpuThread线程中(线程名为：CpuTracker)中将count值减少1，致使被主线程继续执行任务。
 ```java
 mProcessCpuThread = new Thread("CpuTracker") {
             @Override
@@ -208,8 +214,15 @@ mProcessCpuThread = new Thread("CpuTracker") {
 &emsp;&emsp;ProcessCPUThread线程是一个轮询器，用来更新ProcessCpuTracker对象的成员变量，也就是将最新cpu stat数据提供给AMS。
 
 更新的方式有以下几种：
-- 通过ProcessCPUThread的notify方法让正在等待的ProcessCPUThread线程，继续执行线程。AMS的updateCpuStats方法就是封装了notify。
-- 定时刷新的时间。当其他线程没有调用ProcessCPUThread的notify，那么超过定时的时间之后就会自动刷新。
+- 外部通知更新
+&emsp;&emsp;通过ProcessCPUThread#notify方法让正在等待的ProcessCPUThread线程，继续执行线程。AMS的updateCpuStats方法就是封装了notify。而外部调用改方法也有很多处
+
+    1. 广播处理的processNextBroadcastLocked方法，内部会调用；
+    2. AMS启动一个进程的startProcessLocked方法过程会调用；
+    3. Activity进入到resume或者pause都会调用。
+
+- 内部定时刷新
+&emsp;&emsp;当其他线程没有调用ProcessCPUThread#notify方法，那么超过定时的时间之后就会自动刷新。
 
 ```java
  private final void startProcessLocked(ProcessRecord app, String hostingType,
@@ -222,13 +235,13 @@ mProcessCpuThread = new Thread("CpuTracker") {
     ...
 }
 ```
-&emsp;&emsp;通过ProcessCPUThread的notify刷新的场景有很多，比如上面代码展示的，启动一个进程，就会刷新。如果你用过Linux终端程序Htop的话，那么Htop就相当于ProcessCpuTracker。这里在说一下，AMS中处理有监控CPU的还有监控内存的MemInfoReader。
+&emsp;&emsp;通过ProcessCPUThread#notify刷新场景有很多，比如上面代码展示的，启动一个进程，就会刷新。如果你用过Linux终端程序Htop的话，那么Htop就相当于ProcessCpuTracker。这里在说一下，AMS中除了监控CPU，还有监控内存的MemInfoReader和电量。
 
 ### *systemReady方法*{:.header3-font}
 
 ```java
 public void systemReady(final Runnable goingCallback, BootTimingsTraceLog traceLog) {
-
+    traceLog.traceBegin("PhaseActivityManagerReady");
     synchronized(this) {
             if (mSystemReady) {
                 // If we're done calling all the receivers, run the next "boot phase" passed in
@@ -314,13 +327,18 @@ public void systemReady(final Runnable goingCallback, BootTimingsTraceLog traceL
     
 }
 ```
+当调用start启动AMS之后，通过systemReady方法会准备系统的一些服务。我们将systemReady分为以下几个阶段。
 
-systemReady方法就是启动AMS的关键方法了，这个方法里面有几个比较核心的流程如下：
-
-- startPersistentApps
-- startHomeActivityLocked
-- broadcastIntentLocked
-- ActivityStackSupervisor#resumeFocusedStackTopActivityLocked
+- goingCallback阶段之前
+&emsp;&emsp;杀掉procsToKill集合中的进程且不允许重启；调用retrieveSettings方法；
+- goingCallback阶段
+&emsp;&emsp;这个阶段会making service ready。启动webview进程，zygote正式创建的第一个进程。启动systemui服务
+- goingCallback阶段之后
+&emsp;&emsp;有几个比较核心的流程如下：
+    - startPersistentApps
+    - startHomeActivityLocked
+    - broadcastIntentLocked
+    - ActivityStackSupervisor#resumeFocusedStackTopActivityLocked
 
 #### startPersistentApps
 ---
@@ -402,7 +420,7 @@ final int broadcastIntentLocked(ProcessRecord callerApp,
         return ActivityManager.BROADCAST_SUCCESS;  
 }         
 ```
-&emsp;&emsp;broadcastIntentLocked方法很简单就是会区分系统广播（只存在于内部系统，不提供给第三发应用）和第三发应用广播，然后采取不同的处理方式发送。处理这个还会实现粘性广播。关于广播的具体发送逻辑，我们后面再讲。
+&emsp;&emsp;broadcastIntentLocked方法很简单就是会区分系统广播（只存在于内部系统，不提供给第三方应用）和第三方应用广播，然后采取不同的处理方式发送。关于广播的具体发送逻辑，我们后面再讲。
 
 
 

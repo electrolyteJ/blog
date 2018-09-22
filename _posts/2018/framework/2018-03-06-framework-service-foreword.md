@@ -17,7 +17,7 @@ tag:
 
 ## *2.Introduction*{:.header2-font}
 
-&emsp;&emsp;我们都知道kernel的内核空间运行之后会启动用户空间的init进程，进程id为0，也就是天字一号的地位。之后init进程会fork出zygote进程(应用程序名/system/bin/app_process,源码文件frameworks/base/cmds/app_process/app_main.cpp)用于孵化上层应用和服务，比如SystemServer进程。而SystemServer进程，初始化过程中会附带启动ActivityManagerService(AMS)、PackageManagerService(PKMS)、WindowManagerService(WMS)等系统服务，并且在主线程开启一个Looper，接收其他线程的消息，从而实现线程通讯。
+&emsp;&emsp;我们都知道kernel的内核空间运行之后会启动用户空间的init进程，进程id为1，也就是天字一号的地位。之后init进程会fork出zygote进程(应用程序名/system/bin/app_process,源码文件frameworks/base/cmds/app_process/app_main.cpp)用于孵化上层应用和服务，比如system_server进程。而system_server进程，初始化过程中会附带启动ActivityManagerService(AMS)、PackageManagerService(PKMS)、WindowManagerService(WMS)等系统服务，并且在主线程开启一个Looper，接收其他线程的消息，从而实现线程通讯。
 
 重要分包
 ```

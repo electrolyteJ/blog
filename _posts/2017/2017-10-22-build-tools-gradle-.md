@@ -18,7 +18,7 @@ tag:
 &emsp;&emsp;我们会介绍DSL、Gradle相关知识。
 
 ### *Groovy DSL*{:.header3-font}
-&emsp;&emsp;首先Groovy语言的基本知识我们不进行探讨，网上与之相关的资料有很多。我们来讲讲它的DSL，因为Gradle提供的build.gradle配置文件就是用DSL来写的。那么什么是DSL？[维基百科](https://en.wikipedia.org/wiki/Domain-specific_language)里面描述的很清楚，但是具体到代码有哪些呢?就像Android里面的AIDL（Java DSL）、HIDL，前端的JQUERY（JavaScript DSL）。由于DSL是一种为解决某种问题的领域指定语言，而不像Java这种通用性计算机语言有语法解析器，所以Android团队写了解析AIDL的语法解析器，Gradle团队写了解析Groovy DSL的语法解析器。如果想要开发针对自己公司业务的DSL，那么可以自行到网上查找相关的学习资料。不过对于中小公司都是使用成熟的DSL框架，而不是重零开始，我们只要学会使用某个DSL框架就可以了，就比如Gradle框架,只要理解框架中插件的创建，任务的定义就可以了。
+&emsp;&emsp;首先Groovy语言的基本知识我们不进行探讨，网上与之相关的资料有很多。我们来讲讲它的DSL，因为Gradle提供的build.gradle配置文件就是用DSL来写的。那么什么是DSL？[维基百科](https://en.wikipedia.org/wiki/Domain-specific_language)里面描述的很清楚，但是具体到代码有哪些呢?就像Android里面的AIDL（Java DSL）、HIDL，前端的JQUERY（JavaScript DSL）。由于DSL是一种为解决某种问题的领域特定语言，而不像Java这种通用型计算机语言有语法解析器，所以Android团队写了解析AIDL的语法解析器，Gradle团队写了解析Groovy DSL的语法解析器。如果想要开发针对自己公司业务的DSL，那么可以自行到网上查找相关的学习资料。不过对于中小公司都是使用成熟的DSL框架，而不是从零开始，我们只要学会使用某个DSL框架就可以了，就比如Gradle框架,只要理解框架中插件的创建，任务的定义就可以了。
 
 &emsp;&emsp;说了这么多不如来个代码感受一下。
 
@@ -69,7 +69,7 @@ buildTypes {
     }
 {%endhighlight%}
 
-&emsp;&emsp;一般DSL形成的框架都要有足够完整的API，因为其专业性太强了，就是所谓的行话，一般人看不懂，要通过查百科才能明白。
+&emsp;&emsp;一般DSL形成的框架都要有足够完整的API，因为其专业性太强了，就是所谓的行话，一般人看不懂，要通过查文档才能明白。
 &emsp;&emsp;如果你想要根据公司的业务添加一些代码的话，那么就需要我们写任务或者插件，而这需要我们熟悉Gradle框架和Groovy语言了。
 
 ### *Gradle框架*{:.header3-font}
@@ -383,7 +383,7 @@ myCopy {
    include('**/*.txt', '**/*.xml', '**/*.properties')
 }
 ```
-&emsp;&emsp;Gradle并不管给我们提供了这两个task type，还有很多具体查看[Project](https://docs.gradle.org/current/dsl/org.gradle.api.Project.html#N152D1) API，页面左侧栏。当然了我们还可以写一个类继承Copy，然后重写一些属性、方法。
+&emsp;&emsp;Gradle并不仅仅给我们提供了这两个task type，还有很多具体查看[Project](https://docs.gradle.org/current/dsl/org.gradle.api.Project.html#N152D1) API，页面左侧栏。当然了我们还可以写一个类继承Copy，然后重写一些属性、方法。
 
 #### 任务相关性
 ---

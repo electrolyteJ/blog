@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 初次参加Google Developer Days
-description: 见见世面
+description: 多多见见世面
 date: 2018-09-22 23:50:00
 tag: 
 - 呓语

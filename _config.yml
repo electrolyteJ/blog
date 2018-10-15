@@ -27,7 +27,7 @@ social:
   # lastfm: ''
   rss: feed.xml
   zhihu: 'wei-zhi-end'
-  weibo: 'weizhiend'
+  # weibo: 'weizhiend'
   douban: 'weizhiend'
   
 

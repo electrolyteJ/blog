@@ -25,6 +25,7 @@
   {% include yandex-metrica.html %}
 
  <script type="text/javascript">
+  const DELAY=3000
   WebFontConfig = {
     google: {
       families: ['Ubuntu::latin']
@@ -38,6 +39,12 @@
     wf.async = 'true';
     var s = document.getElementsByTagName('script')[0];
     s.parentNode.insertBefore(wf, s);
+    var screenHeight = $('body').height()
+    console.log(screenHeight)
+    setTimeout(() => {
+      // $('.mask').css({"transform":"translate(100px,100px)"});​
+      $('.mask').addClass('animate-scroll')
+    }, DELAY);
   })();
 </script>
 

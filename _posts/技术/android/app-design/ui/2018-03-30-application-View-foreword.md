@@ -7,7 +7,7 @@ date: 2018-03-30
 share: true
 comments: true
 tag:
-- Android Senior Engineer
+- app-design/ui
 ---
 * TOC
 {:toc}

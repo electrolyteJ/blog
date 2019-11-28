@@ -56,5 +56,20 @@ title: About
 {% endif %}
 </ul>
 
+<ul>
+ {% if site.social.bilibili %}
+  <li>
+    做视频的地方：<a title="{{ site.social.bilibili }} bilibili" href="https://space.bilibili.com/{{ site.social.bilibili }} " target="_blank">
+      <!-- <span class="fa-stack fa-lg"> -->
+      <!-- <i class="fa   fa-inverse  fa-2x">知</i> -->
+      <i class="fa   fa-stop-circle  fa-2x">bilibili</i>
+      <!-- <i class="fa fa-check-circle fa-2x"></i> -->
+      <!-- <i class="fa fa-stack-1x fa-circle-o"></i> -->
+      <!-- </span> -->
+    </a>
+  </li>
+  {% endif %}
+</ul>
+
 
 

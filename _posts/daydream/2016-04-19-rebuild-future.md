@@ -32,7 +32,7 @@ web端：
 - [ ] swift语言
 - [x] React Native框架
 - [ ] Flutter框架
-- [ ] c/cpp语言
+- [x] c/cpp语言
 
 工具端：
 - [x] shell 、 python语言

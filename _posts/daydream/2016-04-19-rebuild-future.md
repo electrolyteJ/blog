@@ -26,12 +26,14 @@ commets: true
 web端：
 - [x] php/python/ruby(任选其中语言大于一个)
 - [x] React框架
+
 移动端：
 - [x] java/kotlin语言
 - [ ] swift语言
 - [x] React Native框架
 - [ ] Flutter框架
 - [ ] c/cpp语言
+
 工具端：
 - [x] shell 、 python语言
         

@@ -7,8 +7,6 @@ share: true
 comments: true
 tag: 
 - 基础知识
-
-
 ---
 
 ![network_layer]({{ site.baseurl}}/asset/2017-03-18-network_layer.png)

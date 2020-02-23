@@ -8,6 +8,7 @@ share: true
 comments: true
 tag: 
 - Android Architecture
+published : false
 ---
 
 ## *1.Summary*{:.header2-font}

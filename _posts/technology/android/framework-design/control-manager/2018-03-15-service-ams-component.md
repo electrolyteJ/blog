@@ -6,7 +6,7 @@ author: 电解质
 date: 2018-03-15
 tag:
 - Android Senior Engineer
-- framework-design/ams
+- framework-design/service
 ---
 * TOC
 {:toc}

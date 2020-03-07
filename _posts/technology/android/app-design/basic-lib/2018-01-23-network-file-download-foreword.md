@@ -5,9 +5,7 @@ description:
 date: 2018-01-23 22:50:00
 share: true
 comments: true
-tag:
-- FileDownloader
-- Android Senior Engineer
+tag: app-design/network
 
 ---
 

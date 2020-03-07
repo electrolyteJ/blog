@@ -8,7 +8,7 @@ share: true
 comments: true
 tag: 
 - app-design/network
-published : false
+published : true
 ---
 * TOC
 {:toc}
@@ -17,7 +17,7 @@ published : false
 
 ## *2.Introduction*{:.header2-font}
 ### *Retrofit 注解类*{:.header3-font}
-![network]({{site.baseurl}}/asset/2018-04-03/2018-04-03-retrofit-annotation.png)
+![network]({{site.baseurl}}/asset/network/retrofit-annotation.png)
 #### 请求的方法
 ------
 GET/HEAD POST/PUT/PATCH DELETE  OPTIONS   HTTP( custom method )

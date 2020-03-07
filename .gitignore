@@ -5,3 +5,4 @@ _cache
 .tags_sorted_by_file
 README.md
 LICENSE
+.jekyll-cache

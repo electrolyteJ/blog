@@ -6,7 +6,7 @@ date: 2017-05-14
 share: true
 comments: true
 tag:
-- Android Senior Engineer
+# - app-design/network
 
 ---
 ## *1.Summary*{:.header2-font}
@@ -17,9 +17,7 @@ tag:
 资料看完了，有空再来填坑。
 
 
-![authentication flowchart]({{site.baseurl}}/asset/2017-05-14/2017-05-14-authentication_flowchart.png){:.white-bg-image}
-
-
+![authentication flowchart]({{site.baseurl}}/asset/network/authentication_flowchart.png){:.white-bg-image}
 
 
 ## *4.Reference*{:.header2-font}

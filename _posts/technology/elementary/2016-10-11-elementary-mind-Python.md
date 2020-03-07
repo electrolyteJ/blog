@@ -8,7 +8,7 @@ share: true
 comments: true
 
 tags: 
-- 基础知识
+- elementary/launage
 # categories: 
 # - Script
 # - Backend2

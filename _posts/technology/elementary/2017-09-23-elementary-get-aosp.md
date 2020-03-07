@@ -6,7 +6,7 @@ date: 2017-09-23 22:50:00
 share: true
 comments: true
 tag:
-- 基础知识
+- elementary/others
 # - AOSP(SYS)
 ---
 

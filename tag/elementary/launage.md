@@ -1,4 +1,4 @@
 ---
 layout: tag_index
-tag: 基础知识
+tag: elementary/launage
 ---

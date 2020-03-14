@@ -51,10 +51,10 @@ runningAsyncCalls:ArrayDeque<AsyncCall>
 
 maxRequests = 64
 maxRequestsPerHost = 5
-//线程数最大为整型最大值2^31-1，一分闲置，该池子主要用于异步发送请求
+//线程数最大为整型最大值2^31-1，1min保活，该池子主要用于异步发送请求
 executorService/executorServiceOrNull(corePoolSize = 0,maximumPoolSize = Int.MAX_VALUE,keepAliveTime = 60,unit = s,workQueue=SynchronousQueue ) 
 ```
-&emsp;&emsp;每一次网络请求都会被当成一次call并且被推到队列里面。有时候是同步请求有时候是异步请求，所以OkHttp会初始化三个目的不一样的队列。`对于正在并发请求的数量(runningAsyncCalls size)，OkHttp最多64个，每个host最多5个`，网络请求池最多可容纳整型的最大值，可以近似看成无穷大，每个线程闲置1分钟，没有核心固定的线程,相当于JDK中提供的Executors#newCachedThreadPool,也就是缓存池。
+&emsp;&emsp;每一次网络请求都会被当成一次call并且被推到队列里面。有时候是同步请求有时候是异步请求，所以OkHttp会初始化三个目的不一样的队列。`对于正在并发请求的数量(runningAsyncCalls size)，OkHttp最多64个，每个host最多5个`，请求池最多可容纳整型的最大值，可以近似看成无穷大，每个线程保活1分钟，没有核心固定的线程,相当于JDK中提供的Executors#newCachedThreadPool,也就是缓存池。
 
 &emsp;&emsp;对比一下Volley和OkHttp的并发数量，显然太少，并发的数量更多需要根据cpu核数以及网络类型来计算。所以使用JDK提供的一系列Executor工具，就能高效使用简单控制线程。
 
@@ -233,6 +233,41 @@ JOURNAL_FILE_BACKUP = "journal.bkp"
    *
 ```
 
+缓存策略
+```kotlin
+      val responseCaching = cacheResponse.cacheControl
+
+      val ageMillis = cacheResponseAge()
+      var freshMillis = computeFreshnessLifetime()
+
+      if (requestCaching.maxAgeSeconds != -1) {
+        freshMillis = minOf(freshMillis, SECONDS.toMillis(requestCaching.maxAgeSeconds.toLong()))
+      }
+
+    //在某个时间段内依然有效
+      var minFreshMillis: Long = 0
+      if (requestCaching.minFreshSeconds != -1) {
+        minFreshMillis = SECONDS.toMillis(requestCaching.minFreshSeconds.toLong())
+      }
+
+      var maxStaleMillis: Long = 0
+      if (!responseCaching.mustRevalidate && requestCaching.maxStaleSeconds != -1) {
+        maxStaleMillis = SECONDS.toMillis(requestCaching.maxStaleSeconds.toLong())
+      }
+
+      if (!responseCaching.noCache && ageMillis + minFreshMillis < freshMillis + maxStaleMillis) {
+        val builder = cacheResponse.newBuilder()
+        if (ageMillis + minFreshMillis >= freshMillis) {
+          builder.addHeader("Warning", "110 HttpURLConnection \"Response is stale\"")
+        }
+        val oneDayMillis = 24 * 60 * 60 * 1000L
+        if (ageMillis > oneDayMillis && isFreshnessLifetimeHeuristic()) {
+          builder.addHeader("Warning", "113 HttpURLConnection \"Heuristic expiration\"")
+        }
+        return CacheStrategy(null, builder.build())
+      }
+```
+
 &emsp;&emsp;这里对比一下Volley和OkHttp
 
 ## *c.Retry*{:.header3-font}
@@ -251,8 +286,32 @@ retry一次，连接时间就等于2.5 * 1+2.5 =5s
 ========================
 OkHttp
 =========================
+```kotlin
+        } catch (e: RouteException) {
+          // The attempt to connect via a route failed. The request will not have been sent.
+          if (!recover(e.lastConnectException, call, request, requestSendStarted = false)) {
+            throw e.firstConnectException.withSuppressed(recoveredFailures)
+          } else {
+            recoveredFailures += e.firstConnectException
+          }
+          newExchangeFinder = false
+          continue
+        }
+```
+&emsp;&emsp;retry没有次数限制，只有遇到不可retry的情况ProtocolException SocketTimeoutException SSLHandshakeException/CertificateException SSLPeerUnverifiedException FileNotFoundException才会终止retry
 
-## *3.Reference*{:.header2-font}
+
+## *3.More*{:.header2-font}
+========================
+OkHttp ConnectInterceptor/CallServerInterceptor
+=========================
+&emsp;&emsp;OkHttp定义了连接的类RealConnection(Connection)，对于如何管理连接这种资源，采用池子的方式RealConnectionPool(ConnectionPool)。`连接池最多只能空闲5个连接，每个连接最多保活5min`，这个连接池并不存在上限，也就是有多少连接存多少。相对于请求池保活1分钟，连接池保活5分钟算是合理其连接过程是一种巨大的时间空间的消耗。
+&emsp;&emsp;既然有了管理连接的池子，OkHttp也提供了find/retry连接的类，可能为了遵循设计模式中的单一原则并没有将find/retry放在RealConnectionPool类中去实现,即ExchangeFinder。
+&emsp;&emsp;这里我们需要讲讲组合成连接的组件们
+- 地址路由Route 路由选择器RouteSelector 路由失败的名单RouteDatabase
+- 数据交换器Exchange  ExchangeCodec(Http1ExchangeCodec、Http2ExchangeCodec)
+
+## *4.Reference*{:.header2-font}
 [Volley 源码解析](http://a.codekk.com/detail/Android/grumoon/Volley%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90)
 [HTTP cache](https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching)
 

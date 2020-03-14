@@ -5,7 +5,7 @@ description:
 author: 电解质
 date: 2018-04-03 22:50:00
 share: true
-comments: true
+comments: false
 tag: 
 - app-design/network
 published : true
@@ -45,8 +45,8 @@ ps:Converter.Factory 和Converter用于转换被Body注解的对象，比如将�
 一般比较少用
 2. post/put/patch的请求body
 可以上传的数据类型有下列几种
-   - 表单发送 FormUrlEncoded ( Field FieldMap )
-   - 多部分发送 Multipart ( Part PartMap )
+   - body encoding发送 FormUrlEncoded ( Field FieldMap )
+   - 表单发送 Multipart ( Part PartMap )
 <br>
 
 #### url相关
@@ -239,3 +239,42 @@ public interface CallAdapter<R, T> {
 }
 ```
 通过抽象工程模式创建Adapter。然后将Call适配成其他类型。
+
+#### 原理
+Retrofit通过动态代理，代理网络请求的接口。
+```java
+   private final Map<Method, ServiceMethod<?>> serviceMethodCache = new ConcurrentHashMap<>();
+  public <T> T create(final Class<T> service) {
+    validateServiceInterface(service);
+    return (T) Proxy.newProxyInstance(service.getClassLoader(), new Class<?>[] { service },
+        new InvocationHandler() {
+          private final Platform platform = Platform.get();
+          private final Object[] emptyArgs = new Object[0];
+
+          @Override public @Nullable Object invoke(Object proxy, Method method,
+              @Nullable Object[] args) throws Throwable {
+            // If the method is a method from Object then defer to normal invocation.
+            if (method.getDeclaringClass() == Object.class) {
+              return method.invoke(this, args);
+            }
+            if (platform.isDefaultMethod(method)) {
+              return platform.invokeDefaultMethod(method, service, proxy, args);
+            }
+            return loadServiceMethod(method).invoke(args != null ? args : emptyArgs);
+          }
+        });
+  }
+```
+通过RequestFactory#parseAnnotations解析定义在接口中的具备描述API的注解,invoke调用请求接口。
+```java
+static final class CallAdapted<ResponseT, ReturnT> extends HttpServiceMethod<ResponseT, ReturnT> {
+    private final CallAdapter<ResponseT, ReturnT> callAdapter;
+    ...
+
+    @Override protected ReturnT adapt(Call<ResponseT> call, Object[] args) {
+      return callAdapter.adapt(call);
+    }
+  }
+```
+通过Adapter模式，将Call转换成其他类。Adapter需要有Factor构建
+

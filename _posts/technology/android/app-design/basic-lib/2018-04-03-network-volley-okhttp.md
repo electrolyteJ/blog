@@ -26,7 +26,6 @@ OkHttp
 - retry次数
 
 ## *2.Introduction*{:.header2-font}
-&emsp;&emsp;
 ## *a.Dispatcher*{:.header3-font}
 ========================
 Volley
@@ -39,7 +38,7 @@ mWaitingRequestQueue
 NetworkDispatcher的线程池大小为4
 创建了一个ByteArrayPool最多只能读4k的buf
 ```
-&emsp;&emsp;Volley并不存在同步请求，都是采用异步请求。所以只要两个队列就行。对于处于in flight的request也多是暂时找了个队列存放起来。由于网络请求池子被限制最多只能跑4个线，所以对于Volley来说只能并发4个线程。
+&emsp;&emsp;Volley并不存在同步请求，都是采用异步请求。所以只要两个队列就行。对于处于in flight的request也多是暂时找了个队列存放起来。由于网络请求池子被限制最多只能跑4个线，`所以对于Volley来说只能并发4个线程`。
 
 ========================
 OkHttp
@@ -52,15 +51,46 @@ runningAsyncCalls:ArrayDeque<AsyncCall>
 
 maxRequests = 64
 maxRequestsPerHost = 5
-//线程数最大为整型最大值2^31-1，一分钟保活，该池子主要用于异步发送请求
+//线程数最大为整型最大值2^31-1，一分闲置，该池子主要用于异步发送请求
 executorService/executorServiceOrNull(corePoolSize = 0,maximumPoolSize = Int.MAX_VALUE,keepAliveTime = 60,unit = s,workQueue=SynchronousQueue ) 
 ```
-&emsp;&emsp;每一次网络请求都会被当成一次call并且被推到队列里面。有时候是同步请求有时候是异步请求，所以OkHttp会初始化三个目的不一样的队列。对于正在并发请求的数量(runningAsyncCalls size)，OkHttp最多64个，每个host最多5个，网络请求池最多可容纳整型的最大值，可以近似看成无穷大，每个线程闲置1分钟，没有核心固定的线程,相当于JDK中提供的Executors#newCachedThreadPool,也就是缓存池。
+&emsp;&emsp;每一次网络请求都会被当成一次call并且被推到队列里面。有时候是同步请求有时候是异步请求，所以OkHttp会初始化三个目的不一样的队列。`对于正在并发请求的数量(runningAsyncCalls size)，OkHttp最多64个，每个host最多5个`，网络请求池最多可容纳整型的最大值，可以近似看成无穷大，每个线程闲置1分钟，没有核心固定的线程,相当于JDK中提供的Executors#newCachedThreadPool,也就是缓存池。
 
 &emsp;&emsp;对比一下Volley和OkHttp的并发数量，显然太少，并发的数量更多需要根据cpu核数以及网络类型来计算。所以使用JDK提供的一系列Executor工具，就能高效使用简单控制线程。
 
 
 ## *b.Cache*{:.header3-font}
+&emsp;&emsp;首先得了解HTTP是如何处理缓存的
+### 1. 新鲜度检查（freshness）
+response缓存的字段
+```
+Date:获取服务器时间（绝对时间）
+Age：过期时间（相对时间）
+ETag：tag号
+Last-Modified：最后被修改的时间（绝对时间）
+
+# HTTP1.0使用
+Expires：过期时间（绝对时间）
+# HTTP1.1使用
+cache control 
+- noCache：跳过本地、CND等新鲜度验证，必须与源服务器验证。
+- must-revalidate:本地cache到期，必须跳过CND等缓存服务器，到源服务器验证
+- noStore：禁止使用缓存
+- onlyIfCached:只取本地缓存
+- maxAgeSeconds：缓存时长(相对时间)
+- private：只保留本地，其他中间缓存服务部保留
+- public：不能缓存的也多变成能缓存，比如身份验证
+- maxStaleSeconds:客户端可以接受超过多久的缓存响应
+- minFreshSeconds：期望在指定时间内的响应仍有效
+```
+
+### 2. 再验证
+条件请求
+```
+If-None-Match+ETag：若客户端的etag和服务的etag相同则再验证命中，返回304，未命中返回200 ok
+If-Modified-Since+Last-Modified：上次缓存之后若无被修改则再验证命中，返回304，未命中返回200 ok
+```
+
 &emsp;&emsp;cache这块两个库都是采用lru算法来管理disk资源,也可以说OkHttp借鉴了Volley这块很多代码处理，OkHttp为了支持高并发，拿掉了response body在内存中的缓存，保存了header等一些相关信息。
 
 ========================
@@ -117,7 +147,7 @@ private String getFilenameForKey(String key) {
         return localFilename;
     }
 ```
-&emsp;&emsp;Volley的缓存body:主要缓存 key(getFilenameForKey方法)对应的文件(response body为存储内容)，可以简单理解一个url对应一个缓存文件。缓存文件存放的位置并不是sd卡，而是保存在ROM分配给apk的cache位置。当缓存数据超过5m就会调用pruneIfNeeded清理lru算出来的数据。
+&emsp;&emsp;Volley的缓存body:主要缓存 key(getFilenameForKey方法)对应的文件(response body为存储内容)，可以简单理解一个url对应一个缓存文件。缓存文件存放的位置并不是sd卡，而是保存在ROM分配给apk的cache位置。当缓存数据`超过5m`就会调用`pruneIfNeeded`清理lru算出来的数据。
 
 ========================
 OkHttp
@@ -135,19 +165,17 @@ DiskLruCache(Snapshot、Entry描述的是缓存日志的文件名信息)
 #缓存header
 lruEntries = LinkedHashMap<String, Entry>(0, 0.75f, true)
 
-# 缓存body
-ENTRY_COUNT = 2
-会创建两种类型缓存文件，总计4个文件
-- clean(<url>.md5().hex().0 <url>.md5().hex().1)
-- dirty(<url>.md5().hex().0.tmp <url>.md5().hex().1.tmp)
-
-#日报
+#lruEntries的日报
 JOURNAL_FILE = "journal"
 JOURNAL_FILE_TEMP = "journal.tmp"
 JOURNAL_FILE_BACKUP = "journal.bkp"
 
+# 缓存body ENTRY_COUNT = 2
+会创建两种类型缓存文件，总计4个文件
+- clean(<url>.md5().hex().0 <url>.md5().hex().1)
+- dirty(<url>.md5().hex().0.tmp <url>.md5().hex().1.tmp)
 ```
-&emsp;&emsp;OkHttp的缓存设计和Volley大同小异，内存中保留一份header相关，disk保存body，他们都是来源于Snapshot(封装了io流)。当然也有不同的地方，比如代码整体可读性更高，还有提供了缓存的日报。日报中当用户记录超过2000则会使用lru清理，最大字节数需要使用者设置
+&emsp;&emsp;OkHttp的缓存设计和Volley大同小异，内存中保留一份header相关，disk保存body，他们都是来源于Snapshot(封装了io流)。当然也有不同的地方，比如代码整体可读性更高，还有提供了缓存的日报。如果用户对cache操作记录超过2000次,则会将内存中的lruEntries写入到日报中。`最大字节数和缓存目录需要使用者设置`,如果超过使用者设置的字节数，则会调用trimToSize使用lru清理。
 缓存的header内容大致如下
 ```
      *
@@ -186,7 +214,7 @@ JOURNAL_FILE_BACKUP = "journal.bkp"
      * TLSv1.2
      * ```
 ```
-缓存的日报大致如下
+缓存的日报的记录大致如下
 ```
    *
    *     libcore.io.DiskLruCache
@@ -226,6 +254,7 @@ OkHttp
 
 ## *3.Reference*{:.header2-font}
 [Volley 源码解析](http://a.codekk.com/detail/Android/grumoon/Volley%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90)
+[HTTP cache](https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching)
 
 
 

@@ -7,7 +7,7 @@ date: 2018-07-22 22:50:00
 share: true
 comments: true
 tag: 
-- elementary/launage
+- elementary/language
 ---
 
 ![kotlin]({{site.baseurl}}/asset/2018-07-22/kotlin.png)

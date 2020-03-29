@@ -8,7 +8,7 @@ share: true
 comments: true
 
 tags: 
-- elementary/launage
+- elementary/language
 # categories: 
 # - Script
 # - Backend2

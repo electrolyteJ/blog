@@ -24,7 +24,7 @@ jobs:
       #   jekyll/builder:latest /bin/bash -c "chmod 777 /srv/jekyll && ./deploy.sh"
     - name: Set up jekyll
       run: gem install jekyll
-    - name: Build and delopy blog
+    - name: before deploy
       run: ./before_deploy.sh
     - name: Build and delopy blog
       run: ./deploy.sh

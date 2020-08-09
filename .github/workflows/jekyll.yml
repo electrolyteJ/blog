@@ -27,4 +27,4 @@ jobs:
     # - name: before deploy
       # run: ./before_deploy.sh
     - name: Build and delopy blog
-      run: ./deploy.sh
+      run: ./deploy.sh ${{ secrets.CI_TOKEN }}

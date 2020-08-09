@@ -3,6 +3,7 @@
 #use brew"s ruby
 export PATH=/usr/local/bin:$PATH
 SITE_DIR=./_site
+CI_TOKEN=$1
 
 git submodule update --init --recursive
 #判断sit目录

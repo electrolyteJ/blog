@@ -14,7 +14,7 @@ SITE_DIR=./_site
 #- 最后执行git remote add origin git@github.com:HawksJamesf/blog.git
 #- 在blog目录(cd blog/)下执行 git submodule add -f git@github.com:HawksJamesf/blog.git _site
 #- 在site目录(cd site/)下执行，git add .&&git commit -m update&& git push origin gh-pages
- jekyll build 
+jekyll build 
 if [ ! -d $SITE_DIR ];then
 	echo "not exit $SITE_DIR"
 	exit 1
@@ -44,8 +44,8 @@ postSite(){
 		exit 1
 	fi
 
-	git push --force origin HEAD:gh-pages
-	# git push --quiet --force https://$REPO_TOKEN@github.com/HawksJamesf/blog.git HEAD:gh-pages
+	# git push --force origin HEAD:gh-pages
+	git push --quiet --force https://$CI_TOKEN@github.com/JamesfChen/blog.git HEAD:gh-pages
 	echo -e "\033[34m update successfully \033[0m"
 }
 postSite

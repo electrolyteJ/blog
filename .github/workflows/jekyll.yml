@@ -8,19 +8,27 @@ on:
 
 jobs:
   build:
-
+    name: build blog
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
     - name: Build the site in the jekyll/builder container
-    - run: openssl aes-256-cbc -K $encrypted_4c7563b9ab37_key -iv $encrypted_4c7563b9ab37_iv
-  -in id_rsa.enc -out ~/.ssh/id_rsa -d
-    - run: chmod 600 ~/.ssh/id_rsa
-    - run: echo -e "Host 101.200.36.88\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-    - run: git submodule update --init --recursive
+    # - run: openssl aes-256-cbc -K $encrypted_4c7563b9ab37_key -iv $encrypted_4c7563b9ab37_iv
+  # -in id_rsa.enc -out ~/.ssh/id_rsa -d
+    # - run: chmod 600 ~/.ssh/id_rsa
+    # - run: echo -e "Host 101.200.36.88\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+    # - run: git submodule update --init --recursive
     - run: docker run \
         -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_site:/srv/jekyll/_site \
         jekyll/builder:latest /bin/bash -c "chmod 777 /srv/jekyll "
-    - run: ./deploy.sh
+    # - run: ./deploy.sh
+
+    - name: Build and Deploy
+      uses: JamesIves/github-pages-deploy-action@master
+      env:
+        ACCESS_TOKEN: ${{ secrets.CI_TOKEN }}
+        BRANCH: gh-pages
+        FOLDER: docs
+        BUILD_SCRIPT: jekyll build -d docs --future
         

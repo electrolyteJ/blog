@@ -2,7 +2,7 @@
 
 #use brew"s ruby
 export PATH=/usr/local/bin:$PATH
-SITE_DIR=./build
+SITE_DIR=./docs
 CI_TOKEN=$1
 
 #判断sit目录
@@ -14,7 +14,7 @@ CI_TOKEN=$1
 #- 最后执行git remote add origin git@github.com:HawksJamesf/blog.git
 #- 在blog目录(cd blog/)下执行 git submodule add -f git@github.com:HawksJamesf/blog.git _site
 #- 在site目录(cd site/)下执行，git add .&&git commit -m update&& git push origin gh-pages
-jekyll build -d SITE_DIR
+jekyll build -d docs
 if [ ! -d $SITE_DIR ];then
 	echo "not exit $SITE_DIR"
 	exit 1

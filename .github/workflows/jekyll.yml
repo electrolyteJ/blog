@@ -18,12 +18,4 @@ jobs:
         jekyll/builder:latest /bin/bash -c "chmod 777 /srv/jekyll"
     - run: openssl aes-256-cbc -K $encrypted_4c7563b9ab37_key -iv $encrypted_4c7563b9ab37_iv
   -in id_rsa.enc -out ~/.ssh/id_rsa -d && chmod 600 ~/.ssh/id_rsa
-    # - name: Build the site in the jekyll/builder container 
-    # - name: Build and Deploy
-      # uses: JamesIves/github-pages-deploy-action@master
-      # env:
-      #   ACCESS_TOKEN: ${{ secrets.CI_TOKEN }}
-      #   BRANCH: gh-pages
-      #   FOLDER: docs
-      #   BUILD_SCRIPT: jekyll build -d docs --future
         

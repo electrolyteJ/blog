@@ -12,17 +12,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Build the site in the jekyll/builder container
-      uses: actions/checkout@v2
-      run: docker run \
+    - uses: actions/checkout@v2
+    - run: docker run \
         -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_site:/srv/jekyll/_site \
         jekyll/builder:latest /bin/bash -c "chmod 777 /srv/jekyll"
-
-    - name: Build and Deploy
-      uses: JamesIves/github-pages-deploy-action@master
-      env:
-        ACCESS_TOKEN: ${{ secrets.CI_TOKEN }}
-        BRANCH: gh-pages
-        FOLDER: docs
-        BUILD_SCRIPT: jekyll build -d docs --future
+    - run: chmod 600 ~/.ssh/id_rsa
+    # - name: Build the site in the jekyll/builder container 
+    # - name: Build and Deploy
+      # uses: JamesIves/github-pages-deploy-action@master
+      # env:
+      #   ACCESS_TOKEN: ${{ secrets.CI_TOKEN }}
+      #   BRANCH: gh-pages
+      #   FOLDER: docs
+      #   BUILD_SCRIPT: jekyll build -d docs --future
         

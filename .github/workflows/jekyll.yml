@@ -25,4 +25,6 @@ jobs:
     - name: Set up jekyll
       run: gem install jekyll
     - name: Build and delopy blog
+      run: ./before_deploy.sh
+    - name: Build and delopy blog
       run: ./deploy.sh

@@ -2,11 +2,9 @@
 
 #use brew"s ruby
 export PATH=/usr/local/bin:$PATH
-SITE_DIR=./_site
+SITE_DIR=./build
 CI_TOKEN=$1
 
-git config --global url."https://$CI_TOKEN@github.com/JamesfChen/blog.git"
-git submodule update --init --recursive
 #判断sit目录
 #1.当git clone之后需要git submodule update更新site仓库，不过对于travis ci，会默认执行git submodule xxx来更新site仓库
 #2.除非人为删除site目录，不然site目录不会被删除，jekyll build报错也不会删除site目录。
@@ -16,7 +14,7 @@ git submodule update --init --recursive
 #- 最后执行git remote add origin git@github.com:HawksJamesf/blog.git
 #- 在blog目录(cd blog/)下执行 git submodule add -f git@github.com:HawksJamesf/blog.git _site
 #- 在site目录(cd site/)下执行，git add .&&git commit -m update&& git push origin gh-pages
-jekyll build 
+jekyll build -d SITE_DIR
 if [ ! -d $SITE_DIR ];then
 	echo "not exit $SITE_DIR"
 	exit 1

@@ -48,7 +48,11 @@ postSite(){
 	# git push --quiet --force https://$REPO_TOKEN@github.com/HawksJamesf/blog.git HEAD:gh-pages
 	echo -e "\033[34m update successfully \033[0m"
 }
-
+openssl aes-256-cbc -K $encrypted_4c7563b9ab37_key -iv $encrypted_4c7563b9ab37_iv
+  -in id_rsa.enc -out ~/.ssh/id_rsa -d
+chmod 600 ~/.ssh/id_rsa
+echo -e "Host 101.200.36.88\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+git submodule update --init --recursive
 postSite
 
 

@@ -22,5 +22,7 @@ jobs:
       #   docker run \
       #   -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_site:/srv/jekyll/_site \
       #   jekyll/builder:latest /bin/bash -c "chmod 777 /srv/jekyll && ./deploy.sh"
-    - name: Build the site in the jekyll/builder container
-      run: gem install jekyll && ./deploy.sh
+    - name: Set up jekyll
+      run: gem install jekyll
+    - name: Build and delopy blog
+      run: ./deploy.sh

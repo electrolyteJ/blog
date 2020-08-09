@@ -5,7 +5,8 @@ export PATH=/usr/local/bin:$PATH
 SITE_DIR=./_site
 CI_TOKEN=$1
 
-git submodule update --init --recursive https://$CI_TOKEN@github.com/JamesfChen/blog.git HEAD:master
+git config --global url."https://$CI_TOKEN@github.com/JamesfChen/blog.git"
+git submodule update --init --recursive
 #判断sit目录
 #1.当git clone之后需要git submodule update更新site仓库，不过对于travis ci，会默认执行git submodule xxx来更新site仓库
 #2.除非人为删除site目录，不然site目录不会被删除，jekyll build报错也不会删除site目录。

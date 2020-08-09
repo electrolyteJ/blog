@@ -14,6 +14,8 @@ CI_TOKEN=$1
 #- 最后执行git remote add origin git@github.com:HawksJamesf/blog.git
 #- 在blog目录(cd blog/)下执行 git submodule add -f git@github.com:HawksJamesf/blog.git _site
 #- 在site目录(cd site/)下执行，git add .&&git commit -m update&& git push origin gh-pages
+git config --global user.email "hawksjamesf@gmail.com"
+git config --global user.name "jamesf chen"
 jekyll build -d docs
 if [ ! -d $SITE_DIR ];then
 	echo "not exit $SITE_DIR"

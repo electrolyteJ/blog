@@ -19,7 +19,7 @@ published : true
 - [x] 传输协议 HTTP-TS(HLS) HTTP-FLV RTMP
 
 &emsp;&emsp;我们假象一个这样的场景，一个内容生产者如何通过网络向一个内容的消费者传输内容。首先内容生产者生产了原始数据，编解码器将其编码成有序数据，由于需要通过网络，就会存在带宽压力问题，就需要通过封装技术，进行切片分包发送，使其更易进行网络传输，而运载这些包的纽带又各有千秋，有专门为TS包运输的HLS，有专门为FLV运输的HTTP-FLV RTMP。
-&emsp;&emsp;理解了上面三块的内容那么就相当于入门了,如果想了解如何实现一个从推流端到服务端再到播流端的代码实现，可以阅读这个项目的源代码[JamesfChen/river](https://github.com/JamesfChen/river)，当然也希望您能给与这个项目star
+&emsp;&emsp;理解了上面三块的内容那么就相当于入门了,如果想了解如何实现一个从推流端到服务端再到播流端的代码实现，可以阅读这个项目的源代码[JamesfChen/river](https://github.com/JamesfChen/river)，当然也希望您能给予这个项目star
 
 ## *3.Reference*{:.header2-font}
 [七牛直播云](https://developer.qiniu.com/pili/sdk/3719/PLDroidMediaStreaming-function-using)

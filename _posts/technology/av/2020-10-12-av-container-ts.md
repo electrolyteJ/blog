@@ -30,6 +30,19 @@ program_map_PID=12  ---->  ...
 ```
 
 ## *2.Introduction*{:.header2-font}
+TS
+- PSI
+- PES
+
+> Program-specific information (PSI) is metadata about a program (channel) and part of an MPEG transport stream.
+> The PSI data as defined by ISO/IEC 13818-1 (MPEG-2 Part 1: Systems) includes four tables:
+[PSI](https://en.wikipedia.org/wiki/Program-specific_information)
+- PAT (Program Association Table)
+- CAT (Conditional Access Table)
+- PMT (Program Mapping Table)
+- NIT (Network Information Table)
+
+
 ## *3.Reference*{:.header2-font}
 [MPEG-TS 格式解析](https://blog.csdn.net/Kayson12345/article/details/81266587)
 [MPEG2-TS基础](https://blog.csdn.net/rootusers/article/details/42772657)

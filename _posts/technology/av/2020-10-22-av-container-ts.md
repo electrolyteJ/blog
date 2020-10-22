@@ -7,7 +7,7 @@ date: 2020-10-22 22:50:00
 share: true
 comments: true
 tag: 
-- app-dsign/av
+- app-design/av
 published : true
 ---
 ## *1.Summary*{:.header2-font}
@@ -322,3 +322,7 @@ Stuffing Bytes|variable|length	0xff
 [Program-specific information](https://en.wikipedia.org/wiki/Program-specific_information)
 [Packetized elementary stream](https://en.wikipedia.org/wiki/Packetized_elementary_stream#:~:text=PES%20packet%20header,-Name&text=Specifies%20the%20number%20of%20bytes,Optional%20PES%20header)
 [HLS协议及TS封装](https://www.jianshu.com/p/d6311f03b81f)
+[MD5、SHA1、CRC32值是干什么的？](https://zhuanlan.zhihu.com/p/38411551)
+[h264封装ts](https://blog.csdn.net/wanglf1986/article/details/52944884)
+[视频流基础知识 1-PSI/SI](https://winddoing.github.io/post/10069.html)
+[I帧、P帧、B帧、GOP、IDR 和PTS, DTS之间的关系](https://www.cnblogs.com/yongdaimi/p/10676309.html#:~:text=GOP%20(%20Group%20of%20Pictures)%20%E6%98%AF,%E5%B8%A7%EF%BC%88%E5%8F%8C%E5%90%91%E5%8F%82%E8%80%83%E5%B8%A7%EF%BC%89%E3%80%82)

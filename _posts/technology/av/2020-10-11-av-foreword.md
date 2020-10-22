@@ -68,3 +68,4 @@ MP3 | LAME|
 [七牛直播云](https://developer.qiniu.com/pili/sdk/3719/PLDroidMediaStreaming-function-using)
 [[总结]视音频编解码技术零基础学习方法](https://blog.csdn.net/leixiaohua1020/article/details/18893769)
 [如何搭建一个完整的视频直播系统？](https://www.zhihu.com/question/42162310)
+[如何选择第三方直播SDK?](http://www.fly63.com/article/detial/3823)

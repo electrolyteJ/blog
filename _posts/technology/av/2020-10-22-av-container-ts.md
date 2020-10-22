@@ -243,17 +243,17 @@ name |size(bits)|desc
 ---|---|---
 Marker bits|2|10 binary or 0x8 hex
 Scrambling control|2|00 implies not scrambled
-Priority|1|
+Priority|1|NA
 Data alignment indicator|1|1 indicates that the PES packet header is immediately followed by the video start code or audio syncword
 Copyright|1|1 implies copyrighted
 Original or Copy|1|1 implies original
 PTS DTS indicator|2|11 = both present, 01 is forbidden, 10 = only PTS, 00 = no PTS or DTS
-ESCR flag|1	|
-ES rate flag|1|
-DSM trick mode flag|1|	
-Additional copy info flag|1|	
-CRC flag|1|	
-extension flag|1|	
+ESCR flag|1	| NA
+ES rate flag|1|NA
+DSM trick mode flag|1|NA
+Additional copy info flag|1|NA
+CRC flag|1|	NA
+extension flag|1|NA
 PES header length|8|gives the length of the remainder of the PES header in bytes
 Optional fields|variable|length	presence is determined by flag bits above
 Stuffing Bytes|variable|length	0xff

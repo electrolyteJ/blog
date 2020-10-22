@@ -238,6 +238,7 @@ Optional PES header|variable length (length >= 3)|not present in case of Padding
 Data||See elementary stream. In the case of private streams the first byte of the payload is the sub-stream number.
 
 Optional PES header
+
 name |size(bits)|desc
 ---|---|---
 Marker bits|2|10 binary or 0x8 hex

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: AV --- 前言
-description: 
+description: 音视频开篇入门
 author: 电解质
 date: 2020-10-11 22:50:00
 share: true

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: AV --- TS Container
-description: 
+description: MPEG transport stream
 author: 电解质
 date: 2020-10-22 22:50:00
 share: true

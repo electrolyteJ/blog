@@ -1,6 +1,6 @@
 ---
 layout: post
-title: AV --- Http-FLV Protocol
+title: AV --- HTTP-FLV Protocol
 description: 
 author: 电解质
 date: 2020-10-12 22:50:00

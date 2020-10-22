@@ -266,6 +266,52 @@ Stuffing Bytes|variable|length	0xff
           | ts header |   adaptation field    |      payload(pes n)     |-->第n个Packet
           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
+### 打包
+代码来源项目[JamesfChen/river](https://github.com/JamesfChen/river/blob/master/server4py/app/container/ts.py),欢迎star
+```python
+    def muxe(self, frame, max_duration=3000) -> PacketList:
+        if frame.header.is_keyframe():
+            self.__cur_keyframe = frame
+        dts = frame.header.dts
+        pts = frame.header.pts
+        dts_timescale = dts * 90  # unit:timescale
+        pts_timescale = pts * 90
+        is_video = True if frame.header.is_video_packet() else False
+        # print('%d dts:%d , pts:%d,is_keyframe:%s,is_video:%s,es packet size:%d' % (
+        #     self.__i, dts, pts, frame.header.is_keyframe(), is_video, len(frame.payload)))
+        self.__i += 1
+        h = Header()
+        h.packet_type = Packet_Type_VIDEO
+        payload = bytearray()
+        delta = pts - self.__base_time
+        if delta >= max_duration and frame.header.is_keyframe():
+            print('>>>生成ts文件','ts file:\u001B[31m%s\u001B[0m duration:\u001B[31m%s\u001B[0m' % (self.__ts_file.name, (delta/1000)))
+            # self.__writer = open(self.path % time.time(), 'ab') if self.path else self.sw
+            self.__ts_file.duration = delta
+            self.cache.set(self.__ts_file)
+            self.__seqnum_count += 1
+            self.allocate_ts_file(self.path_template % self.__seqnum_count, self.__seqnum_count)
+            self.__base_time = pts
+            self.__is_first = True
+        # PAT表和PMT表需要定期插入ts流，因为用户随时可能加入ts流,这个间隔比较小，通常每隔几个视频帧就要加入PAT和PMT
+        if self.__is_first:
+            payload.extend(self.ts_pat_packet())
+            payload.extend(self.ts_pmt_packet(is_video))
+            self.__is_first = False
+
+        ts_pes_packets_size, ps = self.ts_pes_packets(
+            frame.payload,
+            is_video,
+            frame.header.is_keyframe(),
+            pts_timescale, dts_timescale
+        )
+
+        for p in ps:
+            payload.extend(p)
+
+        return PacketList(h, payload)
+```
+
 
 
 ## *3.Reference*{:.header2-font}

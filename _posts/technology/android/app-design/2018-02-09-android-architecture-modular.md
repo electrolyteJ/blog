@@ -28,7 +28,7 @@ tag:
 &emsp;&emsp;对于组件化，这里讲的是业务组件化。通过组件化，可以将业务进行拆分，这样业务就独立了，再通过路由将各个组件串联起来。除了是业务解耦，还能让组件在调试时以apk的方式打包，这样可以调高开发效率。
 ## *3.Introduction*{:.header2-font}
 
-说了这么多，还是让我们来看看代码怎么写的。结合[SimpleWeather](https://github.com/HawksJamesf/SimpleWeather)这个项目来看，这个项目是我自己的开源项目，是一个轻量级App，主要关注架构一个App需要哪些技术点，欢迎您的star/fork/pr。
+说了这么多，还是让我们来看看代码怎么写的。结合[JamesfChen/Spacecraft](https://github.com/JamesfChen/Spacecraft)这个项目来看，这个项目是我自己的开源项目，是一个轻量级App，主要关注架构一个App需要哪些技术点，欢迎您的star/fork/pr。
 
 
 ### *组件化配置*{:.header3-font}
@@ -109,7 +109,7 @@ android {
     现如今的第三方路由库[ARouter](https://github.com/alibaba/ARouter),就是设计了一套跳转URI。这里还有一点想要说的，URI在代码代码里面最好的表现方式是什么 ？ Retrofit已经给我们解决了这个问题。而请求/想要最好的方式是什么 ？ RxJava也给我们解决了这个问题。 其实像EventBus也可以用于组件通讯，传递的是事件，但是它的请求/响应，个人感觉比起RxJava感觉有点丑。
 
 2. RPC
-    在Android中的RPC例子就是AIDL，通过Proxy/Stub 实现了通讯，[SimpleWeather](https://github.com/HawksJamesf/SimpleWeather)这个项目也是使用了一个Proxy的来转发跳转页面逻辑。
+    在Android中的RPC例子就是AIDL，通过Proxy/Stub 实现了通讯，[JamesfChen/Spacecraft](https://github.com/JamesfChen/Spacecraft)这个项目也是使用了一个Proxy的来转发跳转页面逻辑。
 
 
 公共库代码

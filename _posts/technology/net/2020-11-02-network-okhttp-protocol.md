@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 网络 --- OkHttp Protocol
-description: Http1 && Http2 && QUIC
+description: HTTP1 && HTTP2 && QUIC
 author: 电解质
 date: 2020-11-02 22:50:00
 share: true
@@ -10,11 +10,11 @@ tag:
 - app-design/network
 ---
 ## *1.Summary*{:.header2-font}
-这一篇文章我们来讲讲Http1 Http2
+这一篇文章我们来讲讲HTTP1 && HTTP2 && QUIC
 
 ## *2.Introduction*{:.header2-font}
 
-Okhttp中将编码request和解码response抽到`ExchangeCodec`类,Http1协议的实现类为Http1ExchangeCodec，Http2协议的实现类为Http2ExchangeCodec。
+OkHttp中将编码request和解码response抽到`ExchangeCodec`类,HTTP1协议的实现类为Http1ExchangeCodec，HTTP2协议的实现类为Http2ExchangeCodec。
 ```java
 /** Encodes HTTP requests and decodes HTTP responses. */
 interface ExchangeCodec {
@@ -44,7 +44,7 @@ interface ExchangeCodec {
   ....
 }
 ```
-ExchangeCodec接口中主要有四个方法需要关注，处理request的header和body(writeRequestHeaders、createRequestBody)；处理response的header和body(readResponseHeaders、openResponseBodySource)。Http1的header采用的是文本形式，body有像json这样的文本形式，也有采用protobuf这样的二进制(其编解码过程被熟知已被破解)。Http2强制header和body都采用二进制形式，其中就引入了帧的概念。
+ExchangeCodec接口中主要有四个方法需要关注，处理request的header和body(writeRequestHeaders、createRequestBody)；处理response的header和body(readResponseHeaders、openResponseBodySource)。HTTP1的header采用的是文本形式，body有像json这样的文本形式，也有采用protobuf这样的二进制(其编解码过程被熟知已被破解)。HTTP2强制header和body都采用二进制形式，其中就引入了帧的概念。
 
 ```java
 class Http2ExchangeCodec(
@@ -79,7 +79,7 @@ class Http2ExchangeCodec(
   ...
 }
 ```
-当发起一个请求，调用者构建的request header经过writeRequestHeaders会被encode为二进制。首先先对request各个header进行utf-8编码，然后将编码之后的数据通过Http2Writer#header进一步压缩编码(其中压缩编码采用的是Hpack)。Http2中定义了10种帧类型，这里讲到的头部帧是其中一个，还有其他可以看下面的代码。
+当发起一个请求，调用者构建的request header经过writeRequestHeaders会被encode为二进制。首先先对request各个header进行utf-8编码，然后将编码之后的数据通过Http2Writer#header进一步压缩编码(其中压缩编码采用的是Hpack)。HTTP2中定义了10种帧类型，这里讲到的头部帧是其中一个，还有其他可以看下面的代码。
 ```java
   const val TYPE_DATA = 0x0
   const val TYPE_HEADERS = 0x1

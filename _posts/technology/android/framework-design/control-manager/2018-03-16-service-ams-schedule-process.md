@@ -5,7 +5,6 @@ description: AMS如何管理进程
 author: 电解质
 date: 2018-03-16
 tag:
-- Android Senior Engineer
 - framework-design/service
 ---
 * TOC

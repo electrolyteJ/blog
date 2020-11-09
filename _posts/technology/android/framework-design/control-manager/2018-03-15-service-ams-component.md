@@ -5,7 +5,6 @@ description: 图解四大组件
 author: 电解质
 date: 2018-03-15
 tag:
-- Android Senior Engineer
 - framework-design/service
 ---
 * TOC

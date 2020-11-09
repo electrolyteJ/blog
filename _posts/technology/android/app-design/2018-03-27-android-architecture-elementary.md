@@ -7,7 +7,7 @@ date: 2018-03-27 22:50:00
 share: true
 comments: true
 tag: 
-- Android Architecture
+- app-design/architecture
 published : false
 ---
 

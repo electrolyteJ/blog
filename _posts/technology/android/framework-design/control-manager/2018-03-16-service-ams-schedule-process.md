@@ -63,6 +63,7 @@ tag:
 
 >It is important that application developers understand how different application components (in particular Activity, Service, and BroadcastReceiver) impact the lifetime of the application's process. Not using these components correctly can result in the system killing the application's process while it is doing important work
 
+android系统的进程依附于四大组件，如果进程不存在这些组件，就会被回收，这与linux的进程管理策略有点区别。
 1. foreground process
 - running Activity at the top of the screen that the use is interacting with（its `onResume()` method has been called）
 - running BroadcastReceiver(its `onReceive()` method is executing)

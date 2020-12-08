@@ -345,11 +345,14 @@ android 的priority值，并没有做什么变动，还是和linux的保持一�
 
 &emsp;&emsp;总的来说主要有变化的是process state和process types。
 ## *3.Introduction*{:.header2-font}
+android进程管理采用LRU算法排序进程，使用oom_adj值决定移除哪个进程。
 
-### *updateLruProcessLocked*{:.header3-font}
+### *进程LRU排序*{:.header3-font}
+进程的LRU列表为mLruProcesses，越靠近数据尾部越不会被kill掉，存活下来的希望越大。当插入一个正在使用的进程那么会发生如下变化 ：
+- 插入的当前进程会被放置于尾部
+- 与其相关联的进程将会尽可能被推到靠近尾部，提高其level，免于被kill
 
 #### 插入当前的进程
-----
 > AMS#updateLruProcessLocked
 {:.filename}
 ```java
@@ -456,26 +459,24 @@ final void updateLruProcessLocked(ProcessRecord app, boolean activityChange,
             mLruProcessServiceStart++;
         }
 ```
-有Activity的进程：
-1. 该进程存在Activity
-2. 该进程为Service进程，其绑定的client进程（bindService）存在Activity
-3. 该进程为Service进程，flag=BIND_TREAT_LIKE_ACTIVITY时，Service将被当成Activity。
+首先尽可能从mLruProcesses移除将要插入的进程，然后判断将要插入的进程应该插入哪一个位置。这里有三个判断条件，与Activity组件有关联的进程；与Service组件相关的进程；其他进程。
 
-&emsp;&emsp;第一种会将进程直接添加到mLruProcesses尾部，后两种会将进程添加到mLruProcesses倒数第二位，从这里可以看出存在Activity的进程比和Activity相互关联的Service进程优先级更高。
+与Activity组件有关联的进程：
+1. 该进程只存在Activity组件
+2. 该进程存在Activity组件，存在Service组件进程，其绑定的client进程(bindService)存在Activity组件，flag为公开给开发中使用的值，比如flag=BIND_AUTO_CREATE
+3. 该进程存在Activity组件，存在Service组件进程，其存在Service组件进程被当中Activity看待，flag=BIND_TREAT_LIKE_ACTIVITY为framework私有的
+4. 该进程中没有Activity组件，存在Service组件进程，其绑定的client进程（bindService）存在Activity组件
+5. 该进程中没有Activity组件，存在Service组件进程，flag=BIND_TREAT_LIKE_ACTIVITY时;Service进程被当中Activity看待
 
-有Service的进程：
+&emsp;&emsp;1,2,3会将进程直接添加到mLruProcesses尾部，理由很简单，Activity是用户交互的组件，我们得先保证其具有高存活率。后两种会将进程添加到mLruProcesses倒数第二位，从这里可以看出存在Activity的进程比和Activity相互关联的Service进程存活率更高。
 
-&emsp;&emsp;由于hasService总是为false，这部分代码还没有完善。不过我们可以大致知道，对于进程的管理越来越细化了，之前是根据Activity来划分，接下去还会出现根据Service来划分。这里有个地方需要提及一下，Android团队在源码中使用了mLruProcessServiceStart/mLruProcessActivityStart这两个字段来分割Service进程和Activity进程。
+有Service组件的进程：
+&emsp;&emsp;由于hasService总是为false，这部分代码还没有完善。不过我们可以大致知道，对于进程的管理越来越细化了，之前是根据Activity来划分，接下去还会出现根据Service来划分。这里有个地方需要提及一下，Android团队在源码中使用了mLruProcessServiceStart/mLruProcessActivityStart这两个字段来分割Service进程和Activity进程。
 
 其他的进程：
-- 对于当前进程来说，存在其client进程。
+&emsp;&emsp;该进程没有存在Activity组件，绑定的进程也没有Activity组件，比如访问ContentProvider进程的Service进程，绑定Service进程的Service进程。首先比较client进程的index和当前进程的index，两者取其最大值，这样保证了存活率最高，然后再和mLruProcessServiceStart比较，两者之间取最小值，这样保证了位置紧邻"上一个其他的进程"。从这里可以看出，client进程的index如果大于当前进程，将帮助当前进程往前添加。如果小于，当前进程还是呆在原地不动。如果不存在client进程，也就对于当前进程的位置没有什么帮助，直接添加到mLruProcessServiceStart的位置。
 
-&emsp;&emsp;取client进程和当前进程在mLruProcesses的最大index，并且和mLruProcessServiceStart比较，两者之间取最小值，最后将当前进程插入到最后这个最新的位置中。从这里可以看出，client进程的index如果大于当前进程，将帮助当前进程往前添加。如果小于，还是呆在原地不动。
-- 对于当前进程来说，不存在client进程。
-
-&emsp;&emsp;直接添加到mLruProcessServiceStart的位置。
-
-#### 重排序和当前线程相互关联的进程
+#### 重排序相关联的进程
 ----
 >AMS#updateLruProcessLocked
 {:.filename}
@@ -501,8 +502,8 @@ final void updateLruProcessLocked(ProcessRecord app, boolean activityChange,
         }
     }
 ```
-&emsp;&emsp;如果当前进程存在service connection，则帮助绑定的service进程提高在mLruProcessses中的index。
-&emsp;&emsp;如果当前进程存在provider reference，则帮助ContentProvider进程提高在mLruProcesses中的index。
+&emsp;&emsp;如果当前进程存在service connection，则帮助绑定的service进程提高在mLruProcessses中的index。
+&emsp;&emsp;如果当前进程存在provider reference，则帮助ContentProvider进程提高在mLruProcesses中的index。
 
 ### *updateOomAdjLocked*{:.header3-font}
 

@@ -21,17 +21,13 @@ jobs:
         node-version: 12
         registry-url: https://registry.npmjs.org
 
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@ec106b438a1ff6ff109590de34ddc62c540232e0
-      with:
-        ruby-version: 2.6
-      # run: |
-      #   docker run \
-      #   -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_site:/srv/jekyll/_site \
-      #   jekyll/builder:latest /bin/bash -c "chmod 777 /srv/jekyll && ./deploy.sh"
-    - name: Set up jekyll
-      run: gem install jekyll
+#     - name: Set up Ruby
+#       uses: ruby/setup-ruby@ec106b438a1ff6ff109590de34ddc62c540232e0
+#       with:
+#         ruby-version: 2.6
+#     - name: Set up jekyll
+#       run: gem install jekyll
     # - name: before deploy
       # run: ./before_deploy.sh
-    - name: Build and delopy blog
-      run: ./deploy.sh ${{ secrets.CI_TOKEN }}
+#     - name: Build and delopy blog
+#       run: ./deploy.sh ${{ secrets.CI_TOKEN }}

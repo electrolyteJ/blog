@@ -474,7 +474,7 @@ final void updateLruProcessLocked(ProcessRecord app, boolean activityChange,
 &emsp;&emsp;由于hasService总是为false，这部分代码还没有完善。不过我们可以大致知道，对于进程的管理越来越细化了，之前是根据Activity来划分，接下去还会出现根据Service来划分。这里有个地方需要提及一下，Android团队在源码中使用了mLruProcessServiceStart/mLruProcessActivityStart这两个字段来分割Service进程和Activity进程。
 
 其他的进程：
-&emsp;&emsp;该进程没有存在Activity组件，绑定的进程也没有Activity组件，比如访问ContentProvider进程的Service进程，绑定Service进程的Service进程。首先比较client进程的index和当前进程的index，两者取其最大值，这样保证了存活率最高，然后再和mLruProcessServiceStart比较，两者之间取最小值，这样保证了位置紧邻"上一个其他的进程"。从这里可以看出，client进程的index如果大于当前进程，将帮助当前进程往前添加。如果小于，当前进程还是呆在原地不动。如果不存在client进程，也就对于当前进程的位置没有什么帮助，直接添加到mLruProcessServiceStart的位置。
+&emsp;&emsp;该进程没有存在Activity组件，绑定的进程也没有Activity组件，比如访问ContentProvider进程的Service进程，绑定Service进程的Service进程。首先比较client进程的index和当前进程的index，两者取其最大值，这样保证了存活率最高，然后再和mLruProcessServiceStart比较，两者之间取最小值，这样保证了位置紧邻"上一个其他的进程"。从这里可以看出，client进程的index如果大于当前进程，将帮助当前进程往前添加。如果小于，当前进程还是呆在原地不动。如果不存在client进程，也就对于当前进程的位置没有什么帮助，直接依次添加mLruProcesses列表的头部。这么说对于那些无依无靠的进程，就很容易被回收。
 
 #### 重排序相关联的进程
 ----
@@ -505,7 +505,7 @@ final void updateLruProcessLocked(ProcessRecord app, boolean activityChange,
 &emsp;&emsp;如果当前进程存在service connection，则帮助绑定的service进程提高在mLruProcessses中的index。
 &emsp;&emsp;如果当前进程存在provider reference，则帮助ContentProvider进程提高在mLruProcesses中的index。
 
-### *updateOomAdjLocked*{:.header3-font}
+### *进程oom_adj调整*{:.header3-font}
 
 adj级别 |取值|介绍
 ---|---|---|

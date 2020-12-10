@@ -54,7 +54,7 @@ tag:
 #### linux process types
 
 ```
-- 交互进程:由shell启动的进程,通过终端控制台(tty)控制。终端控制台关闭，进程也就被关闭了。
+- 交互进程:由shell启动的进程,通过终端控制台(tty)控制。终端控制台关闭，进程也就被关闭了。
 - 批处理进程
 - daemon process:脱离于tty运行的进程。
 ```
@@ -343,12 +343,12 @@ android 的priority值，并没有做什么变动，还是和linux的保持一�
     public static final int SIGNAL_USR1 = 10;
 ```
 
-&emsp;&emsp;总的来说主要有变化的是process state和process types。
+&emsp;&emsp;总的来说主要有变化的是process state和process types。
 ## *3.Introduction*{:.header2-font}
-android进程管理采用LRU算法排序进程，使用oom_adj值决定移除哪个进程。
+android进程管理采用LRU算法排序进程，使用oom_adj值决定在内存紧张的时候移除哪个进程。
 
 ### *进程LRU排序*{:.header3-font}
-进程的LRU列表为mLruProcesses，越靠近数据尾部越不会被kill掉，存活下来的希望越大。当插入一个正在使用的进程那么会发生如下变化 ：
+mLruProcesses为进程的cache列表，越靠近列表的尾部越不会被kill掉，存活下来的希望越大。当插入一个正在使用的进程那么会发生如下变化 ：
 - 插入的当前进程会被放置于尾部
 - 与其相关联的进程将会尽可能被推到靠近尾部，提高其level，免于被kill
 
@@ -471,7 +471,7 @@ final void updateLruProcessLocked(ProcessRecord app, boolean activityChange,
 &emsp;&emsp;1,2,3会将进程直接添加到mLruProcesses尾部，理由很简单，Activity是用户交互的组件，我们得先保证其具有高存活率。后两种会将进程添加到mLruProcesses倒数第二位，从这里可以看出存在Activity的进程比和Activity相互关联的Service进程存活率更高。
 
 有Service组件的进程：
-&emsp;&emsp;由于hasService总是为false，这部分代码还没有完善。不过我们可以大致知道，对于进程的管理越来越细化了，之前是根据Activity来划分，接下去还会出现根据Service来划分。这里有个地方需要提及一下，Android团队在源码中使用了mLruProcessServiceStart/mLruProcessActivityStart这两个字段来分割Service进程和Activity进程。
+&emsp;&emsp;由于hasService总是为false，这部分代码还没有完善。不过我们可以大致知道，对于进程的管理越来越细化了，之前是根据Activity来划分，接下去还会出现根据Service来划分。这里有个地方需要提及一下，Android团队在源码中使用了mLruProcessServiceStart/mLruProcessActivityStart这两个字段来分割Service进程和Activity进程。
 
 其他的进程：
 &emsp;&emsp;该进程没有存在Activity组件，绑定的进程也没有Activity组件，比如访问ContentProvider进程的Service进程，绑定Service进程的Service进程。首先比较client进程的index和当前进程的index，两者取其最大值，这样保证了存活率最高，然后再和mLruProcessServiceStart比较，两者之间取最小值，这样保证了位置紧邻"上一个其他的进程"。从这里可以看出，client进程的index如果大于当前进程，将帮助当前进程往前添加。如果小于，当前进程还是呆在原地不动。如果不存在client进程，也就对于当前进程的位置没有什么帮助，直接依次添加mLruProcesses列表的头部。这么说对于那些无依无靠的进程，就很容易被回收。

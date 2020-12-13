@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Framework层的服务 --- AMS管理进程
-description: AMS如何管理进程
+description: 为了更好的了解user space层面的进程，所以就写了这篇文章。
 author: 电解质
 date: 2018-03-16
 tag:
@@ -10,10 +10,9 @@ tag:
 * TOC
 {:toc}
 ## *1.Summary*{:.header2-font}
-&emsp;&emsp;对于kernel来说，进程线程是不分家的，多线程或者多进程都会共享资源，但是由于需要确保每个应用在user space中都相对独立、相对安全，彼此不能轻易地操作彼此的数据，就急需做分离。所以进程和线程在user space其实是不同的。进程拥有独立的内存。多个进程中某个进程发生crash并不会影响其他的进程运行，借由进程的这个特性，对于需要放于后天的任务来说，进程是个非常好的选择。
-&emsp;&emsp;为了更好的了解user space层面的进程，所以就写了这篇文章。
-## *2.About*{:.header2-font}
-&emsp;&emsp;我们都知道Android操作系统是基于Linux操作系统的。所以很多东西会沿用了Linux，但又在其基础之上做了定制。想要了解Android中的进程，需要简单了解一下Linux中的进程。
+&emsp;&emsp;对于kernel来说，进程、线程是不分家的，多线程或者多进程都会共享资源，但是由于需要确保每个应用在user space中都相对独立、相对安全，彼此不能轻易地操作彼此的数据，就急需做分离。所以进程和线程在user space其实是不同的。进程拥有独立的内存。多个进程中某个进程发生crash并不会影响其他的进程运行，借由进程的这个特性，对于需要放在后台工作的任务来说，进程是个非常好的选择，即使由于内存吃紧被回收，代码发生crash挂了，也都不影响前台UI进程。对于Android操作系统来说，一个app中有多个进程，面向用户的前台UI进程存活率指定是比其他后台进程更高，所以对于像音乐播放器这样的后台进程存活情况如何，怎么提高其存活率使我们需要关注的点。这里可以直接说一下，`使用LRU算法+组件特点排序进程;使用oom_adj值和占用内存大小回收进程`
+
+&emsp;&emsp;我们都知道Android操作系统是基于Linux操作系统的，所以很多东西会沿用了Linux，但又在其基础之上做了定制。想要了解Android中的进程，需要简单了解一下Linux中的进程。
 
 ### *Process state*{:.header3-font}
 #### linux process state
@@ -344,7 +343,7 @@ android 的priority值，并没有做什么变动，还是和linux的保持一�
 ```
 
 &emsp;&emsp;总的来说主要有变化的是process state和process types。
-## *3.Introduction*{:.header2-font}
+## *2.Introduction*{:.header2-font}
 android进程管理采用LRU算法排序进程，使用oom_adj值决定在内存紧张的时候移除哪个进程。
 
 ### *进程LRU排序*{:.header3-font}
@@ -474,7 +473,7 @@ final void updateLruProcessLocked(ProcessRecord app, boolean activityChange,
 &emsp;&emsp;由于hasService总是为false，这部分代码还没有完善。不过我们可以大致知道，对于进程的管理越来越细化了，之前是根据Activity来划分，接下去还会出现根据Service来划分。这里有个地方需要提及一下，Android团队在源码中使用了mLruProcessServiceStart/mLruProcessActivityStart这两个字段来分割Service进程和Activity进程。
 
 其他的进程：
-&emsp;&emsp;该进程没有存在Activity组件，绑定的进程也没有Activity组件，比如访问ContentProvider进程的Service进程，绑定Service进程的Service进程。首先比较client进程的index和当前进程的index，两者取其最大值，这样保证了存活率最高，然后再和mLruProcessServiceStart比较，两者之间取最小值，这样保证了位置紧邻"上一个其他的进程"。从这里可以看出，client进程的index如果大于当前进程，将帮助当前进程往前添加。如果小于，当前进程还是呆在原地不动。如果不存在client进程，也就对于当前进程的位置没有什么帮助，直接依次添加mLruProcesses列表的头部。这么说对于那些无依无靠的进程，就很容易被回收。
+&emsp;&emsp;该进程没有存在Activity组件，绑定的进程也没有Activity组件，比如绑定Service进程的Service进程。首先比较client进程的index和当前进程的index，两者取其最大值，这样保证了存活率最高，然后再和mLruProcessServiceStart比较，两者之间取最小值，这样保证了位置紧邻"上一个其他的进程"。从这里可以看出，client进程的index如果大于当前进程，将帮助当前进程往前添加。如果小于，当前进程还是呆在原地不动。如果不存在client进程，也就对于当前进程的位置没有什么帮助，直接依次添加mLruProcesses列表的头部。这么说对于那些无依无靠的进程，就很容易被回收。
 
 #### 重排序相关联的进程
 ----

@@ -1035,5 +1035,5 @@ ADJ_MEM_FACTOR_CRITICAL	|3|	Cached+Empty<=3
      */
     static final int TRIM_MEMORY_RUNNING_MODERATE = 5;
 ```
-文中还有一些具体的细节没有展开，有空再来填坑。
+文中还有一些具体的细节没有展开，有空再来填坑。
 

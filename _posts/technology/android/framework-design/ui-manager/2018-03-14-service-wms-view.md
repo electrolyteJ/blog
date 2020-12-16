@@ -4,8 +4,6 @@ title: Framework层的服务 --- View
 description: 来一起聊聊WMS的View
 author: 电解质
 date: 2018-03-14
-tag:
-- Android Senior Engineer
 ---
 * TOC
 {:toc}

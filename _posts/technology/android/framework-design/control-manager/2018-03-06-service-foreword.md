@@ -8,7 +8,6 @@ share: true
 comments: true
 tag:
   - framework-design/service
-  - Android Senior Engineer
 ---
 
 <!-- * TOC

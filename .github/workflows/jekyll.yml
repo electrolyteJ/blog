@@ -13,18 +13,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@ec106b438a1ff6ff109590de34ddc62c540232e0
+    - name: checkout ✅
+      uses: actions/checkout@v2.1.1
+    - name: node 🟢
+      uses: actions/setup-node@v1.4.4
       with:
-        ruby-version: 2.6
-      # run: |
-      #   docker run \
-      #   -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_site:/srv/jekyll/_site \
-      #   jekyll/builder:latest /bin/bash -c "chmod 777 /srv/jekyll && ./deploy.sh"
+        node-version: 12
+        registry-url: https://registry.npmjs.org
+
+    - name: Set up Ruby
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: '2.6'
     - name: Set up jekyll
       run: gem install jekyll
-    # - name: before deploy
-      # run: ./before_deploy.sh
+#     - name: before deploy
+#       run: ./before_deploy.sh
     - name: Build and delopy blog
       run: ./deploy.sh ${{ secrets.CI_TOKEN }}

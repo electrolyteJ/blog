@@ -74,3 +74,6 @@ signapk工具签名时使用的是pk8,x509.pem文件
 &emsp;&emsp;双向认证是对于服务端和客户端的认证，为了验证客户端，在客户端校验完服务端的证书之后，客户端也要发送一份自己的证书给服务端校验。当服务端校验通过同时告知客户端加密方案，客户端就会发送密钥premaster secert给服务端，然后通信
 
 &emsp;&emsp;Fiddler/Charles使用了Http代理进行抓包,Wireshark/tcpdump使用了网卡抓包，所以运行Wireshark的机器要要有一张无线网卡(360无线网卡)，用来给手机当做热点，这样才能抓到手机上面的包。
+
+### *可扩展的抓包软件*{:.header3-font}
+还有更加“银杏”的抓包软件MITMProxy 、 HttpCanary 都是支持编写plugin来扩展功能

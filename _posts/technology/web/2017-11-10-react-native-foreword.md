@@ -6,7 +6,7 @@ date: 2017-11-10 22:50:00
 share: true
 comments: true
 tag:
-- react native
+# - react native
 - cross-platform
 ---
 ## *1.Summary*{:.header2-font}

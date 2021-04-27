@@ -1,4 +1,4 @@
 ---
 layout: tag_index
-tag: React Native
+tag: cross-platform
 ---

@@ -7,7 +7,7 @@ share: true
 comments: true
 tag:
 - build-tools
-- AI
+- ai
 ---
 ## *1.Summary*{:.header2-font}
 &emsp;&emsp;正在吐血酝酿中，敬请期待

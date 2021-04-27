@@ -6,7 +6,7 @@ date: 2017-10-22 22:50:00
 share: true
 comments: true
 tag:
-- AI
+- ai
 ---
 ## *1.Summary*{:.header2-font}
 &emsp;&emsp;正在吐血酝酿中，敬请期待

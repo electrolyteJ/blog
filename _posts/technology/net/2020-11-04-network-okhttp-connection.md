@@ -369,5 +369,66 @@ RealConnection
 
 连接socket之后，就要看看接下来要不要tls连接了。
 
+RealConnection
+{:.filename}
+```java
+private fun connectTls(connectionSpecSelector: ConnectionSpecSelector) {
+      val address = route.address
+    val sslSocketFactory = address.sslSocketFactory
+    var success = false
+    var sslSocket: SSLSocket? = null
+    try {
+      // Create the wrapper over the connected socket.
+      sslSocket = sslSocketFactory!!.createSocket(
+          rawSocket, address.url.host, address.url.port, true /* autoClose */) as SSLSocket
+
+      // Configure the socket's ciphers, TLS versions, and extensions.
+      val connectionSpec = connectionSpecSelector.configureSecureSocket(sslSocket)
+      if (connectionSpec.supportsTlsExtensions) {
+        Platform.get().configureTlsExtensions(sslSocket, address.url.host, address.protocols)
+      }
+
+      // Force handshake. This can throw!
+      sslSocket.startHandshake()
+      // block for session establishment
+      val sslSocketSession = sslSocket.session
+      val unverifiedHandshake = sslSocketSession.handshake()
+
+      // Verify that the socket's certificates are acceptable for the target host.
+      if (!address.hostnameVerifier!!.verify(address.url.host, sslSocketSession)) {
+        ...
+      }
+
+      val certificatePinner = address.certificatePinner!!
+
+      handshake = Handshake(unverifiedHandshake.tlsVersion, unverifiedHandshake.cipherSuite,
+          unverifiedHandshake.localCertificates) {
+        certificatePinner.certificateChainCleaner!!.clean(unverifiedHandshake.peerCertificates,
+            address.url.host)
+      }
+
+      // Check that the certificate pinner is satisfied by the certificates presented.
+      certificatePinner.check(address.url.host) {
+        handshake!!.peerCertificates.map { it as X509Certificate }
+      }
+
+      // Success! Save the handshake and the ALPN protocol.
+      val maybeProtocol = if (connectionSpec.supportsTlsExtensions) {
+        Platform.get().getSelectedProtocol(sslSocket)
+      } else {
+        null
+      }
+}
+```
+通过外部提供的sslSocketFactory我们构建了SSLSocket，并和服务器进行的握手，ssl握手的过程可以看这一博文，传送门[抓包原理]({{site.baseurl}}/2020/12/14/capture-message.html)。握手之后拿到证书，通过Okhttp提供的OkHostnameVerifier验证主机，当然你也可以自定义验证主机的逻辑。那么之后就完成连接。这里还要提一嘴，Okhttp项目中还提供了`okhttp-tls`，帮助我们去实现客户端服务端证书的管理。
+
+在进行连接中会出现各种不能恢复的异常
+- 一些致命的异常，ProtocolException  SSLHandshakeException/CertificateException SSLPeerUnverifiedException
+- 客户端配置要求禁止重试
+- 没有更多可用的路由
+- request的body没有数据了：如果是本地路由问题，request还没有被发送body还有数据，如果是服务器问题，那么request已经被发送并且body没有了数据
+
+与上面的不可恢复的异常相对的是可以恢复的异常SocketTimeoutException还有只是本地路由出现了问题，那么对于Okhttp来说会在RetryAndFollowUpInterceptor重新尝试去连接服务。 
+
 ### *Reference*{:.header2-font}
 [Java使用SSLSocket通信](https://my.oschina.net/itblog/blog/651608)

@@ -312,7 +312,7 @@ OkHttp
           continue
         }
 ```
-&emsp;&emsp;retry没有次数限制，只有遇到不可retry的情况ProtocolException SocketTimeoutException SSLHandshakeException/CertificateException SSLPeerUnverifiedException FileNotFoundException才会终止retry
+&emsp;&emsp;retry过程会不停的切route来尝试连接可以用的网络，只有遇到不可retry的情况ProtocolException SocketTimeoutException SSLHandshakeException/CertificateException SSLPeerUnverifiedException FileNotFoundException才会终止retry
 
 
 ## *3.More*{:.header2-font}

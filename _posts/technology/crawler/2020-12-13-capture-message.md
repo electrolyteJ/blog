@@ -67,7 +67,7 @@ signapk工具签名时使用的是pk8,x509.pem文件
 ```
 
 ### *抓包原理*{:.header3-font}
-&emsp;&emsp;抓包软件通过通过这样一种模式来实现抓包的:客户端 <-->中间人<--->服务端
+&emsp;&emsp;抓包软件通过这样一种模式来实现抓包的:客户端 <-->中间人<--->服务端
 ![arch]({{site.baseurl}}/asset/crawler/ssl_tsl单向认证.png){: .center-image }_`ssl_tsl单向认证`_
 &emsp;&emsp;单向认证中是对于服务端的认证，所以为了通过认证服务端会下发一份CA证书给客户端校验，CA证书中包含了服务端的公钥pub_key等其他信息。通过了校验之后，客户端就会将自己的密钥premaster secert用pub_key加密发给服务端。服务端用private_key解密，然后双方用密钥key(由client random+server random+premaster secret共同生成)进行通过。期间服务端使用了非对称加密pub_key、private_key，客户端提供的密钥key是对称加密，解密CA证书使用了操作系统或者浏览器提供的CA证书公钥,CA证书密钥也是非对称，服务器需要通过CA机构(CA秘钥)获取加密之后的证书
 

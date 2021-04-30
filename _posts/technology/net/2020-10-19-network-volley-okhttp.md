@@ -61,6 +61,19 @@ executorService/executorServiceOrNull(corePoolSize = 0,maximumPoolSize = Int.MAX
 
 ## *b.Cache*{:.header3-font}
 &emsp;&emsp;首先得了解HTTP是如何处理缓存的
+```
+通用首部字段
+cache control
+请求首部字段
+If-Match / If-None-Match
+If-Modified-Since / If-Unmodified-Since
+响应首部字段
+ETag
+Expires
+Last-Modified
+Date
+Age
+```
 ### 1. 新鲜度检查（freshness）
 response缓存的字段
 ```
@@ -73,8 +86,8 @@ Last-Modified：最后被修改的时间（绝对时间）
 Expires：过期时间（绝对时间）
 # HTTP1.1使用
 cache control 
-- noCache：跳过本地、CND等新鲜度验证，必须与源服务器验证。
-- must-revalidate:本地cache到期，必须跳过CND等缓存服务器，到源服务器验证
+- noCache：跳过本地、CDN等新鲜度验证，必须与源服务器验证。
+- must-revalidate:本地cache到期，必须跳过CDN等缓存服务器，到源服务器验证
 - noStore：禁止使用缓存
 - onlyIfCached:只取本地缓存
 - maxAgeSeconds：缓存时长(相对时间)
@@ -83,6 +96,7 @@ cache control
 - maxStaleSeconds:客户端可以接受超过多久的缓存响应
 - minFreshSeconds：期望在指定时间内的响应仍有效
 ```
+&emsp;&emsp;第一次请求服务器要数据的时候，响应客户端请求的response header会增加一些缓存字段，来告诉客户端下发的文件是有缓存有效期的，然后当下次客户端再次请求时，就会对文件的新鲜度进行检查，如果还可以用就使用之前保存下来的副本，反之，则重新进行网络请求。所以新鲜度的检查是在本地完成的。
 
 ### 2. 再验证
 条件请求
@@ -90,13 +104,13 @@ cache control
 If-None-Match+ETag：若客户端的etag和服务的etag相同则再验证命中，返回304，未命中返回200 ok
 If-Modified-Since+Last-Modified：上次缓存之后若无被修改则再验证命中，返回304，未命中返回200 ok
 ```
-
+&emsp;&emsp;这里接着新鲜度检查往下走，如果过期了，客户端可以携带If-xxx-xxx的字段发送条件请求，对服务器的资源进行再次检验，服务器通过客户端给的ETag值 or Last-Modified值对资源进行验证，如果发现命中缓存，就返回304，没有的话返回200并给新的资源
 &emsp;&emsp;cache这块两个库都是采用lru算法来管理disk资源,也可以说OkHttp借鉴了Volley这块很多代码处理，OkHttp为了支持高并发，拿掉了response body在内存中的缓存，保存了header等一些相关信息。
 
 ========================
 Volley
 =========================
-&emsp;&emsp;Volley的cache一些基本信息
+&emsp;&emsp;Volley cache一些基本信息
 ```
 Cache接口
 Cache&Entry
@@ -147,7 +161,7 @@ private String getFilenameForKey(String key) {
         return localFilename;
     }
 ```
-&emsp;&emsp;Volley的缓存body:主要缓存 key(getFilenameForKey方法)对应的文件(response body为存储内容)，可以简单理解一个url对应一个缓存文件。缓存文件存放的位置并不是sd卡，而是保存在ROM分配给apk的cache位置。当缓存数据`超过5m`就会调用`pruneIfNeeded`清理lru算出来的数据。
+&emsp;&emsp;Volley的缓存body:主要缓存 key(getFilenameForKey方法)对应的文件(response body为存储内容)，可以简单理解一个url对应一个缓存文件。缓存文件存放的位置并不是sd卡，而是保存在ROM分配给apk的cache位置。当缓存数据`超过5M`就会调用`pruneIfNeeded`清理lru算出来的数据。
 
 ========================
 OkHttp
@@ -305,8 +319,8 @@ OkHttp
 ========================
 OkHttp ConnectInterceptor/CallServerInterceptor
 =========================
-&emsp;&emsp;OkHttp定义了连接的类RealConnection(Connection)，对于如何管理连接这种资源，采用池子的方式RealConnectionPool(ConnectionPool)。`连接池最多只能空闲5个连接，每个连接最多保活5min`，这个连接池并不存在上限，也就是有多少连接存多少。相对于请求池保活1分钟，连接池保活5分钟算是合理其连接过程是一种巨大的时间空间的消耗。
-&emsp;&emsp;既然有了管理连接的池子，OkHttp也提供了find/retry连接的类，可能为了遵循设计模式中的单一原则并没有将find/retry放在RealConnectionPool类中去实现,即ExchangeFinder。
+&emsp;&emsp;OkHttp定义了连接的类RealConnection(Connection)，对于如何管理连接这种资源，采用池子的方式RealConnectionPool(ConnectionPool)。`连接池最多只能空闲5个连接，每个连接最多保活5min`，这个连接池并不存在上限，也就是有多少连接存多少。相对于请求池保活1分钟，连接池保活5分钟,其连接过程是一种巨大的时间与空间的消耗。
+&emsp;&emsp;既然有了管理连接的池子，OkHttp也提供了find/retry连接的类，可能为了遵循设计模式中的单一原则并没有将find/retry放在RealConnectionPool类中去实现，而是通过ExchangeFinder这样一个类提供了这样一些功能。
 &emsp;&emsp;这里我们需要讲讲组合成连接的组件们
 - 地址路由Route 路由选择器RouteSelector 路由失败的名单RouteDatabase
 - 数据交换器Exchange  ExchangeCodec(Http1ExchangeCodec、Http2ExchangeCodec)

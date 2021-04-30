@@ -1,18 +1,15 @@
 ---
 layout: post
-title: 网络 --- OkHttp Protocol
+title: 网络 --- OkHttp Exchange
 description: HTTP1 && HTTP2 && QUIC
 author: 电解质
-date: 2020-11-02 22:50:00
+date: 2018-05-19 22:50:00
 share: true
 comments: true
 tag: 
 - app-design/network
 ---
-## *1.Summary*{:.header2-font}
-这一篇文章我们来讲讲HTTP1 && HTTP2 && QUIC
-
-## *2.Introduction*{:.header2-font}
+## *1.Introduction*{:.header2-font}
 
 OkHttp中将编码request和解码response抽到`ExchangeCodec`类,HTTP1协议的实现类为Http1ExchangeCodec，HTTP2协议的实现类为Http2ExchangeCodec。
 ```java

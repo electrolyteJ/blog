@@ -15,7 +15,7 @@ tag:
 这还得从一个call调用开始说起，当应用层调用请求，紧接而来的就是责任链的一系列调用，对于责任链模式可以看这里的[JavaChainOfResponsibility](https://github.com/JamesfChen/DesignPatterns/blob/master/src/main/java/behavioral/JavaChainOfResponsibility.java)。简单理解就是一个请求经过一条链式时，链上的每个节点会根据情况选择性的处理，如果其中有一节点不处理了往下的节点也就不会处理了。咦？这味道是不是有点熟悉，Android View树事件的分发。我们再把话题重新拉回来，在Okhttp中称呼这条链上的节点叫做拦截器，从应用层往下分别是：RetryAndFollowUpInterceptor、BridgeInterceptor、CacheInterceptor、ConnectInterceptor、CallServerInterceptor，这一节我们要将的就是ConnectInterceptor这个拦截器了。
 
 ConnectInterceptor的代码不多，但是其实都是被封装起来了，让我们来一层层剥开它
-```kotlin
+```java
 object ConnectInterceptor : Interceptor {
 
   @Throws(IOException::class)
@@ -47,7 +47,7 @@ object ConnectInterceptor : Interceptor {
 
 Transmitter
 {:.filename}
-```
+```java
   internal fun newExchange(chain: Interceptor.Chain, doExtensiveHealthChecks: Boolean): Exchange {
     synchronized(connectionPool) {
       check(!noMoreExchanges) { "released" }
@@ -68,11 +68,12 @@ Transmitter
     }
   }
 ```
+
 紧接着我们看到了通过finder找到了交换器的编解码模块，那么如果找到的呢？
 
 ExchangeFinder
 {:.filename}
-```
+```java
   fun find(
     ...
   ): ExchangeCodec {
@@ -120,7 +121,7 @@ ExchangeFinder
 
 ExchangeFinder
 {:.filename}
-```
+```java
  @Throws(IOException::class)
   private fun findConnection(
     ...
@@ -214,7 +215,7 @@ ExchangeFinder
 
 RouteSelector
 {:.filename}
-```kotlin
+```java
   private fun resetNextInetSocketAddress(proxy: Proxy) {
     // Clear the addresses. Necessary if getAllByName() below throws!
     val mutableInetSocketAddresses = mutableListOf<InetSocketAddress>()
@@ -265,7 +266,7 @@ RouteSelector
 
 ExchangeFinder
 {:.filename}
-```
+```java
   @Throws(IOException::class)
   private fun findConnection(
     ...
@@ -309,7 +310,7 @@ ExchangeFinder
 
 RealConnection
 {:.filename}
-```
+```java
   fun connect(
     connectTimeout: Int,
     readTimeout: Int,
@@ -367,3 +368,6 @@ RealConnection
 前面我们说过路由的查找，路由的线路连接主要通过代理，而代理又分为直连、http、socks。如果这三种代理默认是明文传输的，如果开启隧道（http代理+tls）必须加密，这里说一下隧道开启前会先发CONNECT报文进行连接。当然了这三种代理我们也可以选择性的配置tls，取决于上层应用给的规格connectionSpecs。在开启隧道过程中，客户端和代理服务器会进行鉴权，客户端要在Proxy-Authenticate字段中加入鉴权的数据。
 
 连接socket之后，就要看看接下来要不要tls连接了。
+
+### *Reference*{:.header2-font}
+[Java使用SSLSocket通信](https://my.oschina.net/itblog/blog/651608)

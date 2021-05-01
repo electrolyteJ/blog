@@ -3,18 +3,19 @@ layout: post
 title: 网络 --- Okhttp Connection的备胎之路
 description: socket管理
 author: 电解质
-date: 2018-04-28 22:50:00
+date: 2021-04-28 22:50:00
 share: true
-comments: true
 tag: 
 - app-design/network
 ---
-## *1.Introduction*{:.header2-font}
+## *1.Summary*{:.header2-font}
+整理技术笔记才发现还有一些文章草稿没有收尾，2018年写到一半的文章准备发博客却因为一些不可控制的外力导致搁置，现在重新拿出来并且整理一下。Okhttp系列 ，I‘m back.
+## *2.Introduction*{:.header2-font}
 前面我们在Okhttp和Volley这两个开源项目比较重试/重定向、缓存、请求池的设计 ，出门左转文件传送门[网络 --- Volley vs. OkHttp](https://jamesfchen.github.io/blog/2020-10-19/network-volley-okhttp)，接下来我们来讲讲连接池，由于Volley是基于HttpUrlConnection，所以这里我们就不研究HttpUrlConnection怎么管理连接了，我们只讲Okhttp怎么设计连接池。
 
 这还得从一个call调用开始说起，当应用层调用请求，紧接而来的就是责任链的一系列调用，对于责任链模式可以看这里的[JavaChainOfResponsibility](https://github.com/JamesfChen/DesignPatterns/blob/master/src/main/java/behavioral/JavaChainOfResponsibility.java)。简单理解就是一个请求经过一条链式时，链上的每个节点会根据情况选择性的处理，如果其中有一节点不处理了往下的节点也就不会处理了。咦？这味道是不是有点熟悉，Android View树事件的分发。我们再把话题重新拉回来，在Okhttp中称呼这条链上的节点叫做拦截器，从应用层往下分别是：RetryAndFollowUpInterceptor、BridgeInterceptor、CacheInterceptor、ConnectInterceptor、CallServerInterceptor，这一节我们要将的就是ConnectInterceptor这个拦截器了。
 
-ConnectInterceptor的代码不多，但是其实都是被封装起来了，让我们来一层层剥开它
+ConnectInterceptor的代码不多，但是其实都是被封装起来了，让我们来一层层剥开它。
 ```java
 object ConnectInterceptor : Interceptor {
 
@@ -38,12 +39,12 @@ object ConnectInterceptor : Interceptor {
 - ExchangeCodec：数据交换器的流编解码模块，用于处理http1.x还是http2.x协议
 - ExchangeFinder：数据交换器的流编解码模块的finder
 - Connection：连接器
-- Transmitter：发射器(由数据交换器+连接器构成)
+- Transmitter：发射器(由数据交换器+连接器构成) 
 - Route/RouteSelector：网络路由/路由选择器，网络路由持有代理对象，如果当前网络不可用可以切换Proxy提供的线路，我们经常看到视频网站的某个视频会提供很多个数据源线路
 - Proxy/ProxySelector：代理/代理选择器
 
 
-首先Transmitter是应用层和网络层的桥(这里应用层和网络层指的是Okhttp定义的，BridgeInterceptor以上为应用层，往下为网络层)，它管理者Exchange和Connection，可以认为一个call就会有一个Transmitter用于创造属于这个call调用的交互器Exchange和端与端的连接器Connection，所以上面的代码不难看出newExchange方法的意思。
+首先Transmitter(`OkHttp最新代码(commit-id 4ebc5f644c92ad08e41908db2ccaff4819cd0cbe)已经没有这个类了，被合并到RealCall,不过对于那些被封装的代码来说不过是换了个妈，本质没变`)是应用层和网络层的桥(这里应用层和网络层指的是Okhttp定义的，BridgeInterceptor以上为应用层，往下为网络层)，它管理者Exchange和Connection，可以认为一个call就会有一个Transmitter用于创造属于这个call调用的交互器Exchange和端与端的连接器Connection，所以上面的代码不难看出newExchange方法的意思。
 
 Transmitter
 {:.filename}
@@ -365,7 +366,7 @@ RealConnection
   }
 ```
 
-前面我们说过路由的查找，路由的线路连接主要通过代理，而代理又分为直连、http、socks。如果这三种代理默认是明文传输的，如果开启隧道（http代理+tls）必须加密，这里说一下隧道开启前会先发CONNECT报文进行连接。当然了这三种代理我们也可以选择性的配置tls，取决于上层应用给的规格connectionSpecs。在开启隧道过程中，客户端和代理服务器会进行鉴权，客户端要在Proxy-Authenticate字段中加入鉴权的数据。
+前面我们说过路由的查找，路由的线路连接主要通过代理，而代理又分为直连、http、socks。如果只是使用这三种代理那么网络默认是明文传输的，如果开启隧道（http代理+tls）就要求必须加密，这里说一下隧道，开启前会先发CONNECT报文进行连接。当然了这三种代理我们也可以选择性的配置tls，取决于上层应用给的规格connectionSpecs。在开启隧道过程中，客户端和代理服务器会进行鉴权，客户端要在Proxy-Authenticate字段中加入鉴权的数据。
 
 连接socket之后，就要看看接下来要不要tls连接了。
 
@@ -420,15 +421,17 @@ private fun connectTls(connectionSpecSelector: ConnectionSpecSelector) {
       }
 }
 ```
-通过外部提供的sslSocketFactory我们构建了SSLSocket，并和服务器进行的握手，ssl握手的过程可以看这一博文，传送门[抓包原理]({{site.baseurl}}/2020/12/14/capture-message.html)。握手之后拿到证书，通过Okhttp提供的OkHostnameVerifier验证主机，当然你也可以自定义验证主机的逻辑。那么之后就完成连接。这里还要提一嘴，Okhttp项目中还提供了`okhttp-tls`，帮助我们去实现客户端服务端证书的管理。
+通过外部提供的sslSocketFactory我们构建了SSLSocket，并和服务器进行的握手，ssl握手的过程可以看这一博文，传送门[抓包原理]({{site.baseurl}}/2020/12/14/capture-message.html)。握手之后拿到证书，通过Okhttp提供的OkHostnameVerifier验证主机，当然你也可以自定义验证主机的逻辑。那么之后就完成连接。这里还要提一嘴，Okhttp项目中还提供了`okhttp-tls`，帮助我们去实现客户端服务端证书的管理。到这里我们就知道了培养备胎多么浪费资源了吧，先socket握手然后sslsocket握手，握手之后验证证书，所以能从复用就复用千万不要自己搞。
 
-在进行连接中会出现各种不能恢复的异常
+在进行连接的过程中会出现各种不能恢复的异常
 - 一些致命的异常，ProtocolException  SSLHandshakeException/CertificateException SSLPeerUnverifiedException
 - 客户端配置要求禁止重试
 - 没有更多可用的路由
 - request的body没有数据了：如果是本地路由问题，request还没有被发送body还有数据，如果是服务器问题，那么request已经被发送并且body没有了数据
 
-与上面的不可恢复的异常相对的是可以恢复的异常SocketTimeoutException还有只是本地路由出现了问题，那么对于Okhttp来说会在RetryAndFollowUpInterceptor重新尝试去连接服务。 
+与上面的不可恢复的异常相对的是可以恢复的异常SocketTimeoutException，还有本地路由出现了问题，那么对于Okhttp来说会在RetryAndFollowUpInterceptor重新尝试去连接服务。 
 
-### *Reference*{:.header2-font}
+这里我们还需要扩展一个东西。http1.x和http2的发送请求和接受响应的不同，http1.x使用了管道化发送，一个tcp连接可以多个请求可以同时发送，但是服务器却按照顺序响应；http2由于采用了stream模式，一个tcp连接上面有多个stream，可以同时多个请求的同时发送响应。上面的连接复用对于http1.x来说我们很好理解，对于http2在代码的设计上OkHttp有一点不太一样。被复用的RealConnection对象其实是持有Http2Connection对象，当然了前提是使用http2协议，复用了RealConnection对象也就相当于复用了Http2Connection对象。
+
+### *3.Reference*{:.header2-font}
 [Java使用SSLSocket通信](https://my.oschina.net/itblog/blog/651608)

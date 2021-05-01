@@ -1,11 +1,10 @@
 ---
 layout: post
 title: 网络 --- OkHttp的金牌讲师Exchange
-description: HTTP1 && HTTP2 && QUIC
+description: HTTP1 && HTTP2
 author: 电解质
-date: 2018-05-19 22:50:00
+date: 2021-04-29 22:50:00
 share: true
-comments: true
 tag: 
 - app-design/network
 ---
@@ -166,15 +165,15 @@ class Http2ExchangeCodec(
 ```
 当发起一个请求，调用者构建的request header经过writeRequestHeaders会被encode为二进制。首先对request各个header进行utf-8编码，然后将编码之后的数据通过Http2Writer#header进一步压缩编码(其中压缩编码采用的是Hpack)。HTTP2中定义了10种帧类型，这里讲到的头部帧是其中一个，还有其他可以看下面的代码。
 ```java
-  const val TYPE_DATA = 0x0
-  const val TYPE_HEADERS = 0x1
-  const val TYPE_PRIORITY = 0x2
-  const val TYPE_RST_STREAM = 0x3
-  const val TYPE_SETTINGS = 0x4
-  const val TYPE_PUSH_PROMISE = 0x5
-  const val TYPE_PING = 0x6
-  const val TYPE_GOAWAY = 0x7
-  const val TYPE_WINDOW_UPDATE = 0x8
+  const val TYPE_DATA = 0x0 //数据帧
+  const val TYPE_HEADERS = 0x1 //头部帧
+  const val TYPE_PRIORITY = 0x2 
+  const val TYPE_RST_STREAM = 0x3 //终止流帧
+  const val TYPE_SETTINGS = 0x4 //网络配置帧
+  const val TYPE_PUSH_PROMISE = 0x5 
+  const val TYPE_PING = 0x6 //心跳，rtt帧
+  const val TYPE_GOAWAY = 0x7 
+  const val TYPE_WINDOW_UPDATE = 0x8 //流量控制帧，为什么需要这个帧？由于http2中一个tcp可以有多个stream同时写入任意个请求，所以需要控制网络中的流量，避免失控。
   const val TYPE_CONTINUATION = 0x9
 ```
 接下来我们来看看body逻辑，createRequestBody的方法体很简单`return stream!!.getSink()`,Http2Stream中的getSink获得到的是FramingSink，其重写了Sink#write。request body中的data通过FramingSink被写入到内部的sendBuffer缓存(最大16k).
@@ -214,3 +213,4 @@ Http2Stream#takeHeaders获取头部帧，其数据来源于Http2Connection$Reade
 [HTTP 协议入门](http://www.ruanyifeng.com/blog/2016/08/http.html)
 [[译] HPACK：http2中沉默的杀手](https://juejin.im/post/6844904047594438670)
 [HTTP/2 中的帧定义](https://halfrost.com/http2-http-frames-definitions/)
+[HTTP/3 详解](https://www.bookstack.cn/read/http3-explained-zh/h3-h2.md)

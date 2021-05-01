@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 网络 --- OkHttp Exchange
+title: 网络 --- OkHttp的金牌讲师Exchange
 description: HTTP1 && HTTP2 && QUIC
 author: 电解质
 date: 2018-05-19 22:50:00
@@ -10,8 +10,90 @@ tag:
 - app-design/network
 ---
 ## *1.Introduction*{:.header2-font}
+如果说Connection是ConnectInterceptor的最佳发言人，那么Exchange绝对是CallServerInterceptor的金牌讲师,接下来我们就来讲讲Exchange如何在CallServerInterceptor这里发光发热。
 
-OkHttp中将编码request和解码response抽到`ExchangeCodec`类,HTTP1协议的实现类为Http1ExchangeCodec，HTTP2协议的实现类为Http2ExchangeCodec。
+CallServerInterceptor
+{:.filename}
+```java
+class CallServerInterceptor(private val forWebSocket: Boolean) : Interceptor {
+
+  @Throws(IOException::class)
+  override fun intercept(chain: Interceptor.Chain): Response {
+    val realChain = chain as RealInterceptorChain
+    val exchange = realChain.exchange!!
+    val request = realChain.request
+    val requestBody = request.body
+    val sentRequestMillis = System.currentTimeMillis()
+    ...
+    var responseBuilder: Response.Builder? = null
+    var sendRequestException: IOException? = null
+    try {
+      exchange.writeRequestHeaders(request)
+
+      if (HttpMethod.permitsRequestBody(request.method) && requestBody != null) {
+        ...
+      } else {
+        exchange.noRequestBody()
+      }
+
+      if (requestBody == null || !requestBody.isDuplex()) {
+        exchange.finishRequest()
+      }
+    } catch (e: IOException) {
+      ...
+    }
+
+    try {
+      if (responseBuilder == null) {
+        responseBuilder = exchange.readResponseHeaders(expectContinue = false)!!
+        ...
+      }
+      var response = responseBuilder
+          .request(request)
+          .handshake(exchange.connection.handshake())
+          .sentRequestAtMillis(sentRequestMillis)
+          .receivedResponseAtMillis(System.currentTimeMillis())
+          .build()
+      ...
+      response = if (forWebSocket && code == 101) {
+        // Connection is upgrading, but we need to ensure interceptors see a non-null response body.
+        response.newBuilder()
+            .body(EMPTY_RESPONSE)
+            .build()
+      } else {
+        response.newBuilder()
+            .body(exchange.openResponseBody(response))
+            .build()
+      }
+      ...
+      return response
+    } catch (e: IOException) {
+      ...
+    }
+  }
+}
+```
+首先我们假设发送的请求为get，那么起流程就是如下面这样
+1. exchange.writeRequestHeaders(request)
+2. exchange.finishRequest()
+3. responseBuilder = exchange.readResponseHeaders(expectContinue = false)!!
+4. response.newBuilder().body(exchange.openResponseBody(response)).build()
+
+先将request header写入buffer然后flush完成发送请求，当服务器响应了请求再读取response header和body，然后将他们构建出一个新的response发送给上层应用。
+
+再来说说post请求
+1. exchange.writeRequestHeaders(request)
+2. val bufferedRequestBody = exchange.createRequestBody(request, false).buffer()
+3. exchange.finishRequest()
+4. responseBuilder = exchange.readResponseHeaders(expectContinue = false)!!
+5. response.newBuilder().body(exchange.openResponseBody(response)).build()
+
+post数据时会createRequestBody出一个输出流将body数据写入。post请求提出了一种优化post大文件的方案，就是在request header加入`Expect: 100-continue`,在libcurl中如果是post大于1024字节的数据，才会通过100-continue去询问服务器愿不愿意接收客户端的请求body，如果愿意就放回100，不愿意就不能发送请求body数据。Okhttp中也是提供`Expect: 100-continue`，不过要不要使用并不是由Okhttp检查post的字节数大于1024，而是取决于request header是不是有这个字段。
+
+Exchange在这个发送请求，接收响应的过程中有着重要的地位，但是深入阅读这个类你会发现，它其实是个工具人，对于数据的编解码具体实现可以说基本没有，全全加给你了ExchangeCodec。ExchangeCodec类是个高度抽象的接口，它提出了要进行流的编解码应该具备一些什么功能，而其追随者Http1ExchangeCodec与Http2ExchangeCodec,将来可能还有QuicExchangeCodec ，Http3ExchangeCodec，它们都是具体的实践者，实现了一整套编解码方法。
+
+ExchangeCodec
+{:.filename}
 ```java
 /** Encodes HTTP requests and decodes HTTP responses. */
 interface ExchangeCodec {
@@ -25,6 +107,14 @@ interface ExchangeCodec {
   /** This should update the HTTP engine's sentRequestMillis field. */
   @Throws(IOException::class)
   fun writeRequestHeaders(request: Request)
+
+  /** Flush the request to the underlying socket. */
+  @Throws(IOException::class)
+  fun flushRequest()
+
+  /** Flush the request to the underlying socket and signal no more bytes will be transmitted. */
+  @Throws(IOException::class)
+  fun finishRequest()
 
   /**
    * Parses bytes of a response header from an HTTP transport.
@@ -41,7 +131,7 @@ interface ExchangeCodec {
   ....
 }
 ```
-ExchangeCodec接口中主要有四个方法需要关注，处理request的header和body(writeRequestHeaders、createRequestBody)；处理response的header和body(readResponseHeaders、openResponseBodySource)。HTTP1的header采用的是文本形式，body有像json这样的文本形式，也有采用protobuf这样的二进制(其编解码过程被熟知已被破解)。HTTP2强制header和body都采用二进制形式，其中就引入了帧的概念。
+ExchangeCodec接口中主要有四个方法需要关注，处理request的header和body(writeRequestHeaders、createRequestBody)；处理response的header和body(readResponseHeaders、openResponseBodySource)。HTTP1的header采用的是文本形式，body有像json这样的文本形式，也有采用protobuf这样的二进制。HTTP2强制header和body都采用二进制形式，其中就引入了帧的概念。
 
 ```java
 class Http2ExchangeCodec(
@@ -71,12 +161,10 @@ class Http2ExchangeCodec(
   override fun createRequestBody(request: Request, contentLength: Long): Sink {
     return stream!!.getSink()
   }
-
-
   ...
 }
 ```
-当发起一个请求，调用者构建的request header经过writeRequestHeaders会被encode为二进制。首先先对request各个header进行utf-8编码，然后将编码之后的数据通过Http2Writer#header进一步压缩编码(其中压缩编码采用的是Hpack)。HTTP2中定义了10种帧类型，这里讲到的头部帧是其中一个，还有其他可以看下面的代码。
+当发起一个请求，调用者构建的request header经过writeRequestHeaders会被encode为二进制。首先对request各个header进行utf-8编码，然后将编码之后的数据通过Http2Writer#header进一步压缩编码(其中压缩编码采用的是Hpack)。HTTP2中定义了10种帧类型，这里讲到的头部帧是其中一个，还有其他可以看下面的代码。
 ```java
   const val TYPE_DATA = 0x0
   const val TYPE_HEADERS = 0x1

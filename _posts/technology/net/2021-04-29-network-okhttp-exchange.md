@@ -89,7 +89,13 @@ class CallServerInterceptor(private val forWebSocket: Boolean) : Interceptor {
 
 post数据时会createRequestBody出一个输出流将body数据写入。post请求提出了一种优化post大文件的方案，就是在request header加入`Expect: 100-continue`,在libcurl中如果是post大于1024字节的数据，才会通过100-continue去询问服务器愿不愿意接收客户端的请求body，如果愿意就放回100，不愿意就不能发送请求body数据。Okhttp中也是提供`Expect: 100-continue`，不过要不要使用并不是由Okhttp检查post的字节数大于1024，而是取决于request header是不是有这个字段。
 
-Exchange在这个发送请求，接收响应的过程中有着重要的地位，但是深入阅读这个类你会发现，它其实是个工具人，对于数据的编解码具体实现可以说基本没有，全全加给你了ExchangeCodec。ExchangeCodec类是个高度抽象的接口，它提出了要进行流的编解码应该具备一些什么功能，而其追随者Http1ExchangeCodec与Http2ExchangeCodec,将来可能还有QuicExchangeCodec ，Http3ExchangeCodec，它们都是具体的实践者，实现了一整套编解码方法。
+Exchange在这个发送请求，接收响应的过程中有着重要的地位，但是深入阅读这个类你会发现，它其实是个工具人，对于数据的编解码具体实现可以说基本没有，全全加给你了ExchangeCodec。ExchangeCodec类是个高度抽象的接口，它提出了要进行流的编解码应该具备一些什么功能，而其追随者Http1ExchangeCodec与Http2ExchangeCodec,将来可能还有QuicExchangeCodec ，Http3ExchangeCodec，它们都是具体的实践者，实现了一整套编解码方法。在http2协议中，每个请求多会有一个自己的stream和codec，多个codec会同时使用Http2Writer写入/Http2Reader读取帧数据到tcp连接通道
+
+这里先认识几个http2协议中的角色
+- Http2Writer/Http2Reader: http2中二进制帧的编解码类，其作用是将上层的数据编解码成二进制帧数据并且写入到tcp连接buffer
+- Http2Stream/Http2ExchangeCodec：一个tcp连接存在多个Http2Stream/Http2ExchangeCodec对多个请求响应进行codec，Http2Stream每次进行帧处理都会去调用Http2Writer/Http2Reader，所以相对来更上层。
+- Http2Connection：一个Http2Connection表示一个tcp连接，保存了多个Http2Stream
+- ReaderRunnable：一个不停read帧数据的任务(Http2Reader的封装类)
 
 ExchangeCodec
 {:.filename}
@@ -163,11 +169,11 @@ class Http2ExchangeCodec(
   ...
 }
 ```
-当发起一个请求，调用者构建的request header经过writeRequestHeaders会被encode为二进制。首先对request各个header进行utf-8编码，然后将编码之后的数据通过Http2Writer#header进一步压缩编码(其中压缩编码采用的是Hpack)。HTTP2中定义了10种帧类型，这里讲到的头部帧是其中一个，还有其他可以看下面的代码。
+当发起一个请求，调用者构建的request header经过writeRequestHeaders会被encode为二进制。首先对request各个header进行utf-8编码，然后将编码之后的数据通过Http2Writer#header进一步压缩编码(其中压缩编码采用的是Hpack)以头部帧的形式写入到tcp连接buffer中。http2中定义了10种帧类型，这里讲到的头部帧是其中一个，还有其他可以看下面的代码。
 ```java
   const val TYPE_DATA = 0x0 //数据帧
   const val TYPE_HEADERS = 0x1 //头部帧
-  const val TYPE_PRIORITY = 0x2 
+  const val TYPE_PRIORITY = 0x2  //服务器处理流的优先级
   const val TYPE_RST_STREAM = 0x3 //终止流帧
   const val TYPE_SETTINGS = 0x4 //网络配置帧
   const val TYPE_PUSH_PROMISE = 0x5 
@@ -176,7 +182,7 @@ class Http2ExchangeCodec(
   const val TYPE_WINDOW_UPDATE = 0x8 //流量控制帧，为什么需要这个帧？由于http2中一个tcp可以有多个stream同时写入任意个请求，所以需要控制网络中的流量，避免失控。
   const val TYPE_CONTINUATION = 0x9
 ```
-接下来我们来看看body逻辑，createRequestBody的方法体很简单`return stream!!.getSink()`,Http2Stream中的getSink获得到的是FramingSink，其重写了Sink#write。request body中的data通过FramingSink被写入到内部的sendBuffer缓存(最大16k).
+接下来我们来看看body逻辑，createRequestBody的方法体很简单`return stream!!.getSink()`,Http2Stream中的getSink获得到的是FramingSink,将body数据encode为帧。request body中的data通过FramingSink被写入到内部的sendBuffer缓存(最大16k).
 
 
 ```java

@@ -431,7 +431,7 @@ private fun connectTls(connectionSpecSelector: ConnectionSpecSelector) {
 
 与上面的不可恢复的异常相对的是可以恢复的异常SocketTimeoutException，还有本地路由出现了问题，那么对于Okhttp来说会在RetryAndFollowUpInterceptor重新尝试去连接服务。 
 
-这里我们还需要扩展一个东西。http1.x和http2的发送请求和接受响应的不同，http1.x使用了管道化发送，一个tcp连接可以多个请求可以同时发送，但是服务器却按照顺序响应；http2由于采用了stream模式，一个tcp连接上面有多个stream，可以同时多个请求的同时发送响应。上面的连接复用对于http1.x来说我们很好理解，对于http2在代码的设计上OkHttp有一点不太一样。被复用的RealConnection对象其实是持有Http2Connection对象，当然了前提是使用http2协议，复用了RealConnection对象也就相当于复用了Http2Connection对象。
+这里我们还需要扩展一个东西。http1.x和http2的发送请求和接受响应的不同，http1.x使用了管道化发送，一个tcp连接可以多个请求可以同时发送，但是服务器却按照顺序响应；http2由于采用了stream模式，一个tcp连接上面有多个stream，可以同时多个请求的同时发送响应。上面的连接复用对于http1.x来说我们很好理解，对于http2在代码的设计上OkHttp有一点不太一样。被复用的RealConnection对象其实是持有Http2Connection对象，当然了前提是使用http2协议，复用了RealConnection对象也就相当于复用了Http2Connection对象，Http2Connection对象存储这一堆的stream，每个stream对了一对请求响应。
 
 ### *3.Reference*{:.header2-font}
 [Java使用SSLSocket通信](https://my.oschina.net/itblog/blog/651608)

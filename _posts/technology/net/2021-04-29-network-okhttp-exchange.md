@@ -169,7 +169,7 @@ class Http2ExchangeCodec(
   ...
 }
 ```
-当发起一个请求，调用者构建的request header经过writeRequestHeaders会被encode为二进制。首先对request各个header进行utf-8编码，然后将编码之后的数据通过Http2Writer#header进一步压缩编码(其中压缩编码采用的是Hpack)以头部帧的形式写入到tcp连接buffer中。http2中定义了10种帧类型，这里讲到的头部帧是其中一个，还有其他可以看下面的代码。
+当发起一个请求，调用者构建的request header经过writeRequestHeaders会被encode为二进制。首先对request各个header进行utf-8编码，然后将编码之后的数据通过Http2Writer#headers进一步压缩编码(其中压缩编码采用的是Hpack)以头部帧的形式写入到tcp连接buffer中。http2中定义了10种帧类型，这里讲到的头部帧是其中一个，还有其他可以看下面的代码。
 ```java
   const val TYPE_DATA = 0x0 //数据帧
   const val TYPE_HEADERS = 0x1 //头部帧

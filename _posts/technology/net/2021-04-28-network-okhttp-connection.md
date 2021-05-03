@@ -11,7 +11,7 @@ tag:
 ## *1.Summary*{:.header2-font}
 整理技术笔记才发现还有一些文章草稿没有收尾，2018年写到一半的文章准备发博客却因为一些不可控制的外力导致搁置，现在重新拿出来并且整理一下。Okhttp系列 ，I‘m back.
 ## *2.Introduction*{:.header2-font}
-前面我们在Okhttp和Volley这两个开源项目比较重试/重定向、缓存、请求池的设计 ，出门左转文件传送门[网络 --- Volley vs. OkHttp](https://jamesfchen.github.io/blog/2020-10-19/network-volley-okhttp)，接下来我们来讲讲连接池，由于Volley是基于HttpUrlConnection，所以这里我们就不研究HttpUrlConnection怎么管理连接了，我们只讲Okhttp怎么设计连接池。
+前面我们在Okhttp和Volley这两个开源项目比较重试/重定向、缓存、请求池的设计 ，出门左转文件传送门[网络 --- Volley vs. OkHttp]({{site.baseurl}}/2018-04-19/network-volley-okhttp)，接下来我们只讲Okhttp怎么设计连接池。
 
 这还得从一个call调用开始说起，当应用层调用请求，紧接而来的就是责任链的一系列调用，对于责任链模式可以看这里的[JavaChainOfResponsibility](https://github.com/JamesfChen/DesignPatterns/blob/master/src/main/java/behavioral/JavaChainOfResponsibility.java)。简单理解就是一个请求经过一条链式时，链上的每个节点会根据情况选择性的处理，如果其中有一节点不处理了往下的节点也就不会处理了。咦？这味道是不是有点熟悉，Android View树事件的分发。我们再把话题重新拉回来，在Okhttp中称呼这条链上的节点叫做拦截器，从应用层往下分别是：RetryAndFollowUpInterceptor、BridgeInterceptor、CacheInterceptor、ConnectInterceptor、CallServerInterceptor，这一节我们要将的就是ConnectInterceptor这个拦截器了。
 
@@ -70,7 +70,7 @@ Transmitter
   }
 ```
 
-紧接着我们看到了通过finder找到了交换器的编解码模块，那么如果找到的呢？
+紧接着我们看到了通过finder找到了交换器的编解码模块，那么如何找到的呢？
 
 ExchangeFinder
 {:.filename}
@@ -421,7 +421,7 @@ private fun connectTls(connectionSpecSelector: ConnectionSpecSelector) {
       }
 }
 ```
-通过外部提供的sslSocketFactory我们构建了SSLSocket，并和服务器进行的握手，ssl握手的过程可以看这一博文，传送门[抓包原理]({{site.baseurl}}/2020/12/14/capture-message.html)。握手之后拿到证书，通过Okhttp提供的OkHostnameVerifier验证主机，当然你也可以自定义验证主机的逻辑。那么之后就完成连接。这里还要提一嘴，Okhttp项目中还提供了`okhttp-tls`，帮助我们去实现客户端服务端证书的管理。到这里我们就知道了培养备胎多么浪费资源了吧，先socket握手然后sslsocket握手，握手之后验证证书，所以能从复用就复用千万不要自己搞。
+通过外部提供的sslSocketFactory我们构建了SSLSocket，并和服务器进行的握手，ssl握手的过程可以看这一博文，传送门[抓包原理]({{site.baseurl}}/2020-12-13/capture-message)。握手之后拿到证书，通过Okhttp提供的OkHostnameVerifier验证主机，当然你也可以自定义验证主机的逻辑。那么之后就完成连接。这里还要提一嘴，Okhttp项目中还提供了`okhttp-tls`，帮助我们去实现客户端服务端证书的管理。到这里我们就知道了培养备胎多么浪费资源了吧，先socket握手然后sslsocket握手，握手之后验证证书，所以能从复用就复用千万不要自己搞。
 
 在进行连接的过程中会出现各种不能恢复的异常
 - 一些致命的异常，ProtocolException  SSLHandshakeException/CertificateException SSLPeerUnverifiedException
@@ -431,7 +431,17 @@ private fun connectTls(connectionSpecSelector: ConnectionSpecSelector) {
 
 与上面的不可恢复的异常相对的是可以恢复的异常SocketTimeoutException，还有本地路由出现了问题，那么对于Okhttp来说会在RetryAndFollowUpInterceptor重新尝试去连接服务。 
 
-这里我们还需要扩展一个东西。http1.x和http2的发送请求和接受响应的不同，http1.x使用了管道化发送，一个tcp连接可以多个请求可以同时发送，但是服务器却按照顺序响应；http2由于采用了stream模式，一个tcp连接上面有多个stream，可以同时多个请求的同时发送响应。上面的连接复用对于http1.x来说我们很好理解，对于http2在代码的设计上OkHttp有一点不太一样。被复用的RealConnection对象其实是持有Http2Connection对象，当然了前提是使用http2协议，复用了RealConnection对象也就相当于复用了Http2Connection对象，Http2Connection对象存储这一堆的stream，每个stream对了一对请求响应。
+这里我们还需要扩展一个东西。http1.x和http2的发送请求和接受响应的不同，http1.x使用了管道化发送，一个tcp连接可以多个请求可以同时发送，但是服务器却按照顺序响应；http2由于采用了stream模式，一个tcp连接上面有多个stream，可以同时多个请求的同时发送响应。上面的连接复用对于http1.x来说我们很好理解，对于http2在代码的设计上OkHttp有一点不太一样。被复用的RealConnection对象其实是持有Http2Connection对象，当然了前提是使用http2协议，复用了RealConnection对象也就相当于复用了Http2Connection对象，Http2Connection对象存储这一堆的stream，每个stream处理一对请求响应。
+
+
+你以为成为备胎就完事了？放在池子里的备胎也会只是被供挑选的对象也存在竞争，池子也遵循着末尾淘汰机制。那么这个末位淘汰机制是如何设置的？接下来看看。
+
+```java
+  private val cleanupTask = object : Task("$okHttpName ConnectionPool") {
+    override fun runOnce() = cleanup(System.nanoTime())
+  }
+```
+每次有个新连接被put到连接池中，都会触发clean任务。它会清理那些超过保活时间5min的连接或者超过6以上个处于空闲的连接，简单说就是那些到35岁的人或者团队超过6以上长时间不干活的人。你以为这样就clean up只会发生一次，太年轻了。如果clean完一个连接，紧接着马不停蹄没有delay的又开始下一次清理。如果发现这次清理的没有超过35岁或者不干活的人低于5以下，那么就会采取两种判断，如果0< 不干活人数 <=5，那么就会用保活时间减去取空闲时间最长人空闲的时间(keepAliveDurationNs - longestIdleDurationNs),其差作为下次clean任务的delay，等下次clean时，如果还不干活，就clean这个人。还有一种是既然35岁还没有到，比如34岁，就等一年在把他clean掉。那么有没有一种办法终止这种末位淘汰机制，还真有，公司倒闭了没有人了，clean循环停止。
 
 ### *3.Reference*{:.header2-font}
 [Java使用SSLSocket通信](https://my.oschina.net/itblog/blog/651608)

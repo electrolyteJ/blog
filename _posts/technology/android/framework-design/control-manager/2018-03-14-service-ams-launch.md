@@ -10,9 +10,7 @@ tag:
 * TOC
 {:toc}
 ## *1.Summary*{:.header2-font}
-&emsp;&emsp;ActivityManagerService类是framework层的核心，对下它调度着cpu、电量、内存、进程的管理者，对上它调度着四大组件，让app使用者能够轻松简单的切换界面。由于其职能的复杂，所以需要管理的事务也就多了。
-## *2.About*{:.header2-font}
-&emsp;&emsp;只有了解了ActivityManagerService的启动流程，我们才能够更加深入的体会其内部构造。所以启动流程是我们深入的第一步。接下来让我们来看看ActivityManagerService的启动流程。
+&emsp;&emsp;ActivityManagerService类是framework层的核心，对下它调度着cpu、电量、内存、进程的管理者，对上它调度着四大组件，让app使用者能够轻松简单的切换界面。由于其职能的复杂，所以需要管理的事务也就多了。只有了解了ActivityManagerService的启动流程，我们才能够更加深入的体会其内部构造。所以启动流程是我们深入的第一步。接下来让我们来看看ActivityManagerService的启动流程。
 ## *3.Introduction*{:.header2-font}
 
 AMS启动流程中主要的方法也就是下面的三个：

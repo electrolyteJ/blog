@@ -11,8 +11,8 @@ tag:
 {:toc}
 ## *1.Summary*{:.header2-font}
 &emsp;&emsp;在了解了AMS的启动流程之后，我们就需要开始了解运行中的AMS是如何管理四大组件的。所以这一篇会通过图形的方式带领大家了解怎么管理的。
-## *2.About*{:.header2-font}
-&emsp;&emsp;在此之前我们需要知道一些背景知识
+
+在此之前我们需要知道一些背景知识
 
 1.Handler
 

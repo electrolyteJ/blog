@@ -12,10 +12,8 @@ tag:
 * TOC
 {:toc}
 ## *1.Summary*{:.header2-font}
-&emsp;&emsp;熟悉软件的启动过程能让我们快速了解整个系统运作流程，这是入门学习一样新事物的绝佳路径，所以，让我们来了解一下Android系统framework层是如何被启动的。
-## *2.About*{:.header2-font}
-&emsp;&emsp;由于这一篇文章我们只关注framework-java层，所以SystemServer是我们要攻克的类。SystemServer是system_server进程的启动入口类，而system_server进程承载着整个framework-java层，负责与application层交互。SystemServer类会启动大都是我们熟知的类，比如ActivityManagerService、PackageManagerService、WindowManagerService，这些类都是一些binder，用来进行和application层的某个应用进程通信。为了让system_server进程常驻内存中，会开启一个looper。该looper存在于system_server进程的主线程，用来切换工作线程的任务到主线程。比如WindowManagerService$H类。
-## *3.Introduction*{:.header2-font}
+&emsp;&emsp;熟悉软件的启动过程能让我们快速了解整个系统运作流程，这是入门学习一样新事物的绝佳路径，所以，让我们来了解一下Android系统framework层是如何被启动的。由于这一篇文章我们只关注framework-java层，所以SystemServer是我们要攻克的类。SystemServer是system_server进程的启动入口类，而system_server进程承载着整个framework-java层，负责与application层交互。SystemServer类会启动大都是我们熟知的类，比如ActivityManagerService、PackageManagerService、WindowManagerService，这些类都是一些binder，用来进行和application层的某个应用进程通信。为了让system_server进程常驻内存中，会开启一个looper。该looper存在于system_server进程的主线程，用来切换工作线程的任务到主线程。比如WindowManagerService$H类。
+## *2.Introduction*{:.header2-font}
 
 &emsp;&emsp;SystemServer启动流程中涉及到很多的服务，由于我们重点关注AMS、PKMS、WMS所以就让我们讲这三个服务吧。
 ### *SystemServer启动流程*{:.header3-font}
@@ -89,7 +87,7 @@ tag:
 
 对于这些初始化我们并没有必要都去看，只要关注初始化的Context和Service。
 
-### *初始化初始化Context*{:.header3-font}
+### *初始化Context*{:.header3-font}
 ```java
  private void createSystemContext() {
         ActivityThread activityThread = ActivityThread.systemMain();

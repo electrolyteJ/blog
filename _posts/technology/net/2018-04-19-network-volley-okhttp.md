@@ -77,26 +77,28 @@ Age
 ### 1. 新鲜度检查（freshness）
 response缓存的字段
 ```
-Date:获取服务器时间（绝对时间）
-Age：过期时间（相对时间）
+Age：服务告知的过期时间（相对时间）
+# 下面三个用于条件请求
 ETag：tag号
 Last-Modified：最后被修改的时间（绝对时间）
+Date:获取服务器时间（绝对时间）
 
 # HTTP1.0使用
 Expires：过期时间（绝对时间）
 # HTTP1.1使用
 cache control 
 - noCache：跳过本地、CDN等新鲜度验证，必须与源服务器验证。
-- must-revalidate:本地cache到期，必须跳过CDN等缓存服务器，到源服务器验证
 - noStore：禁止使用缓存
 - onlyIfCached:只取本地缓存
 - maxAgeSeconds：缓存时长(相对时间)
-- private：只保留本地，其他中间缓存服务部保留
-- public：不能缓存的也多变成能缓存，比如身份验证
 - maxStaleSeconds:客户端可以接受超过多久的缓存响应
 - minFreshSeconds：期望在指定时间内的响应仍有效
+
+- private：只保留本地，其他中间缓存服务部保留
+- public：不能缓存的也多变成能缓存，比如身份验证
+- must-revalidate:本地cache到期，必须跳过CDN等缓存服务器，到源服务器验证
 ```
-&emsp;&emsp;第一次请求服务器要数据的时候，响应客户端请求的response header会增加一些缓存字段，来告诉客户端下发的文件是有缓存有效期的，然后当下次客户端再次请求时，就会对文件的新鲜度进行检查，如果还可以用就使用之前保存下来的副本，反之，则重新进行网络请求。所以新鲜度的检查是在本地完成的。
+&emsp;&emsp;第一次请求服务器的时候，会响应客户端的response header会增加一些缓存字段，来告诉客户端下发的文件是有缓存有效期的，然后当下次客户端再次请求时，就会对文件的新鲜度进行检查，如果还可以用就使用之前保存下来的副本，反之，则重新进行网络请求。所以新鲜度的检查是在本地完成的。
 
 ### 2. 再验证
 条件请求
@@ -104,7 +106,7 @@ cache control
 If-None-Match+ETag：若客户端的etag和服务的etag相同则再验证命中，返回304，未命中返回200 ok
 If-Modified-Since+Last-Modified：上次缓存之后若无被修改则再验证命中，返回304，未命中返回200 ok
 ```
-&emsp;&emsp;这里接着新鲜度检查往下走，如果过期了，客户端可以携带If-xxx-xxx的字段发送条件请求，对服务器的资源进行再次检验，服务器通过客户端给的ETag值 or Last-Modified值对资源进行验证，如果发现命中缓存，就返回304，没有的话返回200并给新的资源
+&emsp;&emsp;这里接着新鲜度检查往下走，如果过期了，客户端可以携带If-xxx-xxx的字段发送条件请求，对服务器的资源进行再次检验，服务器通过客户端给的ETag值 or Last-Modified值对资源进行验证，如果发现命中缓存，就返回304继续使用缓存副本，没有的话返回200并给新的资源
 &emsp;&emsp;cache这块两个库都是采用lru算法来管理disk资源,也可以说OkHttp借鉴了Volley这块很多代码处理，OkHttp为了支持高并发，拿掉了response body在内存中的缓存，保存了header等一些相关信息。
 
 ========================
@@ -251,8 +253,8 @@ JOURNAL_FILE_BACKUP = "journal.bkp"
 ```kotlin
       val responseCaching = cacheResponse.cacheControl
 
-      val ageMillis = cacheResponseAge()
-      var freshMillis = computeFreshnessLifetime()
+      val ageMillis = cacheResponseAge() #计算公式: 服务器告知的age+ 请求的延误时差+ 到现在为止贮存的时间差，既可以算出响应的age，从这里可以看出age从服务器响应开始算起
+      var freshMillis = computeFreshnessLifetime()#计算公式：服务告知的maxAgeSeconds or 服务告知的expires or 服务告知的lastModified
 
       if (requestCaching.maxAgeSeconds != -1) {
         freshMillis = minOf(freshMillis, SECONDS.toMillis(requestCaching.maxAgeSeconds.toLong()))
@@ -268,7 +270,7 @@ JOURNAL_FILE_BACKUP = "journal.bkp"
       if (!responseCaching.mustRevalidate && requestCaching.maxStaleSeconds != -1) {
         maxStaleMillis = SECONDS.toMillis(requestCaching.maxStaleSeconds.toLong())
       }
-
+       # 客户端认为的maxStaleMillis + 
       if (!responseCaching.noCache && ageMillis + minFreshMillis < freshMillis + maxStaleMillis) {
         val builder = cacheResponse.newBuilder()
         if (ageMillis + minFreshMillis >= freshMillis) {
@@ -281,6 +283,7 @@ JOURNAL_FILE_BACKUP = "journal.bkp"
         return CacheStrategy(null, builder.build())
       }
 ```
+通过cacheResponseAge/computeFreshnessLifetime我们计算出服务告知的age(该age表示了缓存的寿命，从服务器第一次创建到现在活了多久)和新鲜度时间(服务器要求该响应能活多久)，不过最终新鲜度时间的确定还会和客户端的maxStaleSeconds字段协商，两者取小值。那么这个时候我们就可以通过新鲜度的时间和age进行比较，如果新鲜度时间大于age那么依然还可以复用缓存，如果小于的话就会不能复用，不过能不能复用还可以增加一些条件，比如客户端设置最大过期值maxStaleMillis，在缓存过期的情况下，在坚持复用一段时间。当然了，既然能扩大本该过期的时间，那么客户端也能增加提前过期时间minFreshSeconds。如果客户端和服务器协商的freshMillis结果为10ms,age为6ms，客户端要求minFreshMillis为5ms，5>10-6, 那么本来还有4ms的存活时间，被客户端要求太小了至少要5ms，而不能被复用。还有一种情况，就是条件请求，如果服务端之前给过etag/lastModified/servedDate 那么客户端就会发送条件请求向服务确认能不能复用，返回304继续用。
 
 &emsp;&emsp;这里对比一下Volley和OkHttp
 

@@ -154,8 +154,8 @@ CallbackQueue将CallbackRecord遵循时间排序以链表结构存储起来，�
 好了接下来我们来讲View的测绘吧，借张图让大家了解一下测绘流程
 ![]({{site.asseturl}}/ui/readering-pipline.png){: .center-image }_`图片来自“从架构到源码：一文了解Flutter渲染机制”该文章`_
 
-测绘流程
 ```
+ViewRootImpl#performTraversals
 #分发一系列的Window变化的事件
 - dispatchXxx
 #测量，计算窗口可能的size
@@ -163,6 +163,17 @@ CallbackQueue将CallbackRecord遵循时间排序以链表结构存储起来，�
 WindowSession#relayout
 - ViewRootImpl#performLayout ---> View#layout
 - ViewRootImp#performDraw ---> ViewRootImp#draw ---> View#draw(如果使用了硬件加速就是这样 `mAttachInfo.mThreadedRenderer.draw(mView, mAttachInfo, this);`)
+
+View的生命周期
+- onAttachedToWindow
+- onWindowFocusChanged
+- onWindowSystemUiVisibilityChanged
+- onWindowVisibilityChanged
+- onApplyWindowInsets
+- onMeasure
+- onLayou
+- onDraw
+- onDetachedFromWindow
 ```
 在Android中View树上面主要有两种类型，一种是叶子(View),一种是子树(ViewGroup，根节点也是ViewGroup)，他们都需要执行measure、layout、draw。
 ## measure

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 再谈View树渲染流水线
+title: 再谈View树
 description: 整理出2017年的笔记View
 author: 电解质
 date: 2021-05-08

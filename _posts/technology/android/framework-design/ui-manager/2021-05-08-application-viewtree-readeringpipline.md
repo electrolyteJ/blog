@@ -150,7 +150,7 @@ CallbackQueue将CallbackRecord遵循时间排序以链表结构存储起来，�
 
 每个线程拿到的Choreographer对象都是互不影响(ThreadLocal),那么也就意味着，事件线程、动画线程(InvalidateOnAnimationRunnable)，ui测绘线程都有一个Choreographer。
 
-
+#### *View Tree*{:.header3-font}
 好了接下来我们来讲View的测绘吧，借张图让大家了解一下测绘流程
 ![]({{site.asseturl}}/ui/readering-pipline.png){: .center-image }_`图片来自“从架构到源码：一文了解Flutter渲染机制”该文章`_
 
@@ -176,13 +176,16 @@ View的生命周期
 - onDetachedFromWindow
 ```
 在Android中View树上面主要有两种类型，一种是叶子(View),一种是子树(ViewGroup，根节点也是ViewGroup)，他们都需要执行measure、layout、draw。
-## measure
+##### measure
+---------------------------
 在measure阶段从根节点开始dfs measure，每一个父节点会计算子节们点给的layout params(width、height、margin等)和自身的一些情况总结出一份新的宽高测量specification，然后在递归传给子节点们，当一个每个节点measure完成都会给被打上PFLAG_MEASURED_DIMENSION_SET的flag标记并且确定宽高(measure得到的宽高只是理想状态的宽高，还需要经过layout才会确定最终宽高)。
 
-## layout
+##### layout
+---------------------------
 在layout阶段依然再次dfs View树，和measure一样，每个父节点也会计算子节点们给的layout params(除了width、height、margin还会有一些像gravity这样的属性)和自身的一些情况算出子节点的位置(left,top,right,bottom)
 
-## draw
+##### draw
+---------------------------
 在draw阶段还是dfs View树，到这里我们就产生了这样的想法有没有办法将这三个步骤的dfs进行合并或者减少dfs次数，答案还需要我们去flutter寻找。
 ```
         /*

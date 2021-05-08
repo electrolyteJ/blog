@@ -176,16 +176,17 @@ View的生命周期
 - onDetachedFromWindow
 ```
 在Android中View树上面主要有两种类型，一种是叶子(View),一种是子树(ViewGroup，根节点也是ViewGroup)，他们都需要执行measure、layout、draw。
-#### measure
----------------------------
+
+`measure`
+
 在measure阶段从根节点开始dfs measure，每一个父节点会计算子节们点给的layout params(width、height、margin等)和自身的一些情况总结出一份新的宽高测量specification，然后在递归传给子节点们，当一个每个节点measure完成都会给被打上PFLAG_MEASURED_DIMENSION_SET的flag标记并且确定宽高(measure得到的宽高只是理想状态的宽高，还需要经过layout才会确定最终宽高)。
 
-#### layout
----------------------------
+`layout`
+
 在layout阶段依然再次dfs View树，和measure一样，每个父节点也会计算子节点们给的layout params(除了width、height、margin还会有一些像gravity这样的属性)和自身的一些情况算出子节点的位置(left,top,right,bottom)
 
-#### draw
----------------------------
+`draw`
+
 在draw阶段还是dfs View树，到这里我们就产生了这样的想法有没有办法将这三个步骤的dfs进行合并或者减少dfs次数，答案还需要我们去flutter寻找。
 ```
         /*
@@ -270,38 +271,23 @@ final class ViewPostImeInputStage extends InputStage {
 ```
 事件分发从View树的根节点开始(dispatchPointerEvent)，但是为了让事件也能经过Activity，根节点会先发Activity，Activity再发给Window，Window再给根节点，后面就是自顶向下发送，所以通过这样一种逻辑我们可以给根节点发送一个我们模拟的事件就能做到自动化控制页面的效果了。由于事件分发代码较多，我们这里用伪代码来简化一下。
 
-ViewGroup.java
+ViewGroup.java/View.java
 {:.filename}
 ```java
+ViewGroup.java
 @Override
 public boolean dispatchTouchEvent(MotionEvent ev) {
-    intercepted = onInterceptTouchEvent(ev)
-     if (!canceled && !intercepted) {
-        for (int i = childrenCount - 1; i >= 0; i--) {
-            ...
-            final View child = getAndVerifyPreorderedView(
-                                        preorderedList, children, childIndex);
-            ...
-            if (child == null) {//拦截或者不存在child
-                handled = super.dispatchTouchEvent(event);
-            } else {
-                handled = child.dispatchTouchEvent(event);
-            }
-            ...
-        }
-        ...
-      }
-      ....
+     intercepted = onInterceptTouchEvent(ev)
+     if(intercepted){ 
+        handled = super.dispatchTouchEvent(event);
+     }
     }
     ...
     return handled;
 }
-```
-
 View.java
-{:.filename}
-```
 public boolean dispatchTouchEvent(MotionEvent event) {
+    //OnTouchListener
      if (li != null && li.mOnTouchListener != null
                     && (mViewFlags & ENABLED_MASK) == ENABLED
                     && li.mOnTouchListener.onTouch(this, event)) {
@@ -315,20 +301,16 @@ public boolean dispatchTouchEvent(MotionEvent event) {
     //在onTouchEvent方法里面执行
      performClick();
 }
-```
-
-
-```
 ViewGroup
-- onInterceptTouchEvent
-- OnTouchListener/OnClickListener 暴露给外部使用的监听接口
-- onTouchEvent
-- onClick
+- onInterceptTouchEvent //定义View重写该方法
+- OnTouchListener#onTouch //暴露给外部使用的监听接口
+- onTouchEvent //自定义View重写该方法
+- OnClickListener#onClick //暴露给外部使用的监听接口
 
 View
-- OnTouchListener/OnClickListener 暴露给外部使用的监听接口
-- onTouchEvent
-- onClick
+- OnTouchListener#onTouch //暴露给外部使用的监听接口
+- onTouchEvent //自定义View重写该方法 
+- OnClickListener#onClick //暴露给外部使用的监听接口
 ```
 与叶子节点不同的是，其父节点具备拦截功能，在事件分发的过程如果子节点不希望父节点拦截事件,可以通过`requestDisallowInterceptTouchEvent`
 

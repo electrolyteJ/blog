@@ -176,15 +176,15 @@ View的生命周期
 - onDetachedFromWindow
 ```
 在Android中View树上面主要有两种类型，一种是叶子(View),一种是子树(ViewGroup，根节点也是ViewGroup)，他们都需要执行measure、layout、draw。
-##### measure
+#### measure
 ---------------------------
 在measure阶段从根节点开始dfs measure，每一个父节点会计算子节们点给的layout params(width、height、margin等)和自身的一些情况总结出一份新的宽高测量specification，然后在递归传给子节点们，当一个每个节点measure完成都会给被打上PFLAG_MEASURED_DIMENSION_SET的flag标记并且确定宽高(measure得到的宽高只是理想状态的宽高，还需要经过layout才会确定最终宽高)。
 
-##### layout
+#### layout
 ---------------------------
 在layout阶段依然再次dfs View树，和measure一样，每个父节点也会计算子节点们给的layout params(除了width、height、margin还会有一些像gravity这样的属性)和自身的一些情况算出子节点的位置(left,top,right,bottom)
 
-##### draw
+#### draw
 ---------------------------
 在draw阶段还是dfs View树，到这里我们就产生了这样的想法有没有办法将这三个步骤的dfs进行合并或者减少dfs次数，答案还需要我们去flutter寻找。
 ```
@@ -202,14 +202,136 @@ View的生命周期
 ```
 绘制的流程Android团队已经在源码中告诉了我们，从根开始自顶向下绘制，那么从用户的观察角度来说的话，远离用户观察角度的先绘制，然后逐渐到达用户，对于FrameLayout、LinearLayout、RelativeLayout ViewGroup这样的容器其实不怎么需要draw，都是交给叶子绘制，它们更多用于布局子节点们
 
-
+在执行完测绘之后，我们就需要将测绘之后完成的窗口通过WindowSession发送给wms，之后如果成功wms会返回并且真个窗口就可见了。
 ### *b.WindowManager#updateViewLayout*{:.header3-font}
-在执行完addView之后窗口就变为可见了，这一切本该完成了，但是这启动的时候出现弹窗输入法的要求，那么就会updateViewLayout，重新开始整个窗口参数的调整。
+在执行完addView之后窗口就变为可见了，这一切本该完成了，但是这启动的时候出现弹窗输入法的要求，那么就会updateViewLayout，重新开始整个窗口参数的调整，由于篇幅有限就不继续看下去了。
 
-ViewRootImpl：
-```java
-updateViewLayout
+### *c.View树事件分发*{:.header3-font}
+说完了View树的测绘过程，我们还需要来了解它的事件分发。
 ```
+input pipline
+1. aq:native-pre-ime(NativePreImeInputStage)
+Delivers `pre-ime` input events `to a native activity`.Does not support pointer events
+2. ViewPreImeInputStage
+ Delivers `pre-ime` input events `to the view hierarchy`.Does not support pointer events.
+3. aq:ime(ImeInputStage)
+Delivers input events `to the ime`.Does not support pointer events
+4. EarlyPostImeInputStage
+Performs early processing of post-ime input events.
+5. aq:native-post-ime(NativePostImeInputStage) 
+Delivers `post-ime` input events `to a native activity`
+6. ViewPostImeInputStage--->`processPointerEvent`
+Delivers `post-ime` input events `to the view hierarchy`
+7. SyntheticInputStage
+Performs synthesis of new input events from unhandled input events
+```
+在ViewRootImpl#setView的最后会注册事件管道,这里我们只看ViewPostImeInputStage
+
+ViewRootImpl$ViewPostImeInputStage.java
+{:.filename}
+```java
+final class ViewPostImeInputStage extends InputStage {
+
+        @Override
+        protected int onProcess(QueuedInputEvent q) {
+            if (q.mEvent instanceof KeyEvent) {
+                return processKeyEvent(q);
+            } else {
+                final int source = q.mEvent.getSource();
+                if ((source & InputDevice.SOURCE_CLASS_POINTER) != 0) {
+                    return processPointerEvent(q);
+                } else if ((source & InputDevice.SOURCE_CLASS_TRACKBALL) != 0) {
+                    return processTrackballEvent(q);
+                } else {
+                    return processGenericMotionEvent(q);
+                }
+            }
+        }
+        ...
+        private int processPointerEvent(QueuedInputEvent q) {
+            final MotionEvent event = (MotionEvent)q.mEvent;
+
+            mAttachInfo.mUnbufferedDispatchRequested = false;
+            mAttachInfo.mHandlingPointerEvent = true;
+            boolean handled = mView.dispatchPointerEvent(event);
+            maybeUpdatePointerIcon(event);
+            maybeUpdateTooltip(event);
+            mAttachInfo.mHandlingPointerEvent = false;
+            if (mAttachInfo.mUnbufferedDispatchRequested && !mUnbufferedInputDispatch) {
+                mUnbufferedInputDispatch = true;
+                if (mConsumeBatchedInputScheduled) {
+                    scheduleConsumeBatchedInputImmediately();
+                }
+            }
+            return handled ? FINISH_HANDLED : FORWARD;
+        }
+        ...
+}
+```
+事件分发从View树的根节点开始(dispatchPointerEvent)，但是为了让事件也能经过Activity，根节点会先发Activity，Activity再发给Window，Window再给根节点，后面就是自顶向下发送，所以通过这样一种逻辑我们可以给根节点发送一个我们模拟的事件就能做到自动化控制页面的效果了。由于事件分发代码较多，我们这里用伪代码来简化一下。
+
+ViewGroup.java
+{:.filename}
+```java
+@Override
+public boolean dispatchTouchEvent(MotionEvent ev) {
+    intercepted = onInterceptTouchEvent(ev)
+     if (!canceled && !intercepted) {
+        for (int i = childrenCount - 1; i >= 0; i--) {
+            ...
+            final View child = getAndVerifyPreorderedView(
+                                        preorderedList, children, childIndex);
+            ...
+            if (child == null) {//拦截或者不存在child
+                handled = super.dispatchTouchEvent(event);
+            } else {
+                handled = child.dispatchTouchEvent(event);
+            }
+            ...
+        }
+        ...
+      }
+      ....
+    }
+    ...
+    return handled;
+}
+```
+
+View.java
+{:.filename}
+```
+public boolean dispatchTouchEvent(MotionEvent event) {
+     if (li != null && li.mOnTouchListener != null
+                    && (mViewFlags & ENABLED_MASK) == ENABLED
+                    && li.mOnTouchListener.onTouch(this, event)) {
+                result = true;
+    }
+    
+    if (!result && onTouchEvent(event)) {
+                result = true;
+    }
+    
+    //在onTouchEvent方法里面执行
+     performClick();
+}
+```
+
+
+```
+ViewGroup
+- onInterceptTouchEvent
+- OnTouchListener/OnClickListener 暴露给外部使用的监听接口
+- onTouchEvent
+- onClick
+
+View
+- OnTouchListener/OnClickListener 暴露给外部使用的监听接口
+- onTouchEvent
+- onClick
+```
+与叶子节点不同的是，其父节点具备拦截功能，在事件分发的过程如果子节点不希望父节点拦截事件,可以通过`requestDisallowInterceptTouchEvent`
+
 ## *2.Reference*{:.header2-font}
 [从架构到源码：一文了解Flutter渲染机制](https://developer.aliyun.com/article/770384)
 

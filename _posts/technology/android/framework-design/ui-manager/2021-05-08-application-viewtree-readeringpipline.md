@@ -1,7 +1,7 @@
 ---
 layout: post
-title: 再谈View树
-description: 整理2017年的笔记系列之View
+title: 再谈View树渲染流水线
+description: 整理出2017年的笔记View
 author: 电解质
 date: 2021-05-08
 share: true
@@ -125,7 +125,7 @@ performTraversals
 12. pendingDrawFinished
 ```
 
-只有第一次进行递归遍历树，会执行setup 1 2;如果不是第一次并且DecorView的可见性发生了变化，则会执行setup 3
+只有第一次进行遍历View树，会执行setup 1 2;如果不是第一次并且DecorView的可见性发生了变化，则会执行setup 3
 
 在讲View测绘之前，我们先来讲讲一个更为重要的角色Choreographer。
 
@@ -152,6 +152,8 @@ CallbackQueue将CallbackRecord遵循时间排序以链表结构存储起来，�
 
 
 好了接下来我们来讲View的测绘吧。
+![]({{site.asseturl}}/ui/readering-pipline.png){: .center-image }_`图片来自“从架构到源码：一文了解Flutter渲染机制”该文章`_
+
 
 ### *b.WindowManager#updateViewLayout*{:.header3-font}
 在执行完addView之后窗口就变为可见了，这一切本该完成了，但是这启动的时候出现弹窗输入法的要求，那么就会updateViewLayout，重新开始整个窗口参数的调整。
@@ -160,5 +162,7 @@ ViewRootImpl：
 ```java
 updateViewLayout
 ```
+## *2.Reference*{:.header2-font}
+[从架构到源码：一文了解Flutter渲染机制](https://developer.aliyun.com/article/770384)
 
 

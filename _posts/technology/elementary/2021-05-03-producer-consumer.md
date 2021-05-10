@@ -19,6 +19,7 @@ published : true
 OkHttp | TaskRunner|TaskQueue|Task|其他线程
 Android| Looper| MessageQueue|Message(Handler,Runnable)|主线程、其他线程、跨进程
 
+生产者-消费者模型是一种实现线程通信的方式，其核心是利用queue先进先出的特点，生产者负责将消息(或者事件)写入到queue，而消费者负责从queue读取。
 ## *2.Introduction*{:.header2-font}
 Android平台的生产者消费者模型使用范围更加广泛
 - 支持跨进程，支持跨线程

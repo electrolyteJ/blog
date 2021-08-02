@@ -1,191 +1,108 @@
 ---
 layout: post
 title: Android架构中的组件化
-description: 这一篇将会解答组件化、插件化的区别
+description: 让我们来快速搭建组件化
 author: 电解质
 date: 2018-02-09 22:50:00
-share: true
-comments: true
+share: false
+comments: false
 tag: 
 - app-design/architecture
 ---
 * TOC
 {:toc}
 ## *1.Summary*{:.header2-font}
-&emsp;&emsp;现如今开发Android的代码量越来越庞大，容易出现dex超过64k方法，也给构建时间带来了挑战。所以在构建时间这块Android开发者使出了浑身解数，比如抛弃gradle使用buck来优化构建。为了便于团队的开发，很多Android团队使用了组件化、插件化的方式管理项目，而对于它们的共同点就是解耦代码，拆分成逻辑清晰的块。了解它们的关系就是这篇文章的关键点。
-## *2.About*{:.header2-font}
+现如今开发Android的代码量越来越庞大，为了便于团队的开发，很多Android团队使用了组件化、插件化的方式来解耦项目。
 
-|        |构建/执行  | 打包方式|
+| 解耦的方式| 构建/执行  | 打包方式|
 |------------ | ------------- | -------------|       
 |组件化 |      编译时 |     aar|
 |插件化 |      运行时 |     apk/dex|
 {:.wide}
 
-通过上面我们可以粗糙地知道组件化与插件化的区别。
+对于插件化，主要是通过动态代理framework层提供给app层的Binder api或者hook虚拟机加载dex的流程来动态加载apk或者dex，比如动态换肤、热修复这样的案例。不过这种行为对framework有很大的破坏性。对于组件化，可以将业务进行拆分为相互解耦的组件，再通过路由将各个组件串联起来。除了业务解耦，还能让业务组件在调试时单独运行，这样可以调高开发效率。
 
-&emsp;&emsp;对于插件化，主要是通过hook framework层或者虚拟机加载dex的流程来动态加载apk或者dex从而实现业务的解耦，已经实时增加，比如动态换肤、热修复。不过对于这种行为对原来的流程有很大的破坏性，而不如像gradle这样的构建工具能够给我们提供稳定的callback来的安心。所以插件化对于Android生态算是一种恶。对于这种黑科技，我倒不是很喜欢，而组件化确实是一个福音。
+## *2.Introduction*{:.header2-font}
 
-&emsp;&emsp;对于组件化，这里讲的是业务组件化。通过组件化，可以将业务进行拆分，这样业务就独立了，再通过路由将各个组件串联起来。除了是业务解耦，还能让组件在调试时以apk的方式打包，这样可以调高开发效率。
-## *3.Introduction*{:.header2-font}
+先定义一下bundle和foundation,bundle是依附于app framework的native bundle(静态组件，动态插件)、flutter bundle、react native bundle、hybrid bundle，有些bundle具有动态性能被app framework动态加载；foundation是赋予上层能力的基础服务，更像是一些用来快速开发页面的toolkits，比如网络、存储、图像、音视频都是foundation。bundle之间存在通信，比如页面路由。
 
-说了这么多，还是让我们来看看代码怎么写的。结合[JamesfChen/Spacecraft](https://github.com/JamesfChen/Spacecraft)这个项目来看，这个项目是我自己的开源项目，是一个轻量级App，主要关注架构一个App需要哪些技术点，欢迎您的star/fork/pr。
+说了这么多，还是让我们来看看代码怎么写的。结合[bundles-assembler](https://github.com/JamesfChen/bundles-assembler)这个项目来看，这个项目是我自己的开源项目，欢迎您的star/fork/pr。
 
-
-### *组件化配置*{:.header3-font}
-
-```properties
-isComponentMode=true
+### 配置module
+bundle和foundation在gradle眼里都是module,所以一开始需要在module_config.json配置模块，模块配置好，还需要手动用android studio创建模块，这一块后面可以做成自动化生成。
 ```
-&emsp;&emsp;在项目根目录的gradle.properties提供一个开关，来全局控制开启组件化模式。
-
-settings.gradle
-```groovy
-if (!isComponentMode.toBoolean()) {
-    include ':app'
-}
+  "allModules": [
+    ...
+    {
+      "simpleName": "hotel-bundle1", #给idea plugin显示用
+      "canonicalName": ":hotel-module:bundle1", #给settings.gradle include使用
+      "format": "bundle",
+      "group": "hotel",
+      "binary_artifact": "com.jamesfchen.b:hotel-bundle1:1.0", #给project implementation使用
+      "deps": [    #依赖项
+        ":hotel-module:foundation"
+      ]
+    },
+    {
+      "simpleName": "hotel-bundle2",
+      "canonicalName": ":hotel-module:bundle2",
+      "format": "bundle",
+      "group": "hotel",
+      "binary_artifact": "com.jamesfchen.b:hotel-bundle2:1.0",
+      "deps": [
+        ":hotel-module:foundation"
+      ]
+    },
+    ...
+   ]
 ```
-&emsp;&emsp;如果开启组件化模式，我们需要将使用组件app从整个项目去掉。为什么要这么处理呢 ？ 看看下面的配置你就知道了。
- 
-```groovy
-if (isComponentMode.toBoolean()) {
-    apply plugin: 'com.android.application'
-} else {
-    apply plugin: 'com.android.library'
-}
+当配置好module，第一次需要运行指令`./gradlew publishAll`将所有的模块发布到maven仓库,目前只做到发布到mavenlocal后续需要发布到远程maven。
 
-android {
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-        component {
-            initWith debug
-            debuggable true
-        }
-    }
-}
+
+### 选择模块
+
+local.properties
 ```
-&emsp;&emsp;如果开启组件化模式，那么为了调试方便，我们需要将组件编译层apk，而不是aar/jar库。一旦被编译成apk，那么之前引用该组件的应用都要从整个项目去掉，以免造成编译报错。既然我们已经将组将编译成apk了，那么接下来就是搭建调试组件的环境了。
-
-
-#### 组件目录
-----
-
-先来看看我的项目结构图。
-![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-02-09-project-overview-modular.png)
-
-&emsp;&emsp;在src目录下，我们创建了一个component目录，用来放置调试代码，比如res资源，组件启动器，AndroidManifest文件等等。这里我们有必要来说说这个目录结构，其实我们可以在src目录下创建任意个目录用来override/add main目录下的一些资源。前提是这个任意目录结构要和main相同，gradle提供了debug/release两个目录。override/add 的规则是，新建的layout/drawable两个目录会覆盖main的layout/drawable，其余的都是add。所以我们可以把main目录看成是基础资源，而新建的component目录，提供的确实一些调试代码，当编译release时，并不会受到component目录的干扰，因为，我们接下来的代码决定了component也是一种build type。
-
-```groovy
-android {
-    buildTypes {
-        release {
-             ...
-         }
-        component {
-            initWith debug
-            debuggable true
-        }
-    }
-}
+excludeModules=hotel-bundle2,
+sourceModules=app,hotel-bundle1,\
+    hotel-main,hotel-foundation,hotel-lint,\
+  framework-loader,framework-router,framework-network
+apps=hotel-main,app,home-main
 ```
-&emsp;&emsp;创建完目录，我们还需要组件的build.gradle文件添加下面的代码，才能让这个目录生效。使用initWith继承debug type，在这里debuggable其实可加可不加，因为继承了debg type的特性了。
 
-#### 组件通讯
----- 
+利用工具(tools/module-manager-plugin-1.0.1.jar)来选择模块，对于fwk组必须不被exclude，因为作为基础服务要集成到项目中，exclude只会对app framework以上的模块，如果有兴趣了解工具的源码，来这里[康康](https://github.com/JamesfChen/bundles-assembler/tree/main/module-manager-intellij-plugin), 来点个![img](https://github.com/JamesfChen/bundles-assembler/blob/main/android/img.png)
 
-1. Scheme 
-    使用Intent/IntentFilter中的data来实现类似于网络中URL的跳转，URI的`<scheme>://<host>:<port>/<path>`通用公式，那么这样就设计到了URI的设计，数据库的URI设计是根据数据库字段，那么组件的URI设计应该根据什么 ？这是一个值得我们思考的问题。
+![picture](https://github.com/JamesfChen/bundles-assembler/blob/main/android/tools/bundles.png)
 
-    ```
-    tel://：　
-    mailto://：
-    smsto://：
-    content://：
-    file://：
-    geo://
-    ```
-    现如今的第三方路由库[ARouter](https://github.com/alibaba/ARouter),就是设计了一套跳转URI。这里还有一点想要说的，URI在代码代码里面最好的表现方式是什么 ？ Retrofit已经给我们解决了这个问题。而请求/想要最好的方式是什么 ？ RxJava也给我们解决了这个问题。 其实像EventBus也可以用于组件通讯，传递的是事件，但是它的请求/响应，个人感觉比起RxJava感觉有点丑。
+### 组件通信(ibc,inter-bundle communication)
 
-2. RPC
-    在Android中的RPC例子就是AIDL，通过Proxy/Stub 实现了通讯，[JamesfChen/Spacecraft](https://github.com/JamesfChen/Spacecraft)这个项目也是使用了一个Proxy的来转发跳转页面逻辑。
+页面路由
+- 利用android framework层的intent uri路由跳转
+- 在app framework实现路由跳转，需要将app层的路由器发布到app framework的路由器管理中心，当需要跳转时，app framework会到管理中心find获取路由器，然后进行跳转
 
+cbpc,cross bundle procedure call
+- 暴露api给外部bundle模块，然后内部实现接口，需要在app framework注册暴露的api，方便search，实现方式与页面路由的第二种方法相似
 
-公共库代码
-```java
-public abstract class BaseRouterActivity{
+### 监听App生命周期
+使用lifecycle-plugin，自动注册监听App，使用方式，移步这个项目[spacecraft-android-gradle-plugin](https://github.com/JamesfChen/spacecraft-android-gradle-plugin)
 
-    public Fragment switchToFragment(String fragmentName, Bundle args) {
-        Fragment f = Fragment.instantiate(this, fragmentName, args);
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        ...
-        transaction.commitAllowingStateLoss();
-    }
-
-    
-}
+项目结构
 ```
-&emsp;&emsp;BaseRouterActivity类位于所有组件的公共库，组件通过继承BaseRouterActivity类，比如写个StarterActivity类，然后通过调用父类的switchToFragment方法，将信息通过底层公共库传给其他组件。对于BaseRouterActivity类暴露给组件的switchToFragment方法做法应该，在优化一下，应该提供一个抽象方法给子类，而不应该提供一个这么重要的方法，不过为了展示代码方便就这么处理了。
-
-组件代码
-```java
-public class StarterActivity extends BaseRouterActivity {
-
-    public static final String META_DATA_KEY_FRAGMENT_CLASS =
-            "FRAGMENT_CLASS";
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-            switchToFragment(getMetaData());
-    }
-
-     private String getMetaData() {
-        try {
-            ActivityInfo ai = getPackageManager().getActivityInfo(getComponentName(),
-                    PackageManager.GET_META_DATA);
-            if (ai == null || ai.metaData == null) return "";
-            String  fragmentClass = ai.metaData.getString(META_DATA_KEY_FRAGMENT_CLASS);
-              return fragmentClass;
-        } catch (PackageManager.NameNotFoundException nnfe) {
-            // No recovery
-            Log.d("StarterActivity", "Cannot get Metadata for: " + getComponentName().toString());
-        }
-
-        return "";
-    }
+hotel-module
+--- bundle1 bundle1
+--- bundle2 bundle2
+--- foundation 组件们的公共库
+--- main 调试组件的入口
+--- hotel-lint lint规则
+framework
+--- loader  framework的加载器
+--- network 网络库
+--- ibc  inter-bundle communication。页面路由（http路由，模块路由）、bundle rpc、message
+--- common  公共代码
+tools 项目工具
 ```
-```xml
-<activity
-            android:name=".StarterActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="landscape"
-            android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-            <meta-data android:name="FRAGMENT_CLASS"
-                       android:value="应用包名.ActionCenterFragment"/>
-</activity>
-```
-&emsp;&emsp;通过meta-data这个配置形式，使得代码更加简单化，只要在meta-data中提供想要跳转的组件就可以了。
-
-
-
-
-### *组件化项目*{:.header3-font}
-
-再看看一个组件化的案例。
-![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-02-09-architecture-evolution.png)
-
-由于初期，架构v1.x版本比较野蛮的采用了PBL分包，数据交互使用MVP，而随着代码量、业务的增长，在架构v2.x版本则采取底层按照功能模块划分，业务层通过组件化的形式将业务解耦，使其便于调试编译。这里我们确实可以看出MVP架构的价值，不像Android早期的View-Module模式，很多的保证了底层与业务层的充分解耦，如果新增业务，只要通过修改P层，从而让底层与V层做到适配，绝大多数中间人都是为了传递委一方的需求，另一方的能力。
-
-
-<!-- 大部分Android项目都是使用View-Module模式开发 -->
-<!-- ![](http://www.tutorialsteacher.com/Content/images/mvc/mvc-architecture.png) -->
-&emsp;&emsp;
-## *4.Reference*{:.header2-font}
+## *3.Reference*{:.header2-font}
 [英语流利说 Android 架构演进](https://blog.dreamtobe.cn/2016/05/29/lls_architecture/)
 
 [微信Android客户端架构演进之路](http://www.infoq.com/cn/articles/wechat-android-app-architecture)

@@ -171,6 +171,7 @@ OkHttp
 &emsp;&emsp;OkHttp的cache一些基本信息
 ```
 Cache(Entry表示请求在内存中的块，只包括请求头部)
+Cache的Entry只读取了头部信息，来判断正在发送的请求是不是有缓解
 
 DiskLruCache(Entry表示请求在磁盘中的块，包括请求头部与请求体)
 想要读取Entry必须通过流Snapshot(FileSystem管理File文件)，可以读取到header的meta信息与请求的body

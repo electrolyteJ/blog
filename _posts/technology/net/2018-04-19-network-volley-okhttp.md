@@ -170,29 +170,28 @@ OkHttp
 =========================
 &emsp;&emsp;OkHttp的cache一些基本信息
 ```
-Cache(Entry描述的是缓存日志的内容信息)
+Cache(Entry表示请求在内存中的块，只包括请求头部)
 
-DiskLruCache(Snapshot、Entry描述的是缓存日志的文件名信息)
- 
- #缓存meta 和 body的快照
- Snapshot
+DiskLruCache(Entry表示请求在磁盘中的块，包括请求头部与请求体)
+想要读取Entry必须通过流Snapshot(FileSystem管理File文件)，可以读取到header的meta信息与请求的body
 
-# 能在缓存日志中存多少个文件名信息是由maxSize决定
-#缓存header
+DiskLruCache内部实现相关知识：
+
+# 能在缓存日志中存多少个文件名信息是由maxSize决定，超出会使用lru算法清理
 lruEntries = LinkedHashMap<String, Entry>(0, 0.75f, true)
 
-#lruEntries的日报
+#DiskLruCache操作缓存的日报
 JOURNAL_FILE = "journal"
 JOURNAL_FILE_TEMP = "journal.tmp"
 JOURNAL_FILE_BACKUP = "journal.bkp"
 
 # 缓存body ENTRY_COUNT = 2
-会创建两种类型缓存文件，总计4个文件
+DiskLruCache的Entry会创建两种类型缓存文件，总计4个文件
 - clean(<url>.md5().hex().0 <url>.md5().hex().1)
 - dirty(<url>.md5().hex().0.tmp <url>.md5().hex().1.tmp)
 ```
 &emsp;&emsp;OkHttp的缓存设计和Volley大同小异，内存中保留一份header相关，disk保存body，他们都是来源于Snapshot(封装了io流)。当然也有不同的地方，比如代码整体可读性更高，还有提供了缓存的日报。如果用户对cache操作记录超过2000次,则会将内存中的lruEntries写入到日报中。`最大字节数和缓存目录需要使用者设置`,如果超过使用者设置的字节数，则会调用trimToSize使用lru清理。
-缓存的header内容大致如下
+Cache的Entry内容大致如下，会写入到DiskLruCache也会从DiskLruCache中读取
 ```
      *
      * ```

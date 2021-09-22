@@ -13,7 +13,7 @@ published : true
 
 ## *1.Summary*{:.header2-font}
 ### Picasso vs. Glide vs. Fresco
-![image]({{site.baseurl}}/asset/image/picasso.jpg)
-![image]({{site.baseurl}}/asset/image/glide.jpg)
+![image]({{site.baseurl}}/asset/image/picasso.png)
+![image]({{site.baseurl}}/asset/image/glide.png)
 
 ## *2.Reference*{:.header2-font}

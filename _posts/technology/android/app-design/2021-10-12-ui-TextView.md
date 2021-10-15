@@ -13,12 +13,10 @@ published : true
 首先得知道什么是Span？简单来说它是一种标记(mark up),比如整段字符串中出现部分高亮(@功能)，这部分高亮就可以理解为是一种标记。它们的颜色不同于其他字符；可点击；大小不同于其他的字符，简单来说他足够骚，吸引眼球，用它可以实现markdown语法，聊天信息中的图文混排。
  
 ## 1.用java代码编写span
- <p>
  能用来显示span的字符串有三种
- <p>
  
- Class	          |  Mutable text|	Mutable markup|Data structure|
- ---|---|---|---
+ |Class	          |  Mutable text|	Mutable markup|Data structure|
+ |---|---|---|---|
  SpannedString	      |  No	          |  No	 |       Linear array
  SpannableString	   |     No	       |     Yes	 |       Linear array
  SpannableStringBuilder |	Yes	        |    Yes	  |      Interval tree
@@ -69,7 +67,6 @@ published : true
  - ClickableSpan, 可点击
      - URLSpan
      - TextLinkSpan,
- <p>
 
 ### ParagraphStyle的子类
 paragraph affecting spans

@@ -29,7 +29,7 @@ published : true
  
  span有20种（在android.text.style包下）：
  
- ### CharacterStyle的子类
+### CharacterStyle的子类
  text appearance affecting spans or text metrics affecting spans(character affection spans)
  
 
@@ -60,7 +60,7 @@ published : true
       - DynamicDrawableSpan,
           - ImageSpan 支持四种Bitmap/Drawable/Uri/resourceId动态加载图片的方式
       - EmojiSpan
-        -TypefaceEmojiSpan
+        - TypefaceEmojiSpan
 
  - SuggestionSpan,
 

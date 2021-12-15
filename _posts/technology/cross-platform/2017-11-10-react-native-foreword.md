@@ -9,7 +9,7 @@ tag:
 # - react native
 - cross-platform
 ---
-## *1.Summary*{:.header2-font}
+## *1.Introduction*{:.header2-font}
 
 &emsp;&emsp;讲React Native之前，我们应该知道这么一些故事。React是由Facebook公司开发，并且开源到了github，与Vue都是现在很火的前端开发库。之后Facebook觉得这套库在前端使用的效果很是不错，就想让移动端也支持，从而实现如他们的口号一样“Learn Once，Write Anywhere”---学习一次，任何平台都能写。这不就是大前端吗，所以React Native孕育而生。在编码方面React不同于传统的HTML+CSS+JavaScript这一套开发方式，而是采用组件化的形式，让开发者在组件里面可以混写HTML+JavaScript，即JSX代码。而原来的HTML直接解析成真实DOM树，现在也变成了组件先成为虚拟DOM，在插入文档之后才会变成真实DOM。React利用了一个叫做DOM diff的算法提高了网页的性能，所以我们在移动端上面看到很多用React Native实现的应用性能比用HTML5库实现的好很多。看看京东金融和微信。关于HTML5 VS React ，这两者孰优孰劣可以参考这一篇文章[也许，DOM 不是答案](http://www.ruanyifeng.com/blog/2015/02/future-of-dom.html)
 
@@ -26,17 +26,11 @@ tag:
 
 &emsp;&emsp;之后我们将要学习的内容有如下：
 
-- [ ] React Native---入门
-- [ ] React Native---框架概述
 - [x] React Native---启动流程
-- [ ] React Native---开发者调试工具
-- [ ] React Native---智能指针实现
-- [ ] React Native---基于JavaScriptCore引擎的封装
-- [ ] React Native---基于JNI的封装
+- [ ] React Native---渲染机制
 - [ ] React Native---Java和JavaScript通信机制
-- [ ] React Native---学习总结
-- [ ] React Native---项目实战
-
+- [ ] React Native---开发者调试工具
+- [ ] React Native---cpp与java的混合对象管理
 ## *2.Reference*{:.header2-font}
 
 [历史在重演：从KHTML到WebKit，再到Blink](https://36kr.com/p/202396.html)

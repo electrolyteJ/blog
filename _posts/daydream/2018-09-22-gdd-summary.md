@@ -8,6 +8,14 @@ tag:
 share: true 
 # commets: true
 ---
+![]({{site.baseurl}}/asset/2018-09-22/gdd-68.jpg){:.center-image}*如果说我对google是一种什么感情，应该是这张图的这种感情*
+
+`Revision`
+
+1.这篇文件第一次提交
+
+---
+
 ![]({{site.baseurl}}/asset/2018-09-22/gdd-3.jpg)
 
 
@@ -80,9 +88,6 @@ share: true
 ![]({{site.baseurl}}/asset/2018-09-22/gdd-62.jpg){:.center-image}*朋友偷偷拍的小姐姐*
 
 ![]({{site.baseurl}}/asset/2018-09-22/gdd-64.jpg)
-
-
-![]({{site.baseurl}}/asset/2018-09-22/gdd-68.jpg){:.center-image}*如果说我对google是一种什么感情，应该是这张图的这种感情*
 
 &emsp;&emsp;最后说点题外话，很感谢朋友提醒我参加这一次`Google Developer Days`，这些年太过于关注技术，闭门造车，不是在学习技术就是在学习技术的路上，除了加班就是加班，而忽视了生活忽视了周边，因此也碰到了很多的槛。如朋友说地出来见见世面。技术归根到底还是要服务于生活，从生活出发，学习生活。用一句鞭策一下自己，`驽马十驾功在不舍 --- 《劝学》`
 

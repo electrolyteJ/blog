@@ -17,7 +17,7 @@ tags:
 
 ---
 
-![Python]({{ site.baseurl}}/asset/2016-10-11-mind-Python.png)
+![Python]({{ site.baseurl}}/asset/elementary/2016-10-11-mind-Python.png)
 
 <!-- ![My helpful screenshot]({{ site.baseurl | prepend:site.url}}/images/Python.png){: .center-image }*iPhone 5 portrait* -->
 

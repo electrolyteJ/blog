@@ -9,7 +9,7 @@ tag:
 - elementary/others
 ---
 
-![network_layer]({{ site.baseurl}}/asset/2017-03-18-network_layer.png)
+![network_layer]({{ site.baseurl}}/asset/elementary/2017-03-18-network_layer.png)
 
 ### 参考资料:
 [互联网协议入门(一)](http://www.ruanyifeng.com/blog/2012/05/internet_protocol_suite_part_i.html)

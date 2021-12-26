@@ -10,7 +10,7 @@ tag:
 - elementary/language
 ---
 
-![kotlin]({{site.baseurl}}/asset/2018-07-22/kotlin.png)
+![kotlin]({{site.baseurl}}/asset/elementary/kotlin.png)
 
 ### reference
 [kotlin 官方网站](https://kotlinlang.org/docs/reference/)

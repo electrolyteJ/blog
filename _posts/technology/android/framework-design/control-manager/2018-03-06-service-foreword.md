@@ -41,4 +41,4 @@ frameworks/base/services/core/java/com/android/server/wm/WindowManagerService.ja
 
 所以我们接下来就要围绕着 AMS、PKMS、WMS 这三个类来讲故事了。这里在插句话，当你学习完这三个 service 之后，类比其他的 service(比如 InputManagerService、PowerManagerService)也就能信手拈来，因为 Framework 层的 service 设计都差不多。先来张图大致熟悉一下整个 Framework 层的消息响应。
 
-![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-06-Android-framework-architecture.png){: .center-image }
+![]({{site.asseturl}}/android-framework/android-framework-architecture.png){: .center-image }

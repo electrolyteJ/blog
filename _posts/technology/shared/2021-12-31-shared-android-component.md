@@ -8,6 +8,7 @@ share: false
 comments: false
 tag: 
 - 分享
+- app-design/architecture
 ---
 2021年在公司内部做的组件化分享
 

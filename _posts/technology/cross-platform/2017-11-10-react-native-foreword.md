@@ -26,11 +26,11 @@ tag:
 
 &emsp;&emsp;之后我们将要学习的内容有如下：
 
+- [ ] React Native---cpp与java的混合对象管理
+- [ ] React Native---Java和JavaScript通信机制
 - [x] React Native---启动流程
 - [ ] React Native---渲染机制
-- [ ] React Native---Java和JavaScript通信机制
 - [ ] React Native---开发者调试工具
-- [ ] React Native---cpp与java的混合对象管理
 ## *2.Reference*{:.header2-font}
 
 [历史在重演：从KHTML到WebKit，再到Blink](https://36kr.com/p/202396.html)

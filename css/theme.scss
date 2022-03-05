@@ -124,7 +124,21 @@ ul.social-media {
     }
   }
 }
+ul.opensource {
+  list-style: none;
+  list-style-type: none;
+  padding: 0 0 0 0;
 
+  li {
+    margin-top: 10px;
+    list-style: none;
+    list-style-type: none;
+
+    // &:hover {
+    // color: $accent-color;
+    // }
+  }
+}
 
 //    ___ _
 //   / __| |_  __ _ _ _ ___

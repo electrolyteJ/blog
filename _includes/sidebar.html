@@ -1,4 +1,21 @@
 <div class="sidebar ">
+  <h2>Open Source</h2>
+  <!-- <ul class="opensource"> -->
+  <li>
+    <a title="bundles-assembler on Github" href="https://github.com/JamesfChen/bundles-assembler/wiki" target="_blank">
+      <i class="fa fa-github fa-2x"></i>
+      bundles-assembler
+    </a>
+  </li>
+  <li>
+    <a title="padb on Github" href="https://github.com/JamesfChen/padb" target="_blank">
+      <i class="fa fa-github fa-2x"></i>
+      padb
+    </a>
+  </li>
+  </ul>
+</div>
+<div class="sidebar ">
   <h2>Recent Posts</h2>
   <ul>
     {% for post in site.posts limit:5 %}
@@ -19,7 +36,8 @@
 
     {% assign tags = (site.tags | sort:0) %} {% for tag in tags %}
     <li>
-      <a href="{{ '/tag/' | append: tag[0] | relative_url }}" data-toggle="tooltip" data-placement="right" title="{{ tag[1].size }}">
+      <a href="{{ '/tag/' | append: tag[0] | relative_url }}" data-toggle="tooltip" data-placement="right"
+        title="{{ tag[1].size }}">
         <span>{{tag[0] }}</span>
       </a>
     </li>

@@ -2,7 +2,7 @@
 layout: post
 title: React Native ---  渲染机制
 description: 如何渲染一个dom树的页面
-date: 2021-12-06 22:50:00
+date: 2022-03-20 22:50:00
 share: false
 comments: false
 tag:
@@ -189,6 +189,7 @@ function updateContainer(element, container, parentComponent, callback) {
 
 
 ## *Reference*{:.header2-font}
+
 [JS 层渲染之 diff 算法](https://juejin.cn/post/6844904197096226824)
 
 [Native层的渲染流程](https://juejin.cn/post/6844904184542822408)

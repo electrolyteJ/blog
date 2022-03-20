@@ -599,4 +599,4 @@ export type ReactNativeType = {
   ...
 };
 ```
-导出的ReactNativeType#render函数接下来就开始了渲染逻辑。其中传入的实参rootTag为java侧的ReactRootView,React会根据rootTag构造出一个js侧的根节点FiberRootNode，来与Java侧的ReactRootView一一对应。当组件从`PerformanceLoggerContext.Provider ---> AppContainer ---> RootComponent`，一层一层往下渲染到App，真正的页面渲染才开始。React Native如何渲染，让我们来一一剖析一下[React Native ---  渲染机制]({{site.baseurl}}/2021-12-06/react-native-render)
+导出的ReactNativeType#render函数接下来就开始了渲染逻辑。其中传入的实参rootTag为java侧的ReactRootView,React会根据rootTag构造出一个js侧的根节点FiberRootNode，来与Java侧的ReactRootView一一对应。当组件从`PerformanceLoggerContext.Provider ---> AppContainer ---> RootComponent`，一层一层往下渲染到App，真正的页面渲染才开始。React Native如何渲染，让我们来一一剖析一下[React Native ---  渲染机制]({{site.baseurl}}/2022-03-20/react-native-render)

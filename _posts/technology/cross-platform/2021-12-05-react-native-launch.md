@@ -93,11 +93,11 @@ public class ReactActivityDelegate {
 }
 
 ```
-#### 1.onCreate
+### *1.onCreate*{:.header3-font}
 - 在onCreate中会yload React App，异步创建全局ReactApplicationContext 与 加载js bundle
 - 将ReactRootView对象setContentView，等待js引擎加载完js bundle并且通过bridge将js组件对应的native组件add到ReactRootView，然后等待页面的渲染
 
-##### java侧的load js bundle
+#### *java侧的load js bundle*{:.header3-font}
 ------
 接下来我们来看看load React App的关键过程
 
@@ -200,7 +200,48 @@ public class ReactInstanceManager {
 - createReactContext:会启动一个线程创建ReactApplicationContext 与 加载js bundle。
 - setupReactContext:监听来自native模块队列的消息，并且告知各个native模块js初始化完毕
 
-ReactApplicationContext的创建比较简单就set一些对象比如全局的NativeModuleCallExceptionHandler处理器，CatalystInstance对象，我们主要关注的是有CatalystInstace负责的js bundle加载过程，这里我们需要说明一下，单单从CatalystInstace名字我们就能知道其职责，催生一个React应用实例，其是一个混合对象，一部分是由JVM堆分配的java对象，一部分是由操作系统分配的cpp对象。
+ReactApplicationContext的创建比较简单就set一些对象比如全局的NativeModuleCallExceptionHandler处理器，CatalystInstance对象.其中解析ReactPackage的逻辑我们来分析一下。
+
+#### *解析ReactPackage*{:.header3-font}
+------
+```
+ReactPackage
+|--- TurboReactPackage
+     |--- CoreModulesPackage 
+     |--- DebugCorePackage
+|--- CompositeReactPackage
+```
+在processPackage过程中，TurboReactPackage中的模块使用时才会加载，CompositeReactPackage会立马被加载。 在早期React Native会加载所有模块，经过turbo改造之后，很多模块都是使用时才会被加载，NativeModuleRegistry的模块都被移步到TurboModuleRegistry
+
+CoreModulesPackage包含的模块如下
+```java
+@ReactModuleList(
+    // WARNING: If you modify this list, ensure that the list below in method
+    // getReactModuleInfoByInitialization is also updated
+    nativeModules = {
+      AndroidInfoModule.class,
+      DeviceEventManagerModule.class,
+      DeviceInfoModule.class,
+      DevSettingsModule.class,
+      ExceptionsManagerModule.class,
+      LogBoxModule.class,
+      HeadlessJsTaskSupportModule.class,
+      SourceCodeModule.class,
+      TimingModule.class,
+      UIManagerModule.class,
+      NativeDevSplitBundleLoaderModule.class,
+    })
+```
+DebugCorePackage包含模块如下
+```java
+@ReactModuleList(
+    nativeModules = {
+      JSCHeapCapture.class,
+    })
+```
+
+
+我们主要关注的是有CatalystInstace负责的js bundle加载过程，这里我们需要说明一下，单单从CatalystInstace名字我们就能知道其职责，催生一个React应用实例，其是一个混合对象，一部分是由JVM堆分配的java对象，一部分是由操作系统分配的cpp对象。
 ```
 CatalystInstanceImpl.java                      CatalystInstanceImpl.cpp 
  loadScriptFromAssets                           jniLoadScriptFromAssets
@@ -210,7 +251,8 @@ CatalystInstanceImpl的cpp对象持有Instace的cpp对象，Instance对象是整
 
 创建完ReactContext 与 加载完js bundle之后，就会执行setupReactContext方法，通知各个模块js实例初始化完毕。
 
-##### cpp层的load js bundle
+
+#### *cpp层的load js bundle*{:.header3-font}
 ------
 当CatalystInstanceImpl类被加载到classloader，就会调用其静态代码块的逻辑,`ReactBridge.staticInit();`开始load so。load的过程主要是将java侧的native方法与cpp层的方法进行映射.
 ```cpp
@@ -410,7 +452,7 @@ void JSIExecutor::loadBundle(
 JSCExecutor是java对象，JSExecutor真正的衍生类为JSIExecutor，注入的runtime是jsc，所以当就会将js bundle内容注入到jsc 的evaluateJavaScript方法，jsc引擎开始渲染页面
 
 
-##### javascript层的load js bundle
+#### *javascript层的load js bundle*{:.header3-font}
 ------
 一个简单的react native项目结构
 ```
@@ -463,11 +505,11 @@ AppRegistry.js
 ```
 AppRegistery通过注册表runnables存储以appName为key，类对象为value。当java侧想要运行App，就可以通过appName到AppRegistery查询并且运行。
 
-### 2.onResume
+### *2.onResume*{:.header3-font}
 执行生命周期ReactInstanceManager#onHostResume，ReactContext#onHostResume,没有什么重要的事情。
 
-### 3.make visibilty
-##### java侧的run application
+### *3.make visibilty*{:.header3-font}
+#### *java侧的run application*{:.header3-font}
 ------
 执行ReactRootView的绘制流程，在ReactRootView的onMeasure时会执行attachToReactInstanceManager，将ReactRootView注册到UIManagerModule，紧接着调用AppRegistry的runApplication启动整个js框架，接着就是js组件的渲染，这个我们留给React Native渲染机制再讲.
 ```java
@@ -480,7 +522,7 @@ public interface AppRegistry extends JavaScriptModule {
   void startHeadlessTask(int taskId, String taskKey, WritableMap data);
 }
 ```
-##### javascript层的run application
+#### *javascript层的run application*{:.header3-font}
 ------
 调用js接口主要采用了java的动态代理，JavaScriptModuleRegistry#getJavaScriptModule方法，返回一个AppRegistry的代理类。当调用runApplication方法，就会执行CatalystInstance#jniCallJSFunction,最后会执行JSIExecutor$callFunction方法，执行js的runApplication接口
 AppRegistry.js

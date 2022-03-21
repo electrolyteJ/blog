@@ -188,6 +188,8 @@ function updateContainer(element, container, parentComponent, callback) {
 }
 ```
 workInProgress的tag为5或者6时调用`ReactNativePrivateInterface.UIManager.createView`创建组件
+
+UIManager.js
 ```typescript
 //UIManagerJSInterface 接口声明
 export interface UIManagerJSInterface extends Spec {
@@ -212,10 +214,44 @@ export interface UIManagerJSInterface extends Spec {
 //BridgelessUIManager文件或者PaperUIManager文件为UIManagerJSInterface 接口实现
 const UIManager: UIManagerJSInterface =
   global.RN$Bridgeless === true
-    ? require('./BridgelessUIManager')
-    : require('./PaperUIManager');
+    ? require('./BridgelessUIManager')//log打印
+    : require('./PaperUIManager');//真正的实现
 
 module.exports = UIManager;
+```
+
+NativeUIManager.js
+```typescript
+export interface Spec extends TurboModule {
+    +createView: (
+    reactTag: ?number,
+    viewName: string,
+    rootTag: RootTag,
+    props: Object,
+  ) => void;
+}
+// 通过global.__turboModuleProxy获取名为UIManager的模块
+export default (TurboModuleRegistry.getEnforcing<Spec>('UIManager'): Spec);
+```
+js侧与java侧的接口调用主要采用turbo，所以js侧的UIManager对应的java侧的UIManagerModule，如何不理解turbo，可以查看这一篇文章[React Native---Java和JavaScript通信机制]({{site.baseurl}}/2022-03-10/react-native-java-js-interoperability)
+
+```java
+@ReactModule(name = UIManagerModule.NAME)
+public class UIManagerModule extends ReactContextBaseJavaModule
+    implements OnBatchCompleteListener, LifecycleEventListener, UIManager {
+  ...
+  @ReactMethod
+  public void createView(int tag, String className, int rootViewTag, ReadableMap props) {
+    if (DEBUG) {
+      String message =
+          "(UIManager.createView) tag: " + tag + ", class: " + className + ", props: " + props;
+      FLog.d(ReactConstants.TAG, message);
+      PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.UI_MANAGER, message);
+    }
+    mUIImplementation.createView(tag, className, rootViewTag, props);
+  }
+  ...
+}
 ```
 
 ### *3.react应用页面再次渲染*{:.header3-font}
@@ -227,3 +263,5 @@ module.exports = UIManager;
 [Native层的渲染流程](https://juejin.cn/post/6844904184542822408)
 
 [ReactNative 知识小集(2)-渲染原理](https://zhuanlan.zhihu.com/p/32749940)
+
+[2022 年 React Native 的全新架构更新](https://www.codetd.com/pt/article/13682554)

@@ -428,6 +428,116 @@ MethodCallResult MethodInvoker::invoke(
 ---> ... ---> MessageQueue#invokeCallbackAndReturnFlushedQueue
 ```
 
+
+### *javascript调用java接口，turbo方式*{:.header3-font}
+
+SampleTurboModule.java
+```java
+@ReactModule(name = SampleTurboModule.NAME)
+public class SampleTurboModule extends NativeSampleTurboModuleSpec {
+    @DoNotStrip
+  @SuppressWarnings("unused")
+  @Override
+  public double getNumber(double arg) {
+    log("getNumber", arg, arg);
+    return arg;
+  }
+}
+
+```
+SampleTurboModuleSpec.cpp
+```cpp
+
+static facebook::jsi::Value
+__hostFunction_NativeSampleTurboModuleSpecJSI_getNumber(
+    facebook::jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const facebook::jsi::Value *args,
+    size_t count) {
+  return static_cast<JavaTurboModule &>(turboModule)
+      .invokeJavaMethod(rt, NumberKind, "getNumber", "(D)D", args, count);
+}
+
+NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
+    const JavaTurboModule::InitParams &params)
+    : JavaTurboModule(params) {
+  methodMap_["getNumber"] = MethodMetadata{
+      1, __hostFunction_NativeSampleTurboModuleSpecJSI_getNumber};
+}
+```
+
+使用turbo方式编写的模块使用是才会被加载，需要使用TurboReactPackage包与TurboModule。与global.nativeModuleProxy相比turbo也有一个proxy(global.__turboModuleProxy)。
+
+获取某个指定模块时，调用TurboModuleBinding#jsProxy。
+```cpp
+std::shared_ptr<TurboModule> TurboModuleBinding::getModule(
+    const std::string &name) {
+  std::shared_ptr<TurboModule> module = nullptr;
+  {
+    SystraceSection s("TurboModuleBinding::getModule", "module", name);
+    module = moduleProvider_(name);
+  }
+  return module;
+}
+
+jsi::Value TurboModuleBinding::jsProxy(
+    jsi::Runtime &runtime,
+    const jsi::Value &thisVal,
+    const jsi::Value *args,
+    size_t count) {
+  if (count < 1) {
+    throw std::invalid_argument(
+        "__turboModuleProxy must be called with at least 1 argument");
+  }
+  std::string moduleName = args[0].getString(runtime).utf8(runtime);
+  jsi::Value nullSchema = jsi::Value::undefined();
+
+  std::shared_ptr<TurboModule> module = getModule(moduleName);
+  if (module == nullptr) {
+    return jsi::Value::null();
+  }
+
+  return jsi::Object::createFromHostObject(runtime, std::move(module));
+}
+TurboModuleProviderFunctionType moduleProvider_;
+```
+
+通过codegen会自动生成cpp与java的turbo接口代码，java侧的TurboModule的接口签名信息与函数地址会被存储在cpp层的TurboModule#methodMap_中.
+
+获取某个函数地址时会从methodMap_中获取，当调用函数会执行MethodMetadata.invokder.
+```cpp
+  //获取函数地址
+  virtual facebook::jsi::Value get(
+      facebook::jsi::Runtime &runtime,
+      const facebook::jsi::PropNameID &propName) override {
+    std::string propNameUtf8 = propName.utf8(runtime);
+    auto p = methodMap_.find(propNameUtf8);
+    if (p == methodMap_.end()) {
+      // Method was not found, let JS decide what to do.
+      return jsi::Value::undefined();
+    }
+    MethodMetadata meta = p->second;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        propName,
+        static_cast<unsigned int>(meta.argCount),
+        //调用某个函数时
+        [this, meta](
+            facebook::jsi::Runtime &rt,
+            const facebook::jsi::Value &thisVal,
+            const facebook::jsi::Value *args,
+            size_t count) { return meta.invoker(rt, *this, args, count); });
+  }
+```
+由于cpp层的JTurboModule对象与java侧的TurboModule对象是混合对象，所以执行MethodMetadata.invokder之后就会调用TurboModule#getNumber函数
+JavaTurboModule.h
+```cpp
+struct JTurboModule : jni::JavaClass<JTurboModule> {
+  static auto constexpr kJavaDescriptor =
+      "Lcom/facebook/react/turbomodule/core/interfaces/TurboModule;";
+};
+```
+
 ### *java调用javascript接口*{:.header3-font}
 那么java如何调用javascript接口呢？
 javascript接口实现

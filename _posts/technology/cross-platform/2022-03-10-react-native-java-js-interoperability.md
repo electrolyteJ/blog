@@ -17,7 +17,37 @@ published : true
 ### *java 与 javascript 通信原理*{:.header3-font}
 
 1.java 与 cpp 通信
+
+   java    | jni     | 内存分配
+   |---|---|---|---|
+   boolean(1bit) | jboolean| 1byte  |无符号8位整型 uint8_t
+   byte    | jbyte   | 1byte  |有符号8位整型 int8_t
+   char    | jchar   | 2bytes |无符号16位整型 uint16_t
+   short   | jshort  | 2bytes |有符号8位整型 int16_t
+   int     | jint    | 4bytes |有符号32位整型 int32_t
+   long    | jlong   | 8bytes |有符号64位整型 int64_t
+   float   | jfloat  | 4bytes |32位浮点型    float
+   double  | jdouble | 8bytes |64位浮点型    double
+   Object  | jobject
+   Class   | jclass
+   String  | jstring
+   Object[]| jobjectArray
+   boolean[]|jbooleanArray
+   byte[]   |jbyteArray
+   char[]   |jcharArray
+   short[]  |jshortArray
+   int[]    |jintArray
+   long[]   |jlongArray
+   float[]  |jfloatArray
+   double[] |jdoubleArray
+   void     | void
+
 java访问cpp函数通过jni将java的native函数与cpp的函数进行映射,cpp访问java函数可以通过反射。
+
+   java    | fbjni
+   |---|---
+   T | JavaClass\<T\>
+  
 为了使其使用简单、易扩展、强鲁棒性，facebook封装了自己的库[fbjni](https://github.com/facebookincubator/fbjni),其中的java与cpp混合对象内存管理利用了虚可达。
 
 - 不可达：一个对象没有被有效的引用所指向，且指向该对象的PhantomReference（如果有的话）也成了垃圾
@@ -83,8 +113,11 @@ jni
 
 2.javascript 与 cpp 通信
 
-在react native中使用了jsi技术将cpp层的函数映射js侧的函数，就能相互调用.
+   javascript    | jsi 
+   |---|---
+   js的对象 | host object
 
+在react native中使用了jsi技术将cpp层的函数映射js侧的函数，就能相互调用.
 
 react native的java与javascript通信是基于前面两种融合实现的，前者使用jni后者使用jsi，cpp层作为了两者的桥梁。
 

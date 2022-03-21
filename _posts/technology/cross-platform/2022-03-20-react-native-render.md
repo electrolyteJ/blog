@@ -14,7 +14,7 @@ published : true
 {:toc}
 ## *Introduction*{:.header2-font}
 
-要想了解渲染机制，我们可以先从自定义native ui组件开始熟悉react应用的三棵树，然后在研究react应用启动时整个页面的初次渲染。
+React Native渲染我们分为初次渲染与再次渲染，为了提高再次渲染的性能，使用了diff算法，通过比较前后两次的virtual dom，计算出差异项然后局部更新, 接下来我们先来分析初次渲染。
 
 ### *1.自定义native ui component*{:.header3-font}
 先来点代码示例看看如何定义并且使用native ui component
@@ -162,9 +162,10 @@ const requireNativeComponent = <T>(uiViewClassName: string): HostComponent<T> =>
 
   
 
-### *2.react应用初次页面渲染*{:.header3-font}
-之前在react应用启动流程篇章里面，最后我们讲到调用ReactNativeRenderer-prod.js中render函数进行组件的渲染时，会先创建ReactRootView对应的根节点FiberRootNode，接下就updateContainer,开始各个渲染组件。
+### *2.react应用页面初次渲染*{:.header3-font}
+之前在react应用启动流程篇章里面，最后我们讲到调用ReactNativeRenderer-prod.js中render函数进行组件的渲染时，会先创建ReactRootView对应的根节点FiberRootNode，接下就updateContainer开始渲染各个组件。
 ```typescript
+//element：PerformanceLoggerContext.Provider 树  ，container：FiberRootNode
 function updateContainer(element, container, parentComponent, callback) {
   var current = container.current,
     eventTime = requestEventTime(),
@@ -186,10 +187,43 @@ function updateContainer(element, container, parentComponent, callback) {
   return lane;
 }
 ```
+workInProgress的tag为5或者6时调用`ReactNativePrivateInterface.UIManager.createView`创建组件
+```typescript
+//UIManagerJSInterface 接口声明
+export interface UIManagerJSInterface extends Spec {
+  +getViewManagerConfig: (viewManagerName: string) => Object;
+  +hasViewManagerConfig: (viewManagerName: string) => boolean;
+  +createView: (
+    reactTag: ?number,
+    viewName: string,
+    rootTag: RootTag,
+    props: Object,
+  ) => void;
+  +updateView: (reactTag: number, viewName: string, props: Object) => void;
+  +manageChildren: (
+    containerTag: ?number,
+    moveFromIndices: Array<number>,
+    moveToIndices: Array<number>,
+    addChildReactTags: Array<number>,
+    addAtIndices: Array<number>,
+    removeAtIndices: Array<number>,
+  ) => void;
+}
+//BridgelessUIManager文件或者PaperUIManager文件为UIManagerJSInterface 接口实现
+const UIManager: UIManagerJSInterface =
+  global.RN$Bridgeless === true
+    ? require('./BridgelessUIManager')
+    : require('./PaperUIManager');
 
+module.exports = UIManager;
+```
+
+### *3.react应用页面再次渲染*{:.header3-font}
 
 ## *Reference*{:.header2-font}
 
 [JS 层渲染之 diff 算法](https://juejin.cn/post/6844904197096226824)
 
 [Native层的渲染流程](https://juejin.cn/post/6844904184542822408)
+
+[ReactNative 知识小集(2)-渲染原理](https://zhuanlan.zhihu.com/p/32749940)

@@ -253,8 +253,64 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   ...
 }
 ```
+根据设计模式为了保持java侧与js侧的接口一致性，UIManagerModule的内部实现全全交给了UIImplementation。
+```java
+public class UIImplementation {
+  protected Object uiImplementationThreadLock = new Object();
+  //事件分发
+  protected final EventDispatcher mEventDispatcher;
+  protected final ReactApplicationContext mReactContext;
+  //shadow node的注册中心，shadow树
+  protected final ShadowNodeRegistry mShadowNodeRegistry = new ShadowNodeRegistry();
+  //ViewManager注册中心，管理ui组件
+  private final ViewManagerRegistry mViewManagers;
+  //存放来自于js侧操作dom的指令
+  private final UIViewOperationQueue mOperationsQueue;
+  private final NativeViewHierarchyOptimizer mNativeViewHierarchyOptimizer;
+  private final int[] mMeasureBuffer = new int[4];
+
+  private long mLastCalculateLayoutTime = 0;
+  protected @Nullable LayoutUpdateListener mLayoutUpdateListener;
+  ...
+    public void createView(int tag, String className, int rootViewTag, ReadableMap props) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
+    synchronized (uiImplementationThreadLock) {
+      ReactShadowNode cssNode = createShadowNode(className);
+      ReactShadowNode rootNode = mShadowNodeRegistry.getNode(rootViewTag);
+      Assertions.assertNotNull(rootNode, "Root node with tag " + rootViewTag + " doesn't exist");
+      cssNode.setReactTag(tag); // Thread safety needed here
+      cssNode.setViewClassName(className);
+      cssNode.setRootTag(rootNode.getReactTag());
+      cssNode.setThemedContext(rootNode.getThemedContext());
+
+      mShadowNodeRegistry.addNode(cssNode);
+
+      ReactStylesDiffMap styles = null;
+      if (props != null) {
+        styles = new ReactStylesDiffMap(props);
+        cssNode.updateProperties(styles);
+      }
+
+      handleCreateView(cssNode, rootViewTag, styles);
+    }
+  }
+
+  protected void handleCreateView(
+      ReactShadowNode cssNode, int rootViewTag, @Nullable ReactStylesDiffMap styles) {
+    if (!cssNode.isVirtual()) {
+      mNativeViewHierarchyOptimizer.handleCreateView(cssNode, cssNode.getThemedContext(), styles);
+    }
+  }
+}
+```
+从UIImplementation的成员变量就能大概猜测其职能，维系一棵js侧树的shadow树来决定prop有没有发生变化，变化了就会发送操作指令create、update对真实的dom树进行更新。在createView阶段，会创建ShadowNode(LayoutShadowNode),对js侧的react dom树进行shadow。
+整棵ShadowNode树的基石是yoga，关于yoga后续有空可以来讲解一下。NativeViewHierarchyOptimizer会将操作指令发送到UIViewOperationQueue，等待下一帧绘制时，读取并且处理队列中的指令，比如ViewManager#createView方法。
 
 ### *3.react应用页面再次渲染*{:.header3-font}
+
 
 ## *Reference*{:.header2-font}
 
@@ -265,3 +321,5 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 [ReactNative 知识小集(2)-渲染原理](https://zhuanlan.zhihu.com/p/32749940)
 
 [2022 年 React Native 的全新架构更新](https://www.codetd.com/pt/article/13682554)
+
+[The how and why on React’s usage of linked list in Fiber to walk the component’s tree](https://medium.com/react-in-depth/the-how-and-why-on-reacts-usage-of-linked-list-in-fiber-67f1014d0eb7)

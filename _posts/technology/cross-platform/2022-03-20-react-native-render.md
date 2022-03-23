@@ -310,6 +310,129 @@ public class UIImplementation {
 整棵ShadowNode树的基石是yoga，关于yoga后续有空可以来讲解一下。NativeViewHierarchyOptimizer会将操作指令发送到UIViewOperationQueue，等待下一帧绘制时，读取并且处理队列中的指令，比如ViewManager#createView方法。
 
 ### *3.react应用页面再次渲染*{:.header3-font}
+```java
+public class UIImplementation {
+  ...
+  /** Invoked by React to create a new node with a given tag has its properties changed. */
+  public void updateView(int tag, String className, ReadableMap props) {
+    if (!mViewOperationsEnabled) {
+      return;
+    }
+
+    ViewManager viewManager = mViewManagers.get(className);
+    if (viewManager == null) {
+      throw new IllegalViewOperationException("Got unknown view type: " + className);
+    }
+    ReactShadowNode cssNode = mShadowNodeRegistry.getNode(tag);
+    if (cssNode == null) {
+      throw new IllegalViewOperationException("Trying to update non-existent view with tag " + tag);
+    }
+
+    if (props != null) {
+      ReactStylesDiffMap styles = new ReactStylesDiffMap(props);
+      cssNode.updateProperties(styles);
+      handleUpdateView(cssNode, className, styles);
+    }
+  }
+  protected void handleUpdateView(
+      ReactShadowNode cssNode, String className, ReactStylesDiffMap styles) {
+    if (!cssNode.isVirtual()) {
+      mNativeViewHierarchyOptimizer.handleUpdateView(cssNode, className, styles);
+    }
+  }
+  ...
+}
+```
+
+更新流程的调用链`UIImplementation#updateView ---> UIImplementation#handleUpdateView ---> NativeViewHierarchyOptimizer#handleUpdateView ---> UIViewOperationQueue#enqueueUpdateProperties ---> android系统绘制下一帧时 ---> UpdatePropertiesOperation#execute`。
+在NativeViewHierarchyOptimizer#handleUpdateView的逻辑中通过shadow树判断要不要将更新的指令放到UIViewOperationQueue中。等到android系统开始绘制下一帧时，会从UIViewOperationQueue获取指令并且处理
+```java
+  private final class UpdatePropertiesOperation extends ViewOperation {
+
+    private final ReactStylesDiffMap mProps;
+
+    private UpdatePropertiesOperation(int tag, ReactStylesDiffMap props) {
+      super(tag);
+      mProps = props;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.updateProperties(mTag, mProps);
+    }
+  }
+```
+调用链`NativeViewHierarchyManager#updateProperties ---> ViewManager#updateProperties ---> ViewManagerPropertyUpdater#updateProps ---> FallbackViewManagerSetter#setProperty ---> ViewManagersPropertyCache.PropSetter#updateViewProp` 
+
+实例化FallbackViewManagerSetter对象的时候，会扫描ViewManager带有ReactProp注解的方法，并保存到ViewManagersPropertyCache的map中，当在setProperty刷新每个属性时，就会调用其对应的方法进行正在ui更新。
+
+之前我们讲过NativeViewHierarchyOptimizer#handleUpdateView会通过shadow树判断要不要更新属性，这块我们深挖一下。在UIImplementation#updateView过程中，会执行两个重要事情，一个updateProperties shadow树的节点，另外一个NativeViewHierarchyOptimizer#handleUpdateView。
+
+shadow节点的类结构图
+```
+ReactShadowNode
+  ReactShadowNodeImpl
+    LayoutShadowNode
+```
+LayoutShadowNode节点相当于ViewManager也有很多被ReactProp注解标注的方法。
+```java
+LayoutShadowNode.java
+setWidth(Dynamic)
+  @ReactProp(name = ViewProps.WIDTH)
+setMinWidth(Dynamic)
+  @ReactProp(name = ViewProps.MIN_WIDTH)
+setCollapsable(boolean)
+  @ReactProp(name = "collapsable")
+setMaxWidth(Dynamic)
+  @ReactProp(name = ViewProps.MAX_WIDTH)
+setHeight(Dynamic)
+  @ReactProp(name = ViewProps.HEIGHT)
+setMinHeight(Dynamic)
+  @ReactProp(name = ViewProps.MIN_HEIGHT)
+setMaxHeight(Dynamic)
+  @ReactProp(name = ViewProps.MAX_HEIGHT)
+setFlex(float)
+  @ReactProp(name = ViewProps.FLEX, defaultFloat = 0f)
+setFlexGrow(float)
+  @ReactProp(name = ViewProps.FLEX_GROW, defaultFloat = 0f)
+setFlexShrink(float)
+  @ReactProp(name = ViewProps.FLEX_SHRINK, defaultFloat = 0f)
+setFlexBasis(Dynamic)
+  @ReactProp(name = ViewProps.FLEX_BASIS)
+setAspectRatio(float)
+  @ReactProp(name = ViewProps.ASPECT_RATIO, defaultFloat = YogaConstants.UNDEFINED)
+setFlexDirection(String)
+  @ReactProp(name = ViewProps.FLEX_DIRECTION)
+setFlexWrap(String)
+  @ReactProp(name = ViewProps.FLEX_WRAP)
+setAlignSelf(String)
+  @ReactProp(name = ViewProps.ALIGN_SELF)
+setAlignItems(String)
+  @ReactProp(name = ViewProps.ALIGN_ITEMS)
+setAlignContent(String)
+  @ReactProp(name = ViewProps.ALIGN_CONTENT)
+setJustifyContent(String)
+  @ReactProp(name = ViewProps.JUSTIFY_CONTENT)
+setOverflow(String)
+  @ReactProp(name = ViewProps.OVERFLOW)
+setDisplay(String)
+  @ReactProp(name = ViewProps.DISPLAY)
+setPosition(String)
+  @ReactProp(name = ViewProps.POSITION)
+setShouldNotifyOnLayout(boolean)
+  @ReactProp(name = "onLayout")
+setShouldNotifyPointerEnter(boolean)
+  @ReactProp(name = "onPointerEnter")
+setShouldNotifyPointerLeave(boolean)
+  @ReactProp(name = "onPointerLeave")
+setShouldNotifyPointerMove(boolean)
+  @ReactProp(name = "onPointerMove")
+```
+看完之后是不是会很熟悉，flexbox？ 对的。LayoutShadowNode是基于yoga，而yoga是一个实现flexbox的跨平台库，shadow树是react树在native的影子，所以每个节点的宽高位置是否发生变化。
+
+```
+react 树(virtual 树) ---> shadow 树 ---> android view树
+```
 
 
 ## *Reference*{:.header2-font}

@@ -431,6 +431,8 @@ MethodCallResult MethodInvoker::invoke(
 
 ### *javascript调用java接口，turbo方式*{:.header3-font}
 
+2022年react native架构进行了升级，原先使用的react package改为了turbo package。
+
 SampleTurboModule.java
 ```java
 @ReactModule(name = SampleTurboModule.NAME)

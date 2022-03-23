@@ -434,7 +434,7 @@ setShouldNotifyPointerMove(boolean)
 react 树(virtual 树) ---> shadow 树 ---> android view树
 ```
 
-
+在2022年react native的团队规划中，做了一次大的技术改造，将shadow树在cpp中实现，react采用fabric，整个渲染流水线发生了较大的变动。目前代码还没有完成，等完成再来分析。
 ## *Reference*{:.header2-font}
 
 [JS 层渲染之 diff 算法](https://juejin.cn/post/6844904197096226824)

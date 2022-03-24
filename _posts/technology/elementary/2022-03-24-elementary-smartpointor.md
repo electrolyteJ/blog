@@ -36,6 +36,7 @@ public:
 };
 template<typename T>
 shared_ptr make_shared(T t) {
+    //栈对象自动调用析构；而堆对象需要new操作符，要手动delete才会调用析构
     return shared_ptr(t);
 }   
 template<typename T>
@@ -61,11 +62,11 @@ int main() {
     return 0;
 }
 ```
-cpp通过包装类shared_ptr重载-> 与 * 来操作、检查、管理指针。
+cpp通过包装类shared_ptr来操作、检查、管理指针,在shared_ptr类中可以设置一个计数器counter，如果发生拷贝、移动拷贝、赋值，就计数器+1，当shared_ptr被析构时就检查计数器，如果为0就释放内存。
 
 ### *android版 cpp智能指针*{:.header3-font}
 
-cpp官方是在c++11中推出，比android系统晚出来，所以android系统自己设计了一套智能指针sp、wp
+cpp官方是在c++11中推出智能指针比android系统晚出来，所以android系统自己设计了一套智能指针sp、wp
 
 ### *jni智能引用*{:.header3-font}
 

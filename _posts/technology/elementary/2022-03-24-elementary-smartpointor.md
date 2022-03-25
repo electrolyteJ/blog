@@ -27,6 +27,10 @@ STL库提供了三种智能指针
 
 如何实现智能指针？
 ```cpp
+#include <iostream>
+
+using namespace std;
+
 class SpObj {
 public:
     template<typename T>
@@ -34,39 +38,79 @@ public:
         cout << "a:" << t << endl;
     }
 };
+
+
 template<typename T>
-shared_ptr make_shared(T t) {
-    //栈对象自动调用析构；而堆对象需要new操作符，要手动delete才会调用析构
-    return shared_ptr(t);
-}   
-template<typename T>
-class shared_ptr{
+class sp_wrapper {
 public:
-    shared_ptr(T *t):localP(t);
-    T* operator ->(){
-        //做检查
-        return localP;
+    sp_wrapper(T *mPtr) : m_ptr(mPtr) {}
+    virtual ~sp_wrapper() {
+        //计数器
     }
-    T& operator *(){
-        //做检查
-        return *localP;
-        
+
+    T *operator->() {
+        return m_ptr;
+    }
+    T &operator*() {
+        return *m_ptr;
     }
 private:
-    T* localP;
+    T *m_ptr;
+};
+
+template<typename T>
+sp_wrapper<T> make() {
+    sp_wrapper<T> p(new T());
+    return p;
 }
+
 int main() {
-    shared_ptr<SpObj> p = make_shared<SpObj>();
+    sp_wrapper<SpObj> p = make<SpObj>();
     p->a<int>(1);
-    cout << p.get() << endl;
     return 0;
 }
+
+
 ```
 cpp通过包装类shared_ptr来操作、检查、管理指针,在shared_ptr类中可以设置一个计数器counter，如果发生拷贝、移动拷贝、赋值，就计数器+1，当shared_ptr被析构时就检查计数器，如果为0就释放内存。
 
 ### *android版 cpp智能指针*{:.header3-font}
 
 cpp官方是在c++11中推出智能指针比android系统晚出来，所以android系统自己设计了一套智能指针sp、wp
+
+```cpp
+- sp:通过引用计数实现，与shared_ptr<T>相同
+- wp:用来解决指针相互引用，计数器满足不了自动管理内存的问题。与weak_ptr功能定位相同
+
+class AndroidSpObj : public android::RefBase {
+public:
+    template<typename T>
+    void a(T t) {
+        cout << "AndroidSpObj 引用计数:" << t << endl;
+    }
+};
+int main() {
+    android::wp<AndroidSpObj> androidWp;
+    {
+        android::sp<AndroidSpObj> androidSp(new AndroidSpObj());
+        androidSp->a(androidSp->getStrongCount());
+        androidWp = androidSp;
+        {
+            android::sp<AndroidSpObj> androidSp2(androidSp);
+            android::sp<AndroidSpObj> androidSp3 = androidSp;
+            android::sp<AndroidSpObj> androidSp4 = androidWp.promote();
+            androidSp->a(androidSp->getStrongCount());
+
+        }
+        androidSp->a(androidSp->getStrongCount());
+    }
+    android::sp<AndroidSpObj> androidSp5 = androidWp.promote();
+    if (androidSp5 == nullptr) {
+        cout << " 空指针" << endl;
+    }
+    return 0;
+}
+```
 
 ### *jni智能引用*{:.header3-font}
 

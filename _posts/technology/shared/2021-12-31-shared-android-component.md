@@ -15,3 +15,5 @@ tag:
 下载地址如下:
 
 - [android组件化]({{site.baseurl}}/asset/shared/android组件化.key)
+
+顺便推荐一下我的组件化项目[bundles-assembler](https://github.com/JamesfChen/bundles-assembler)

@@ -233,7 +233,7 @@ export interface Spec extends TurboModule {
 // 通过global.__turboModuleProxy获取名为UIManager的模块
 export default (TurboModuleRegistry.getEnforcing<Spec>('UIManager'): Spec);
 ```
-js侧与java侧的接口调用主要采用turbo，所以js侧的UIManager对应的java侧的UIManagerModule，如何不理解turbo，可以查看这一篇文章[React Native---Java和JavaScript通信机制]({{site.baseurl}}/2022-03-10/react-native-java-js-interoperability)
+js侧与java侧的接口调用主要采用turbo，所以js侧的UIManager对应的java侧的UIManagerModule，如果不理解turbo，可以查看这一篇文章[React Native---Java和JavaScript通信机制]({{site.baseurl}}/2022-03-10/react-native-java-js-interoperability)
 
 ```java
 @ReactModule(name = UIManagerModule.NAME)
@@ -253,7 +253,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   ...
 }
 ```
-根据设计模式为了保持java侧与js侧的接口一致性，UIManagerModule的内部实现全全交给了UIImplementation。
+根据设计模式为了保持java侧与js侧的接口一致性UIManagerModule只负责接口声明，实现全部交给UIImplementation。
 ```java
 public class UIImplementation {
   protected Object uiImplementationThreadLock = new Object();
@@ -374,7 +374,7 @@ ReactShadowNode
   ReactShadowNodeImpl
     LayoutShadowNode
 ```
-LayoutShadowNode节点相当于ViewManager也有很多被ReactProp注解标注的方法。
+LayoutShadowNode节点也有很多被ReactProp注解标注的方法。
 ```java
 LayoutShadowNode.java
 setWidth(Dynamic)
@@ -428,13 +428,14 @@ setShouldNotifyPointerLeave(boolean)
 setShouldNotifyPointerMove(boolean)
   @ReactProp(name = "onPointerMove")
 ```
-看完之后是不是会很熟悉，flexbox？ 对的。LayoutShadowNode是基于yoga，而yoga是一个实现flexbox的跨平台库，shadow树是react树在native的影子，所以每个节点的宽高位置是否发生变化。
+看完之后是不是会很熟悉，flexbox？ 对的。LayoutShadowNode是基于yoga，而yoga是一个实现flexbox的跨平台库。
 
 ```
-react 树(virtual 树) ---> shadow 树 ---> android view树
+react 树(virtual 树) ---> shadow 树(shadow树是react树在native的影子) ---> android view树
 ```
 
-在2022年react native的团队规划中，做了一次大的技术改造，将shadow树在cpp中实现，react采用fabric，整个渲染流水线发生了较大的变动。目前代码还没有完成，等完成再来分析。
+在2022年react native的团队规划中，做了一次大的技术改造，将shadow树在cpp中实现，react采用fabric，整个渲染流水线发生了较大的变动。目前代码还没有完成，等完成再来分析。除了官方的优化，shopify在渲染这块也做了大胆的尝试，抛弃了平台渲染直接用skia进行dom树渲染，项目这里[react-native-skia](https://github.com/Shopify/react-native-skia)
+
 ## *Reference*{:.header2-font}
 
 [JS 层渲染之 diff 算法](https://juejin.cn/post/6844904197096226824)

@@ -16,3 +16,4 @@ published : false
 [quickjs](https://github.com/bellard/quickjs)
 [j2v8](https://github.com/eclipsesource/J2V8)
 [js引擎比较](https://segmentfault.com/a/1190000039288517)
+[深入理解JSCore](https://tech.meituan.com/2018/08/23/deep-understanding-of-jscore.html)

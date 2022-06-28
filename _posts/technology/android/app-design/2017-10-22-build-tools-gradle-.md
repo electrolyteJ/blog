@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  构建工具Gradle
-description: 
+description: 使用groovy定义的dsl语言描述构建过程
 date: 2017-10-22 22:50:00
 share: true
 comments: true

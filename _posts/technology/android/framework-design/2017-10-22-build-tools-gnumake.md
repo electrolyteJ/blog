@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  构建工具GNU make
-description: 使用Makefile语言描述编译过程
+description: 使用Makefile语言描述构建过程
 date: 2017-10-11 22:50:00
 share: true
 comments: true

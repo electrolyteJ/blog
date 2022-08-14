@@ -431,10 +431,71 @@ MethodCallResult MethodInvoker::invoke(
 
 ### *javascript调用java接口，turbo方式*{:.header3-font}
 
-2022年react native架构进行了升级，原先使用的react package改为了turbo package。
+2022年react native架构进行了升级，提出了一种turbo package，使用turbo方式编写的模块使用懒加载，需要实现TurboReactPackage包与TurboModule模块。下面是一个sample的代码。
 
-SampleTurboModule.java
+SampleTurboModule js
+```javascript
+TurboModuleExample.js
+const React = require('react');
+const SampleTurboModuleExample = require('./SampleTurboModuleExample');
+
+exports.displayName = (undefined: ?string);
+exports.title = 'TurboModule';
+exports.category = 'Basic';
+exports.description = 'Usage of TurboModule';
+exports.examples = [
+  {
+    title: 'SampleTurboModule',
+    render: function (): React.Element<any> {
+      return <SampleTurboModuleExample />;
+    },
+  },
+];
+
+
+NativeSampleTurboModule.js
+...
+export interface Spec extends TurboModule {
+  // Exported methods.
+  +getConstants: () => {|
+    const1: boolean,
+    const2: number,
+    const3: string,
+  |};
+  +voidFunc: () => void;
+  +getBool: (arg: boolean) => boolean;
+  +getNumber: (arg: number) => number;
+  +getString: (arg: string) => string;
+  +getArray: (arg: Array<any>) => Array<any>;
+  +getObject: (arg: Object) => Object;
+  +getUnsafeObject: (arg: UnsafeObject) => UnsafeObject;
+  +getRootTag: (arg: RootTag) => RootTag;
+  +getValue: (x: number, y: string, z: Object) => Object;
+  +getValueWithCallback: (callback: (value: string) => void) => void;
+  +getValueWithPromise: (error: boolean) => Promise<string>;
+}
+
+export default (TurboModuleRegistry.getEnforcing<Spec>(
+  'SampleTurboModule',
+): Spec);
+
+```
+
+
+SampleTurboModule java
+
 ```java
+//export的接口声明
+public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
+  public NativeSampleTurboModuleSpec(ReactApplicationContext reactContext) {
+    super(reactContext);
+  }
+  ...
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public abstract double getNumber(double arg);
+  ...
+}
+//export的接口实现
 @ReactModule(name = SampleTurboModule.NAME)
 public class SampleTurboModule extends NativeSampleTurboModuleSpec {
     @DoNotStrip
@@ -447,9 +508,29 @@ public class SampleTurboModule extends NativeSampleTurboModuleSpec {
 }
 
 ```
-SampleTurboModuleSpec.cpp
+SampleTurboModule cpp
 ```cpp
+//cpp header
+namespace facebook {
+namespace react {
 
+/**
+ * C++ class for module 'SampleTurboModule'
+ */
+class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public JavaTurboModule {
+ public:
+  NativeSampleTurboModuleSpecJSI(const JavaTurboModule::InitParams &params);
+};
+
+std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(
+    const std::string &moduleName,
+    const JavaTurboModule::InitParams &params);
+
+} // namespace react
+} // namespace facebook
+
+//cpp source
+//该函数对应SampleTurboModule文件的getNumber
 static facebook::jsi::Value
 __hostFunction_NativeSampleTurboModuleSpecJSI_getNumber(
     facebook::jsi::Runtime &rt,
@@ -459,19 +540,60 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getNumber(
   return static_cast<JavaTurboModule &>(turboModule)
       .invokeJavaMethod(rt, NumberKind, "getNumber", "(D)D", args, count);
 }
-
+...
 NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
     const JavaTurboModule::InitParams &params)
     : JavaTurboModule(params) {
+  methodMap_["voidFunc"] =
+      MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
+
+  methodMap_["getBool"] =
+      MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getBool};
+
   methodMap_["getNumber"] = MethodMetadata{
       1, __hostFunction_NativeSampleTurboModuleSpecJSI_getNumber};
+
+  methodMap_["getString"] = MethodMetadata{
+      1, __hostFunction_NativeSampleTurboModuleSpecJSI_getString};
+
+  methodMap_["getArray"] =
+      MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getArray};
+
+  methodMap_["getObject"] = MethodMetadata{
+      1, __hostFunction_NativeSampleTurboModuleSpecJSI_getObject};
+
+  methodMap_["getRootTag"] = MethodMetadata{
+      1, __hostFunction_NativeSampleTurboModuleSpecJSI_getRootTag};
+
+  methodMap_["getValue"] =
+      MethodMetadata{3, __hostFunction_NativeSampleTurboModuleSpecJSI_getValue};
+
+  methodMap_["getValueWithCallback"] = MethodMetadata{
+      1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithCallback};
+
+  methodMap_["getValueWithPromise"] = MethodMetadata{
+      1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithPromise};
+
+  methodMap_["getConstants"] = MethodMetadata{
+      0, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
+}
+
+std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(
+    const std::string &moduleName,
+    const JavaTurboModule::InitParams &params) {
+  if (moduleName == "SampleTurboModule") {
+    return std::make_shared<NativeSampleTurboModuleSpecJSI>(params);
+  }
+  return nullptr;
 }
 ```
+上面的sample代码，我们可以看到在cpp层会将java侧的SampleTurboModule.java的函数信息注册到methodMap_。那么问题来了，懒加载的时机是什么时候？，也就是在哪里调用SampleTurboModuleSpec_ModuleProvider函数将SampleTurboModule.java的函数信息注册到methodMap_? 答案是require函数。当使用模块时，才会将java侧的模块信息注册到cpp层methodMap_
 
-使用turbo方式编写的模块使用是才会被加载，需要使用TurboReactPackage包与TurboModule。与global.nativeModuleProxy相比turbo也有一个proxy(global.__turboModuleProxy)。
+与global.nativeModuleProxy相比turbo也有一个proxy(global.__turboModuleProxy)。
 
 获取某个指定模块时，调用TurboModuleBinding#jsProxy。
 ```cpp
+//js:global.__turboModuleProxy --> cpp:TurboModuleBinding
 std::shared_ptr<TurboModule> TurboModuleBinding::getModule(
     const std::string &name) {
   std::shared_ptr<TurboModule> module = nullptr;

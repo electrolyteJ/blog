@@ -47,7 +47,7 @@ postSite(){
 	fi
 
 	# git push --force origin HEAD:gh-pages
-	git push --quiet --force https://$CI_TOKEN@github.com/deltajf/blog.git HEAD:gh-pages
+	git push --quiet --force https://$CI_TOKEN@github.com/electrolyteJ/blog.git HEAD:gh-pages
 	echo -e "\033[34m update successfully \033[0m"
 }
 postSite

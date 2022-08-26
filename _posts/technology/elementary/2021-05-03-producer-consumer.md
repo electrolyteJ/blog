@@ -209,7 +209,7 @@ Message next() {
         }
 }
 ```
-MessageQueue#next是获取Message的方法，如果消息是异步消息，那么就不会被barrier拦住，barrier的功能是拦住非异步消息的被消费，这样就能把所有的cpu资源都给先要处理的事情，Choreographer就利用barrier拦住非异步的消息，然后递归View数。如果没有消息那么就会调用epoll编写native接口进行wait。wait这一块OkHttp的消费者TaskRunner则是基于java wait,这个到底孰强孰弱，有机会在看看，关于epoll的使用可以移步[这里代码](https://github.com/deltajf/attack-on-titan/blob/master/guard/src/main/jni/guard/event.cpp)
+MessageQueue#next是获取Message的方法，如果消息是异步消息，那么就不会被barrier拦住，barrier的功能是拦住非异步消息的被消费，这样就能把所有的cpu资源都给先要处理的事情，Choreographer就利用barrier拦住非异步的消息，然后递归View数。如果没有消息那么就会调用epoll编写native接口进行wait。wait这一块OkHttp的消费者TaskRunner则是基于java wait,这个到底孰强孰弱，有机会在看看，关于epoll的使用可以移步[这里代码](https://github.com/electrolyteJ/attack-on-titan/blob/master/guard/src/main/jni/guard/event.cpp)
 
 消费者Looper
 {:.filename}

@@ -62,7 +62,7 @@ MP3 | LAME|
 
 &emsp;&emsp;而对于封装技术更是种类繁多，用于存在于文件的封装技术，用于网络传输的封装技术。这里就不做过多介绍，有兴趣维基百科自己看看[wiki](https://en.wikipedia.org/wiki/Comparison_of_video_container_formats)。网络传输协议主要使用到的HTTP-TS(HLS)  HTTP-FLV  RTMP
 
-&emsp;&emsp;理解了这些内容就相当于半只脚入了门。如果想了解如何实现一个从推流端到服务端再到播流端的代码实现，可以阅读这个项目的源代码[deltajf/river](https://github.com/deltajf/river)，当然也希望您能给予这个项目star，因为这个项目目前的维护者和开发者都是博主我，让博主感受感受来着读者的反馈。
+&emsp;&emsp;理解了这些内容就相当于半只脚入了门。如果想了解如何实现一个从推流端到服务端再到播流端的代码实现，可以阅读这个项目的源代码[river](https://github.com/electrolyteJ/river)，当然也希望您能给予这个项目star，因为这个项目目前的维护者和开发者都是博主我，让博主感受感受来着读者的反馈。
 
 ## *3.Reference*{:.header2-font}
 [七牛直播云](https://developer.qiniu.com/pili/sdk/3719/PLDroidMediaStreaming-function-using)

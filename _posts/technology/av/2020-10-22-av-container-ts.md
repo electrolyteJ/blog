@@ -274,7 +274,7 @@ Stuffing Bytes|variable|length	0xff
           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 ### 打包
-代码来源项目[deltajf/river](https://github.com/deltajf/river/blob/master/server4py/app/container/ts.py),欢迎star
+代码来源项目[river](https://github.com/electrolyteJ/river/blob/master/server4py/app/container/ts.py),欢迎star
 ```python
     def muxe(self, frame, max_duration=3000) -> PacketList:
         if frame.header.is_keyframe():

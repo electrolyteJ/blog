@@ -44,6 +44,6 @@ HLS通过下发给客户端m3u8列表指明需要播放的ts文件列表。m3u8�
         #EXTINF:7.975,
         https://priv.example.com/fileSequence2682.ts
 ```
-直播与点播的区别在于EXT-X-ENDLIST，其表示了该m3u8文件有结尾，不会在向服务器请求下一个m3u8文件。直播server端代码已经实现，可以参考这个项目[deltajf/river](https://github.com/deltajf/river/blob/master/server4py/app/http_ts/server.py)
+直播与点播的区别在于EXT-X-ENDLIST，其表示了该m3u8文件有结尾，不会在向服务器请求下一个m3u8文件。直播server端代码已经实现，可以参考这个项目[river](https://github.com/electrolyteJ/river/blob/master/server4py/app/http_ts/server.py)
 ## *3.Reference*{:.header2-font}
 [HTTP Live Streaming](https://developer.apple.com/streaming/)

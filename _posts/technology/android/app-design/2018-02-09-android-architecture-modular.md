@@ -26,7 +26,7 @@ tag:
 
 先定义一下bundle和foundation,bundle是依附于app framework的native bundle(静态组件，动态插件)、flutter bundle、react native bundle、hybrid bundle，有些bundle具有动态性能被app framework动态加载；foundation是赋予上层能力的基础服务，更像是一些用来快速开发页面的toolkits，比如网络、存储、图像、音视频都是foundation。bundle之间存在通信，比如页面路由。
 
-说了这么多，还是让我们来看看代码怎么写的。结合[bundles-assembler](https://github.com/JamesfChen/bundles-assembler)这个项目来看，这个项目是我自己的开源项目，欢迎您的star/fork/pr。
+说了这么多，还是让我们来看看代码怎么写的。结合[bundles-assembler](https://github.com/deltajf/bundles-assembler)这个项目来看，这个项目是我自己的开源项目，欢迎您的star/fork/pr。
 
 ### 配置module
 bundle和foundation在gradle眼里都是module,所以一开始需要在module_config.json配置模块，模块配置好，还需要手动用android studio创建模块，这一块后面可以做成自动化生成。
@@ -70,9 +70,9 @@ sourceModules=app,hotel-bundle1,\
 apps=hotel-main,app,home-main
 ```
 
-利用工具(tools/module-manager-plugin-1.0.1.jar)来选择模块，对于fwk组必须不被exclude，因为作为基础服务要集成到项目中，exclude只会对app framework以上的模块，如果有兴趣了解工具的源码，来这里[康康](https://github.com/JamesfChen/bundles-assembler/tree/main/module-manager-intellij-plugin), 来点个![img](https://github.com/JamesfChen/bundles-assembler/blob/main/android/img.png)
+利用工具(tools/module-manager-plugin-1.0.1.jar)来选择模块，对于fwk组必须不被exclude，因为作为基础服务要集成到项目中，exclude只会对app framework以上的模块，如果有兴趣了解工具的源码，来这里[康康](https://github.com/deltajf/bundles-assembler/tree/main/module-manager-intellij-plugin), 来点个![img](https://github.com/deltajf/bundles-assembler/blob/main/android/img.png)
 
-![picture](https://github.com/JamesfChen/bundles-assembler/blob/main/android/tools/bundles.png)
+![picture](https://github.com/deltajf/bundles-assembler/blob/main/android/tools/bundles.png)
 
 ### 组件通信(ibc,inter-bundle communication)
 
@@ -84,7 +84,7 @@ cbpc,cross bundle procedure call
 - 暴露api给外部bundle模块，然后内部实现接口，需要在app framework注册暴露的api，方便search，实现方式与页面路由的第二种方法相似
 
 ### 监听App生命周期
-使用lifecycle-plugin，自动注册监听App，使用方式，移步这个项目[spacecraft-android-gradle-plugin](https://github.com/JamesfChen/spacecraft-android-gradle-plugin)
+使用lifecycle-plugin，自动注册监听App，使用方式，移步这个项目[spacecraft-android-gradle-plugin](https://github.com/deltajf/spacecraft-android-gradle-plugin)
 
 项目结构
 ```

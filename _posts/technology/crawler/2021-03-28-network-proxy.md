@@ -23,7 +23,7 @@ tcp代理有socks v4 v5，socks4支持tcp而socks5不仅支持tcp还支持udp,�
 那么是否有比起更低的网络代理？答案是有的，ip代理。通过在本地创建一块虚拟网卡tun，然后监听这张虚拟网卡。vpn就是起具体的实现方式，通过抓取tun网卡的包发送给vpns，vpns接收到并且解析包之后找出目标服务器地址并且连接和交换数据。
 
 tunnel代理、socks代理、vpn代理这三种代理方式在连接目标服务器的时候都要进行安全认证，以防止被恶意攻击。在破解app并且获取其中的网络密钥之后，通过vpn代理抓取到网络包然后使用密钥对包进行加解密就能篡改报文里面的某些重要字段，从而欺骗服务端和客户端达到某种目的。
-对于vpn代理中，一个包的结构包含多种协议，ip/udp/tcp/http等，所以在编解码时我们需要对包有清楚的认知。有兴趣的小伙伴可以看看我提供的这个开源库，里面提供了udp包、tcp包、ip包的结构[JamesfChen/oknem](https://github.com/JamesfChen/oknem/tree/main/androidvpn/app/src/main/java/com/jamesfchen/vpn/protocol)，只需轻轻点击即可获得成倍的抄作业快乐。
+对于vpn代理中，一个包的结构包含多种协议，ip/udp/tcp/http等，所以在编解码时我们需要对包有清楚的认知。有兴趣的小伙伴可以看看我提供的这个开源库，里面提供了udp包、tcp包、ip包的结构[deltajf/oknem](https://github.com/deltajf/oknem/tree/main/androidvpn/app/src/main/java/com/deltajf/vpn/protocol)，只需轻轻点击即可获得成倍的抄作业快乐。
 
 还有提供了packet_builder用来构建tcp握手与挥手时的包
 {:.filename}

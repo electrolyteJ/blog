@@ -84,7 +84,7 @@ HttpServiceMethod
     return adapt(call, args);
   }
 ```
-上面就是HttpServiceMethod构建CallAdapted的工程方法parseAnnotations,解析完注解提供的信息并构建ServiceMethod对象，然后会调用invoke方法发送请求。得到的Retrofit Call对象能被适配成各种对象，比如RxJava中的观察者对象,Rxjava的观察者对象通过链式调用操作各种操作符从而完成任务处理。对于这里使用的OkhttpCall是封装了Okhttp的网络请求，如果我们使用了UrlConnection，那么也可以封装成UrlConnectionCall，或者对于现在的很多公司都会基于tcp自定义协议，比如阿里mtop，携程sotp，也可以封装其Call。有兴趣的可以阅读我改造的这个项目[JamesfChen/super-retrofit](https://github.com/JamesfChen/super-retrofit)，就是实现这样一种逻辑。
+上面就是HttpServiceMethod构建CallAdapted的工程方法parseAnnotations,解析完注解提供的信息并构建ServiceMethod对象，然后会调用invoke方法发送请求。得到的Retrofit Call对象能被适配成各种对象，比如RxJava中的观察者对象,Rxjava的观察者对象通过链式调用操作各种操作符从而完成任务处理。对于这里使用的OkhttpCall是封装了Okhttp的网络请求，如果我们使用了UrlConnection，那么也可以封装成UrlConnectionCall，或者对于现在的很多公司都会基于tcp自定义协议，比如阿里mtop，携程sotp，也可以封装其Call。有兴趣的可以阅读我改造的这个项目[deltajf/super-retrofit](https://github.com/deltajf/super-retrofit)，就是实现这样一种逻辑。
 
 ```java
   @Override

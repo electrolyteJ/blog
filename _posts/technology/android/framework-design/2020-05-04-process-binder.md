@@ -135,7 +135,7 @@ public class BinderShadow implements IMyAidlInterface {
 
 这里要说一下IBinder(实现类Binder)的queryLocalInterface方法，该方法可以查询到该Binder服务对应的IInterface，像AMS对应的IActivityManager,PMS的IPackageManager，可以通过hook该方法拿到IInterface对象，然后使用java动态代理接口，拦截客户端发往framework的数据，篡改framework返回的数据，做一些不能做的事情。
 
-看完上面的代码我们就知道了，其实AIDL是用来声明rpc接口的代码，和Retrofit通过注解声明接口一样，不同的是Retrofit是通过接口的动态代理实现具体的远程调用，AIDL则是通过编译时生成静态代理。了解AIDL，那么我们不禁会问有没有一种远程通信是基于事件的，可以被动调用。还真有。这就让我们引出了下面的主角Messenger信使。没用过的可以看这里的代码[StartActivity](https://github.com/JamesfChen/Spacecraft/blob/master/components/template/src/main/java/com/hawksjamesf/template/StartActivity.java)、[MessengerService](https://github.com/JamesfChen/Spacecraft/blob/master/components/template/src/main/java/com/hawksjamesf/template/MessengerService.java)，接下来我们讲讲其本质是什么。
+看完上面的代码我们就知道了，其实AIDL是用来声明rpc接口的代码，和Retrofit通过注解声明接口一样，不同的是Retrofit是通过接口的动态代理实现具体的远程调用，AIDL则是通过编译时生成静态代理。了解AIDL，那么我们不禁会问有没有一种远程通信是基于事件的，可以被动调用。还真有。这就让我们引出了下面的主角Messenger信使。没用过的可以看这里的代码[StartActivity](https://github.com/deltajf/Spacecraft/blob/master/components/template/src/main/java/com/hawksjamesf/template/StartActivity.java)、[MessengerService](https://github.com/deltajf/Spacecraft/blob/master/components/template/src/main/java/com/hawksjamesf/template/MessengerService.java)，接下来我们讲讲其本质是什么。
 
 
 ```java

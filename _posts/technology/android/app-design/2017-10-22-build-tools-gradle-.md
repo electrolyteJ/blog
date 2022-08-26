@@ -83,7 +83,7 @@ buildTypes {
 
 &emsp;&emsp;基于这个流程Android团队提供了自己的插件给Android开发者写Android项目，并且有丰富的DSL文档[Android Plugin DSL Reference](https://google.github.io/android-gradle-dsl/current/)。如果想要看看Gradle官方提供的插件可以看看这个文档[Gradle Build Language Reference](https://docs.gradle.org/current/dsl/index.html)。
 
-&emsp;&emsp;为了验证流程，我在自己的项目[JamesfChen/Spacecraft](https://github.com/JamesfChen/Spacecraft)中添加如下log。
+&emsp;&emsp;为了验证流程，我在自己的项目[deltajf/Spacecraft](https://github.com/deltajf/Spacecraft)中添加如下log。
 
 SimpleWeather/settings.gradle
 ```groovy
@@ -490,7 +490,7 @@ apply plugin: GreetingPlugin
 ```
 如果代码量较多我们就不能写在build.gradle文件，需要像编写一个库一样来写插件。而这个时候我们就可以创建一个模块，也就是第二种。
 
-![]({{site.asseturl}}/build-tools/2017-10-22-gradle-project-structure.png){:.center-image}*项目的地址[JamesfChen/Spacecraft](https://github.com/JamesfChen/Spacecraft)*
+![]({{site.asseturl}}/build-tools/2017-10-22-gradle-project-structure.png){:.center-image}*项目的地址[deltajf/Spacecraft](https://github.com/deltajf/Spacecraft)*
 
 这里有几点需要注意的
 - 模块的名字必须是buildSrc。

@@ -1,13 +1,13 @@
 ---
 layout: post
-title: 图像 --- 前言
+title: 图像|前言
 description: 图像处理
 author: 电解质
 date: 2020-03-29 22:50:00
 share: true
 comments: true
 tag: 
-- app-design/image
+- elementary/image
 published : true
 ---
 

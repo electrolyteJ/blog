@@ -1,13 +1,13 @@
 ---
 layout: post
-title: Location系统 --- 启动流程
+title: LBS | 启动流程
 description: 讲解启动流程
 author: 电解质
 date: 2018-01-25 22:50:00
 share: true
 comments: true
 tag:
-- framework-design/location
+- elementary/lbs
 ---
 * TOC
 {:toc}

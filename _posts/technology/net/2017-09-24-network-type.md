@@ -1,12 +1,12 @@
 ---
 layout: post
-title: 网络制式
+title: 网络|网络制式
 description: 一篇对于网络制式的粗糙汇总
 date: 2017-09-24 22:50:00
 share: true
 comments: true
 tag:
-- elementary/others
+- elementary/network
 ---
 
 ## *Introduction*{:.header2-font}

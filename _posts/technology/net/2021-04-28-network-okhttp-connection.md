@@ -1,12 +1,12 @@
 ---
 layout: post
-title: 网络 --- Okhttp Connection的备胎之路
+title: 网络|Okhttp Connection的备胎之路
 description: socket管理
 author: 电解质
 date: 2021-04-28 22:50:00
 share: true
 tag: 
-- app-design/network
+- elementary/network
 ---
 ## *1.Summary*{:.header2-font}
 整理技术笔记才发现还有一些文章草稿没有收尾，2018年写到一半的文章准备发博客却因为一些不可控制的外力导致搁置，现在重新拿出来并且整理一下。Okhttp系列 ，I‘m back.

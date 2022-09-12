@@ -1,12 +1,12 @@
 ---
 layout: post
-title: 网络 --- OkHttp的金牌讲师Exchange
+title: 网络|OkHttp的金牌讲师Exchange
 description: HTTP1 && HTTP2
 author: 电解质
 date: 2021-04-29 22:50:00
 share: true
 tag: 
-- app-design/network
+- elementary/network
 ---
 ## *1.Introduction*{:.header2-font}
 如果说Connection是ConnectInterceptor的最佳发言人，那么Exchange绝对是CallServerInterceptor的金牌讲师,接下来我们就来讲讲Exchange如何在CallServerInterceptor这里发光发热。

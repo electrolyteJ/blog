@@ -1,4 +1,4 @@
 ---
 layout: tag_index
-tag: app-design/network
+tag: elementary/network
 ---

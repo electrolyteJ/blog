@@ -7,7 +7,7 @@ date: 2018-03-30
 share: true
 comments: true
 tag:
-- app-design/ui
+- android-app-design
 published : false
 ---
 * TOC

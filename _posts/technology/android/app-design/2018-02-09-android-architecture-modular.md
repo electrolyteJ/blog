@@ -7,7 +7,7 @@ date: 2018-02-09 22:50:00
 share: false
 comments: false
 tag: 
-- app-design/architecture
+- android-app-design
 ---
 * TOC
 {:toc}

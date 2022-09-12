@@ -5,7 +5,7 @@ description: 来一起聊聊AMS的启动流程
 author: 电解质
 date: 2018-03-14
 tag:
-- framework-design/service
+- android-framework-design
 ---
 * TOC
 {:toc}

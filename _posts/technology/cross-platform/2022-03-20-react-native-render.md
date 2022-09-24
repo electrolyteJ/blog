@@ -1,6 +1,6 @@
 ---
 layout: post
-title: React Native ---  渲染机制
+title: React Native ---  初代渲染器
 description: 如何渲染一个dom树的页面
 date: 2022-03-20 22:50:00
 share: false
@@ -13,8 +13,20 @@ published : true
 * TOC
 {:toc}
 ## *Introduction*{:.header2-font}
+### 名词解释
+- 渲染器renderer: React 可以自定义渲染器renderer，用于适配各个平台，浏览器、移动端、终端等。React的渲染器renderer有React DOM、React Native、Ink。
+- 渲染流水线pipeline：pipeline 的原义是将计算机指令处理过程拆分为多个步骤，并通过多个硬件处理单元并行执行来加快指令执行速度。其具体执行过程类似工厂中的流水线，并因此得名。React Native 渲染器(Fabric Renderer)在多个线程之间分配渲染流水线（render pipeline）任务。
+- 渲染流水线可大致分为三个阶段phase：
+    - 渲染（Render）
+    - 提交（Commit）
+    - 挂载（Mount）
+- 线程模型：渲染流水线的各个阶段可能发生在不同的线程，大多数渲染流水线发生在javascript线程与后台线程，当UI线程上有高优先级事件，渲染器能够在 UI 线程上同步执行所有渲染流水线。
+    - UIThread
+    - JSThread
+    - BGThread
 
-React Native渲染我们分为初次渲染与再次渲染，为了提高再次渲染的性能，使用了diff算法，通过比较前后两次的virtual dom，计算出差异项然后局部更新, 接下来我们先来分析初次渲染。
+
+React Native渲染场景我们分为初次渲染与再次渲染，为了提高再次渲染的性能，使用了diff算法，通过比较前后两次的virtual dom，计算出差异项然后局部更新, 接下来我们先来分析初次渲染。
 
 ### *1.自定义native ui component*{:.header3-font}
 先来点代码示例看看如何定义并且使用native ui component
@@ -233,7 +245,7 @@ export interface Spec extends TurboModule {
 // 通过global.__turboModuleProxy获取名为UIManager的模块
 export default (TurboModuleRegistry.getEnforcing<Spec>('UIManager'): Spec);
 ```
-js侧与java侧的接口调用主要采用turbo，所以js侧的UIManager对应的java侧的UIManagerModule，如果不理解turbo，可以查看这一篇文章[React Native---Java和JavaScript通信机制]({{site.baseurl}}/2022-03-10/react-native-java-js-interoperability)
+js侧与java侧的接口调用主要采用turbo，所以js侧的UIManager对应的java侧的UIManagerModule，如果不理解turbo，可以查看这一篇文章[React Native---Java和JavaScript互操作]({{site.baseurl}}/2022-03-10/react-native-java-js-interoperability)
 
 ```java
 @ReactModule(name = UIManagerModule.NAME)

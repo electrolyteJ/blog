@@ -1,6 +1,6 @@
 ---
 layout: post
-title: React Native ---  Java和JavaScript通信机制
+title: React Native ---  Java和JavaScript互操作
 description: Java <--> JavaScript
 date: 2022-03-10 22:50:00
 share: false
@@ -14,9 +14,9 @@ published : true
 {:toc}
 ## *Introduction*{:.header2-font}
 
-### *java 与 javascript 通信原理*{:.header3-font}
+### *java 与 javascript 互操作原理*{:.header3-font}
 
-1.java 与 cpp 通信
+#### *1.java 与 cpp 通信*{:.header3-font}
 
    java    | jni     | 内存分配
    |---|---|---|---|
@@ -111,15 +111,69 @@ jni
 - global_ref:引用计数指针.常常用于类成员变量，return到java侧并不会自动释放
 ```
 
-2.javascript 与 cpp 通信
+#### *2.javascript 与 cpp 通信*{:.header3-font}
 
    javascript    | jsi 
    |---|---
    js的对象 | host object
+   js的函数 | host functioin
+
+javascript调用cpp接口通过jsi， cpp调用javascript接口也是通过jsi
+
+```javascript
+//TurboModuleRegistry.js
+const turboModuleProxy = global.__turboModuleProxy;
+function requireModule<T: TurboModule>(name: string): ?T {
+  ...
+
+  if (turboModuleProxy != null) {
+    const module: ?T = turboModuleProxy(name);
+    return module;
+  }
+
+  return null;
+}
+...
+//TurboModuleBinding.cpp
+void TurboModuleBinding::install(
+    jsi::Runtime &runtime,
+    const TurboModuleProviderFunctionType &&moduleProvider,
+    TurboModuleBindingMode bindingMode,
+    std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection) {
+  runtime.global().setProperty(
+      runtime,
+      "__turboModuleProxy",
+      jsi::Function::createFromHostFunction(
+          runtime,
+          jsi::PropNameID::forAscii(runtime, "__turboModuleProxy"),
+          1,
+          [binding = TurboModuleBinding(
+               std::move(moduleProvider),
+               bindingMode,
+               std::move(longLivedObjectCollection))](
+              jsi::Runtime &rt,
+              const jsi::Value &thisVal,
+              const jsi::Value *args,
+              size_t count) mutable {
+            return binding.getModule(rt, thisVal, args, count);
+          }));
+}
+```
+js函数__turboModuleProxy为global对象的成员属性，在react native初始化的时候cpp层通过createFromHostFunction函数将入host function注入到global对象。
+
+createFromHostFunction函数参数如下
+- runtime：js引擎
+- name：函数名
+- paramCount：函数参数个数
+- func：函数体
+
 
 在react native中使用了jsi技术将cpp层的函数映射js侧的函数，就能相互调用.
 
+#### *3.java 与 javascript 通信*{:.header3-font}
 react native的java与javascript通信是基于前面两种融合实现的，前者使用jni后者使用jsi，cpp层作为了两者的桥梁。
+![arch]({{site.baseurl}}/asset/cross-platform/react-native-arch.jpeg)
+
 
 ### *javascript调用java接口*{:.header3-font}
 这里我们来案例分析一个例子，js如何调用java的接口。
@@ -199,7 +253,6 @@ export default NewModuleButton;
 - 调用native模块中的函数
 
 #### *1.获取native module*{:.header3-font}
----
 
 当NativeModules被import之后，NativeModules.js模块会被初始化，由于使用了jsi接口架构，NativeModule就是全局对象global的nativeModuleProxy
 ```typescript
@@ -429,7 +482,7 @@ MethodCallResult MethodInvoker::invoke(
 ```
 
 
-### *javascript调用java接口，turbo方式*{:.header3-font}
+#### *3.升级版turbo*{:.header3-font}
 
 2022年react native架构进行了升级，提出了一种turbo package，使用turbo方式编写的模块使用懒加载，需要实现TurboReactPackage包与TurboModule模块。下面是一个sample的代码。
 
@@ -729,14 +782,14 @@ JavaScriptModuleRegistry#getJavaScriptModule通过动态代理创建一个AppReg
 继续调用
 
 ```
----> CatalystInstance#callFunction
----> PendingJSCall#call
----> CatalystInstance#jniCallJSFunction
----> Instant#callJSFunction
----> NativeToJsBridge#callFunction(切到js线程)
----> JSIExecutor#callFunction
----> callFunctionReturnFlushedQueue_#call
----> MessageQueue#callFunctionReturnFlushedQueue(回调js接口) 
+---> java侧：CatalystInstance#callFunction
+---> java侧：PendingJSCall#call
+---> cpp层：CatalystInstance#jniCallJSFunction
+---> cpp层：Instant#callJSFunction
+---> cpp层：NativeToJsBridge#callFunction(切到mqt_js线程)
+---> cpp层：JSIExecutor#callFunction
+---> cpp层：callFunctionReturnFlushedQueue_#call
+---> javascript侧：MessageQueue#callFunctionReturnFlushedQueue(回调js接口) 
 ---> cpp层得到callFunctionReturnFlushedQueue返回的queue，如果还有数据就继续执行JSIExecutor#callNativeModules
 ```
 整个链路到最后通过js引擎调用js接口,再把值通过JsToNativeBridge返回给java调用者，为了保证js接口安全，NativeToJsBridge在处理时会切换到了mqt_js线程。

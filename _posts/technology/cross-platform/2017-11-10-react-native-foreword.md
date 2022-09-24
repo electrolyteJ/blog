@@ -19,16 +19,15 @@ tag:
 
 &emsp;&emsp;React Native在iOS平台使用的是WebKit，而在Android平台目前使用的也是Webkit，并不是平台提供的Chromium。Facebook对于JavaScriptCore引擎又进行了客制化。在github可以找到[facebook android-jsc](https://github.com/facebook/android-jsc)。知道了这些事之后，我们可以来做个大概的总结，其实React Native框架就是我们平时的原生开发通过libjsc.so等库去解析bundle（许多JavaScript文件的打包文件，为了提高性能所以进行了打包），而Java和JavaScript的交互就是通过这一层所谓的bridge完成的。所以由c/c++编写的库就像媒婆一样，为两者牵线搭桥。而我们想要去使用动态库libjsc,就需要知道它提供的API。Apple已经为我们提供了它的API文档[framework JavaScriptCore](https://developer.apple.com/documentation/javascriptcore)。也可以通过这一篇文章[JavaScriptCore Tutorial for iOS: Getting Started](https://www.raywenderlich.com/124075/javascriptcore-tutorial)简单了解一下JavaScriptCore引擎中的一些知识。
 
-![arch]({{site.baseurl}}/asset/cross-platform/react-native-arch.jpeg)
-
 
 &emsp;&emsp;说完这些知识点，我们就知道了其实React Native的存在就是为了让原生开发的一套规范转换到Web开发规范，既然换了一种开发方式就意味着你要学习Web开发的相关知识，这里推荐一篇博文供大家入门前端开发，[React 入门实例教程](http://www.ruanyifeng.com/blog/2015/03/react.html)
 
 &emsp;&emsp;之后我们将要学习的内容有如下：
 
+- [x] [React Native---Java和JavaScript互操作]({{site.baseurl}}/2022-03-10/react-native-java-js-interoperability)
 - [x] [React Native---启动流程]({{site.baseurl}}/2021-12-05/react-native-launch)
-- [x] [React Native---Java和JavaScript通信机制]({{site.baseurl}}/2022-03-10/react-native-java-js-interoperability)
-- [x] [React Native---渲染机制]({{site.baseurl}}/2022-03-20/react-native-render)
+- [x] [React Native---初代渲染器]({{site.baseurl}}/2022-03-20/react-native-render)
+- [x] [React Native---Fabric渲染器]({{site.baseurl}}/2022-09-22/react-native-fabric-render)
 - [ ] React Native---js引擎
 - [ ] React Native---开发者调试工具
 

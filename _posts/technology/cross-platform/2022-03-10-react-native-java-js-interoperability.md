@@ -467,7 +467,7 @@ MethodCallResult MethodInvoker::invoke(
 ---> JSIExecutor#callNativeModules 
 ---> JsToNativeBridge#callNativeModules 
 ---> ModuleRegistry#callNativeMethod
----> JavaNativeModule#invoke(切到mqt_native_bridge线程)
+---> JavaNativeModule#invoke(切到mqt_native_modules线程)
 ```
 这样就完成了异步操作。
 

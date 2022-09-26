@@ -640,24 +640,12 @@ std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(
   return nullptr;
 }
 ```
-上面的sample代码，我们可以看到在cpp层会将java侧的SampleTurboModule.java的函数信息注册到methodMap_。那么问题来了，懒加载的时机是什么时候？，也就是在哪里调用SampleTurboModuleSpec_ModuleProvider函数将SampleTurboModule.java的函数信息注册到methodMap_? 答案是require函数。当使用模块时，才会将java侧的模块信息注册到cpp层methodMap_
+上面的sample代码，我们可以看到在cpp层会将java侧的SampleTurboModule.java的函数元数据信息注册到methodMap_，注册的时机为jni load时。
 
-与global.nativeModuleProxy相比turbo也有一个proxy(global.__turboModuleProxy)。
 
-获取某个指定模块时，调用TurboModuleBinding#jsProxy。
 ```cpp
 //js:global.__turboModuleProxy --> cpp:TurboModuleBinding
-std::shared_ptr<TurboModule> TurboModuleBinding::getModule(
-    const std::string &name) {
-  std::shared_ptr<TurboModule> module = nullptr;
-  {
-    SystraceSection s("TurboModuleBinding::getModule", "module", name);
-    module = moduleProvider_(name);
-  }
-  return module;
-}
-
-jsi::Value TurboModuleBinding::jsProxy(
+jsi::Value TurboModuleBinding::getModule(
     jsi::Runtime &runtime,
     const jsi::Value &thisVal,
     const jsi::Value *args,
@@ -667,17 +655,45 @@ jsi::Value TurboModuleBinding::jsProxy(
         "__turboModuleProxy must be called with at least 1 argument");
   }
   std::string moduleName = args[0].getString(runtime).utf8(runtime);
-  jsi::Value nullSchema = jsi::Value::undefined();
 
-  std::shared_ptr<TurboModule> module = getModule(moduleName);
-  if (module == nullptr) {
+  std::shared_ptr<TurboModule> module;
+  {
+    SystraceSection s(
+        "TurboModuleBinding::moduleProvider", "module", moduleName);
+    module = moduleProvider_(moduleName);
+  }
+  if (module) {
+    // Default behaviour
+    if (bindingMode_ == TurboModuleBindingMode::HostObject) {
+      return jsi::Object::createFromHostObject(runtime, std::move(module));
+    }
+
+    auto &jsRepresentation = module->jsRepresentation_;
+    if (!jsRepresentation) {
+      jsRepresentation = std::make_unique<jsi::Object>(runtime);
+      if (bindingMode_ == TurboModuleBindingMode::Prototype) {
+        // Option 1: create plain object, with it's prototype mapped back to the
+        // hostobject. Any properties accessed are stored on the plain object
+        auto hostObject =
+            jsi::Object::createFromHostObject(runtime, std::move(module));
+        jsRepresentation->setProperty(
+            runtime, "__proto__", std::move(hostObject));
+      } else {
+        // Option 2: eagerly install all hostfunctions at this point, avoids
+        // prototype
+        for (auto &propName : module->getPropertyNames(runtime)) {
+          module->get(runtime, propName);
+        }
+      }
+    }
+    return jsi::Value(runtime, *jsRepresentation);
+  } else {
     return jsi::Value::null();
   }
-
-  return jsi::Object::createFromHostObject(runtime, std::move(module));
 }
 TurboModuleProviderFunctionType moduleProvider_;
 ```
+与global.nativeModuleProxy相比turbo也有一个proxy(global.__turboModuleProxy)，通过TurboModuleBinding类将js侧的global.__turboModuleProxy与cpp层的某个host function绑定。那么调用global.__turboModuleProxy(moduleName)就可直接调用TurboModuleBinding#getModule函数获取模块。
 
 通过codegen会自动生成cpp与java的turbo接口代码，java侧的TurboModule的接口签名信息与函数地址会被存储在cpp层的TurboModule#methodMap_中.
 

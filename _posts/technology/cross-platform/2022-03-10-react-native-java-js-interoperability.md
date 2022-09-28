@@ -804,10 +804,17 @@ JavaScriptModuleRegistry#getJavaScriptModule通过动态代理创建一个AppReg
 ---> cpp层：Instant#callJSFunction
 ---> cpp层：NativeToJsBridge#callFunction(切到mqt_js线程)
 ---> cpp层：JSIExecutor#callFunction
----> cpp层：callFunctionReturnFlushedQueue_#call
+---> cpp层：调用callFunctionReturnFlushedQueue_#call
 ---> javascript侧：MessageQueue#callFunctionReturnFlushedQueue(回调js接口) 
----> cpp层得到callFunctionReturnFlushedQueue返回的queue，如果还有数据就继续执行JSIExecutor#callNativeModules
-```
+---> javascript侧：...
+---> javascript侧：AppRegistry#runApplication 创建react元素树 与 shadow树
+---> javascript侧：MessageQueue#flushedQueue 数据通过queue传给cpp层
+---> cpp层：得到callFunctionReturnFlushedQueue_#call的返回结果
+---> cpp层：JsToNativeBridge#callNativeModules , isEndOfBatch的值为true时，会调用onBatchComplete函数
+---> java侧：ReactCallback#onBatchComplete
+---> java侧：NativeModuleRegistry#onBatchComplete
+---> java侧：UIManagerModule#onBatchComplete 开始异步计算shadow树的布局
+```  
 整个链路到最后通过js引擎调用js接口,再把值通过JsToNativeBridge返回给java调用者，为了保证js接口安全，NativeToJsBridge在处理时会切换到了mqt_js线程。
 
 MessageQueue|NativeToJsBridge|desc

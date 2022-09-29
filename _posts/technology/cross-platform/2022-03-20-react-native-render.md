@@ -14,7 +14,7 @@ published : true
 {:toc}
 ## *Introduction*{:.header2-font}
 ### 名词解释
-- 渲染器renderer: React 可以自定义渲染器renderer，用于适配各个平台，浏览器、移动端、终端等。React的渲染器renderer有React DOM、React Native、Ink。
+- 渲染器renderer: 使用React 提供的npm包[react-reconciler](https://www.npmjs.com/package/react-reconciler) 可以自定义渲染器renderer，React Native渲染器的npm包为[react-native-renderer](https://www.npmjs.com/package/react-native-renderer),github仓库为[packages/react-native-renderer](https://github.com/facebook/react/tree/main/packages/react-native-renderer)。React的渲染器renderer有React DOM、React Native、Ink，用于适配各个平台，浏览器、移动端、终端等
 - 渲染流水线pipeline：pipeline 的原义是将计算机指令处理过程拆分为多个步骤，并通过多个硬件处理单元并行执行来加快指令执行速度。其具体执行过程类似工厂中的流水线，并因此得名。React Native 渲染器(Fabric Renderer)在多个线程之间分配渲染流水线（render pipeline）任务。
 - 渲染流水线可大致分为三个阶段phase：
     - 渲染（Render）
@@ -26,8 +26,12 @@ published : true
     - BGThread
 
 
-React Native渲染场景我们分为初次渲染与再次渲染，为了提高再次渲染的性能，使用了diff算法，通过比较前后两次的virtual dom，计算出差异项然后局部更新, 接下来我们先来分析初次渲染。
+React Native渲染场景我们分为初次渲染与状态更新。
 
+```
+react元素树 ---> shadow树 ---> android view树
+```
+在2022年react native的团队规划中，做了一次大的技术改造，将shadow树在cpp中实现，react采用fabric，整个渲染流水线发生了较大的变动。目前代码还没有完成，等完成再来分析。除了官方的优化，shopify在渲染这块也做了大胆的尝试，抛弃了平台渲染直接用skia进行dom树渲染，项目这里[react-native-skia](https://github.com/Shopify/react-native-skia)
 ### *1.自定义native ui component*{:.header3-font}
 先来点代码示例看看如何定义并且使用native ui component
 
@@ -161,7 +165,7 @@ export default function App() {
 }
 ```
 
-在myview.js文件中通过requireNativeComponent函数懒加载HostComponent(native ui component).
+在myview.js文件中通过requireNativeComponent函数加载HostComponent(native ui component).
 
 requireNativeComponent.js
 ```typescript
@@ -170,12 +174,14 @@ const requireNativeComponent = <T>(uiViewClassName: string): HostComponent<T> =>
     getNativeComponentAttributes(uiViewClassName),
   ): any): HostComponent<T>);
 ```
-调用requireNativeComponent函数时会将组件名为key，获取组件属性的闭包存储在viewConfigCallbacks结构中。当进行页面的渲染时，
+调用requireNativeComponent函数时会将组件名为key，获取组件属性的闭包存储在viewConfigCallbacks结构中。
 
   
 
 ### *2.react应用页面初次渲染*{:.header3-font}
-之前在react应用启动流程篇章里面，最后我们讲到调用ReactNativeRenderer-prod.js中render函数进行组件的渲染时，会先创建ReactRootView对应的根节点FiberRootNode，接下就updateContainer开始渲染各个组件。
+
+#### *渲染阶段*{:.header3-font}
+渲染阶段会创建shadow树，shadow树用于布局(layout)ui，关于布局的计算会在提交阶段，那么来看看如何创建shadow树的。之前在react应用启动流程篇章里面，最后我们讲到调用ReactNativeRenderer-prod.js中render函数进行组件的渲染时，会先创建ReactRootView对应的根节点FiberRootNode，接下就updateContainer开始渲染各个组件。
 ```typescript
 //element：PerformanceLoggerContext.Provider 树  ，container：FiberRootNode
 function updateContainer(element, container, parentComponent, callback) {
@@ -202,6 +208,7 @@ function updateContainer(element, container, parentComponent, callback) {
 workInProgress的tag为5或者6时调用`ReactNativePrivateInterface.UIManager.createView`创建组件
 
 UIManager.js
+{:.fileName}
 ```typescript
 //UIManagerJSInterface 接口声明
 export interface UIManagerJSInterface extends Spec {
@@ -245,7 +252,7 @@ export interface Spec extends TurboModule {
 // 通过global.__turboModuleProxy获取名为UIManager的模块
 export default (TurboModuleRegistry.getEnforcing<Spec>('UIManager'): Spec);
 ```
-js侧与java侧的接口调用主要采用turbo，所以js侧的UIManager对应的java侧的UIManagerModule，如果不理解turbo，可以查看这一篇文章[React Native---Java和JavaScript互操作]({{site.baseurl}}/2022-03-10/react-native-java-js-interoperability)
+js侧与java侧的接口调用主要采用turbo，所以js侧UIManager对应的java侧UIManagerModule，如果不理解turbo，可以查看这一篇文章[React Native---Java和JavaScript互操作]({{site.baseurl}}/2022-03-10/react-native-java-js-interoperability)
 
 ```java
 @ReactModule(name = UIManagerModule.NAME)
@@ -318,10 +325,98 @@ public class UIImplementation {
   }
 }
 ```
-从UIImplementation的成员变量就能大概猜测其职能，维系一棵js侧树的shadow树来决定prop有没有发生变化，变化了就会发送操作指令create、update对真实的dom树进行更新。在createView阶段，会创建ShadowNode(LayoutShadowNode),对js侧的react dom树进行shadow。
-整棵ShadowNode树的基石是yoga，关于yoga后续有空可以来讲解一下。NativeViewHierarchyOptimizer会将操作指令发送到UIViewOperationQueue，等待下一帧绘制时，读取并且处理队列中的指令，比如ViewManager#createView方法。
+从UIImplementation的成员变量就能大概猜测其职能，维系一棵js侧树的shadow树来决定prop有没有发生变化，变化了就会发送操作指令create、update对真实的dom树进行更新。在createView阶段，会创建ShadowNode(LayoutShadowNode)对js侧的react dom树进行shadow。
+整棵shadow树的基石是yoga，关于yoga后续有空可以来讲解一下。NativeViewHierarchyOptimizer会将操作指令发送到UIViewOperationQueue。等到了下一帧绘制时，读取并且处理队列中的指令，比如ViewManager#createView方法。
 
-### *3.react应用页面再次渲染*{:.header3-font}
+#### *提交阶段*{:.header3-font}
+当渲染阶段的renderApplicatioin执行完成，cpp层的callFunctionReturnFlushedQueue_#call得到结果之后，经过一系列的调用链最后会调用UIManagerModule#onBatchComplete在mqt_native后台线程计算shadow树的布局。
+
+UIImplementation.java
+{:.fileName}
+```java
+public class UIImplementation {
+    /** Invoked at the end of the transaction to commit any updates to the node hierarchy. */
+  public void dispatchViewUpdates(int batchId) {
+    ...
+    try {
+      updateViewHierarchy();
+      mNativeViewHierarchyOptimizer.onBatchComplete();
+      mOperationsQueue.dispatchViewUpdates(batchId, commitStartTime, mLastCalculateLayoutTime);
+    } finally {
+     ...
+    }
+  }
+  protected void updateViewHierarchy() {
+    ...
+    try {
+      for (int i = 0; i < mShadowNodeRegistry.getRootNodeCount(); i++) {
+        int tag = mShadowNodeRegistry.getRootTag(i);
+        ReactShadowNode cssRoot = mShadowNodeRegistry.getNode(tag);
+
+        if (cssRoot.getWidthMeasureSpec() != null && cssRoot.getHeightMeasureSpec() != null) {
+          ...
+          try {
+            notifyOnBeforeLayoutRecursive(cssRoot);
+          } finally {
+            Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+          }
+
+          calculateRootLayout(cssRoot);
+          SystraceMessage.beginSection(
+                  Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIImplementation.applyUpdatesRecursive")
+              .arg("rootTag", cssRoot.getReactTag())
+              .flush();
+          try {
+            applyUpdatesRecursive(cssRoot, 0f, 0f);
+          } finally {
+            Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+          }
+
+          if (mLayoutUpdateListener != null) {
+            mOperationsQueue.enqueueLayoutUpdateFinished(cssRoot, mLayoutUpdateListener);
+          }
+        }
+      }
+    } finally {
+      ...
+    }
+  }
+}
+```
+1. updateViewHierarchy：calculateRootLayout计算shadow树的布局，包括width、height,applyUpdatesRecursive会把每个需要更新的shadow节点信息push到指令queue里面，等到下一帧到来处理
+2. dispatchViewUpdates: view command operations、non batched operations、batched operations会在下一帧绘制时在UI线程被处理
+
+
+
+#### *挂载阶段*{:.header3-font}
+
+挂载阶段为vsync信号发送到来之后，会调用DispatchUIFrameCallback。
+
+UIViewOperationQueue.java
+{:.fileName}
+```java
+private final class CreateViewOperation extends ViewOperation {
+  ...
+  @Override
+  public void execute() {
+      Systrace.endAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "createView", mTag);
+      mNativeViewHierarchyManager.createView(mThemedContext, mTag, mClassName, mInitialProps);
+  }
+  ...
+}
+private final class UpdateLayoutOperation extends ViewOperation {
+  ...
+  @Override
+  public void execute() {
+      Systrace.endAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "updateLayout", mTag);
+      mNativeViewHierarchyManager.updateLayout(mParentTag, mTag, mX, mY, mWidth, mHeight);
+  }
+  ...
+}
+```
+最先执行的ui原子操作指令为create，去构造某个View, 而update layout 指令是接下来负责将shadow树的layout结果更新到view树的每个节点
+
+### *3.react应用页面状态更新*{:.header3-font}
 ```java
 public class UIImplementation {
   ...
@@ -380,73 +475,6 @@ public class UIImplementation {
 
 之前我们讲过NativeViewHierarchyOptimizer#handleUpdateView会通过shadow树判断要不要更新属性，这块我们深挖一下。在UIImplementation#updateView过程中，会执行两个重要事情，一个updateProperties shadow树的节点，另外一个NativeViewHierarchyOptimizer#handleUpdateView。
 
-shadow节点的类结构图
-```
-ReactShadowNode
-  ReactShadowNodeImpl
-    LayoutShadowNode
-```
-LayoutShadowNode节点也有很多被ReactProp注解标注的方法。
-```java
-LayoutShadowNode.java
-setWidth(Dynamic)
-  @ReactProp(name = ViewProps.WIDTH)
-setMinWidth(Dynamic)
-  @ReactProp(name = ViewProps.MIN_WIDTH)
-setCollapsable(boolean)
-  @ReactProp(name = "collapsable")
-setMaxWidth(Dynamic)
-  @ReactProp(name = ViewProps.MAX_WIDTH)
-setHeight(Dynamic)
-  @ReactProp(name = ViewProps.HEIGHT)
-setMinHeight(Dynamic)
-  @ReactProp(name = ViewProps.MIN_HEIGHT)
-setMaxHeight(Dynamic)
-  @ReactProp(name = ViewProps.MAX_HEIGHT)
-setFlex(float)
-  @ReactProp(name = ViewProps.FLEX, defaultFloat = 0f)
-setFlexGrow(float)
-  @ReactProp(name = ViewProps.FLEX_GROW, defaultFloat = 0f)
-setFlexShrink(float)
-  @ReactProp(name = ViewProps.FLEX_SHRINK, defaultFloat = 0f)
-setFlexBasis(Dynamic)
-  @ReactProp(name = ViewProps.FLEX_BASIS)
-setAspectRatio(float)
-  @ReactProp(name = ViewProps.ASPECT_RATIO, defaultFloat = YogaConstants.UNDEFINED)
-setFlexDirection(String)
-  @ReactProp(name = ViewProps.FLEX_DIRECTION)
-setFlexWrap(String)
-  @ReactProp(name = ViewProps.FLEX_WRAP)
-setAlignSelf(String)
-  @ReactProp(name = ViewProps.ALIGN_SELF)
-setAlignItems(String)
-  @ReactProp(name = ViewProps.ALIGN_ITEMS)
-setAlignContent(String)
-  @ReactProp(name = ViewProps.ALIGN_CONTENT)
-setJustifyContent(String)
-  @ReactProp(name = ViewProps.JUSTIFY_CONTENT)
-setOverflow(String)
-  @ReactProp(name = ViewProps.OVERFLOW)
-setDisplay(String)
-  @ReactProp(name = ViewProps.DISPLAY)
-setPosition(String)
-  @ReactProp(name = ViewProps.POSITION)
-setShouldNotifyOnLayout(boolean)
-  @ReactProp(name = "onLayout")
-setShouldNotifyPointerEnter(boolean)
-  @ReactProp(name = "onPointerEnter")
-setShouldNotifyPointerLeave(boolean)
-  @ReactProp(name = "onPointerLeave")
-setShouldNotifyPointerMove(boolean)
-  @ReactProp(name = "onPointerMove")
-```
-看完之后是不是会很熟悉，flexbox？ 对的。LayoutShadowNode是基于yoga，而yoga是一个实现flexbox的跨平台库。
-
-```
-react 树(virtual 树) ---> shadow 树(shadow树是react树在native的影子) ---> android view树
-```
-
-在2022年react native的团队规划中，做了一次大的技术改造，将shadow树在cpp中实现，react采用fabric，整个渲染流水线发生了较大的变动。目前代码还没有完成，等完成再来分析。除了官方的优化，shopify在渲染这块也做了大胆的尝试，抛弃了平台渲染直接用skia进行dom树渲染，项目这里[react-native-skia](https://github.com/Shopify/react-native-skia)
 
 ## *Reference*{:.header2-font}
 

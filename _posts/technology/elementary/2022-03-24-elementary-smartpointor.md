@@ -118,9 +118,9 @@ JNI提供了两种引用JNILocalReference与JNIGlobalReference，在jni中env->N
 
 fbjni分装
 ```
-- alias_ref：non-owning reference, like a bare pointer。常常用户函数的形参
-- local_ref：引用计数指针。常常用户函数体内部应用，return 到java侧自动释放
-- global_ref:引用计数指针.常常用于类成员变量，return到java侧并不会自动释放
+- alias_ref：non-owning reference, like a bare pointer。用于函数的形参
+- local_ref：引用计数指针。用于函数体内部应用，return 到java侧自动释放
+- global_ref:引用计数指针。用于类成员变量，return到java侧并不会自动释放
 ```
 
 ## *Reference*{:.header2-font}

@@ -1,0 +1,13 @@
+site_name: My Docs
+site_url: https://example.com/
+nav:
+    - Home: index.md
+    - About: about.md
+theme: 
+    name: null
+    custom_dir: 'jtheme'
+    static_templates:
+    - 404.html
+plugins: ['search',
+# 'jplugin'
+]

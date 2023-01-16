@@ -5,7 +5,7 @@ description: SurfaceFlinger 、 Hardware Composer 、Gralloc 、 BufferQueue 、
 author: 电解质
 tag:
 - android-framework-design
-- renderer
+- elementary/renderer
 ---
 
 ## 名词解释

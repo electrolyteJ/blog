@@ -1,4 +1,4 @@
 ---
 layout: tag_index
-tag: renderer
+tag: elementary/renderer
 ---

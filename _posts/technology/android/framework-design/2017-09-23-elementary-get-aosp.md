@@ -6,11 +6,8 @@ date: 2017-09-23 22:50:00
 share: true
 comments: true
 tag:
-- elementary/others
-# - AOSP(SYS)
+- android-framework-design
 ---
-
-
 
 ## *1.Summary*{:.header2-font}
 &emsp;&emsp;在获取和编译AOSP代码遇到了一些坑，所以特意来写个文章记录一下，不然回头又忘记当初怎么解决坑的。健忘真是程序员的专长，今天出门之前提醒自己要带伞，结果出了门才发现没带。

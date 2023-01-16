@@ -1,6 +1,6 @@
 ---
 layout: post
-title: React Native ---  初代渲染器
+title: React Native |  初代渲染器
 description: 如何渲染一个dom树的页面
 date: 2022-03-20 22:50:00
 share: false
@@ -8,12 +8,12 @@ comments: false
 tag:
 # - react native
 - cross-platform
+- renderer
 published : true 
 ---
 * TOC
 {:toc}
-## *Introduction*{:.header2-font}
-### 名词解释
+## *名词解释*
 - 渲染器renderer: 使用React 提供的npm包[react-reconciler](https://www.npmjs.com/package/react-reconciler) 可以自定义渲染器renderer，React Native渲染器的npm包为[react-native-renderer](https://www.npmjs.com/package/react-native-renderer),github仓库为[packages/react-native-renderer](https://github.com/facebook/react/tree/main/packages/react-native-renderer)。React的渲染器renderer有React DOM、React Native、Ink，用于适配各个平台，浏览器、移动端、终端等
 - 渲染流水线pipeline：pipeline 的原义是将计算机指令处理过程拆分为多个步骤，并通过多个硬件处理单元并行执行来加快指令执行速度。其具体执行过程类似工厂中的流水线，并因此得名。React Native 渲染器(Fabric Renderer)在多个线程之间分配渲染流水线（render pipeline）任务。
 - 渲染流水线可大致分为三个阶段phase：
@@ -32,7 +32,7 @@ React Native渲染场景我们分为初次渲染与状态更新。
 react元素树 ---> shadow树 ---> android view树
 ```
 在2022年react native的团队规划中，做了一次大的技术改造，将shadow树在cpp中实现，react采用fabric，整个渲染流水线发生了较大的变动。目前代码还没有完成，等完成再来分析。除了官方的优化，shopify在渲染这块也做了大胆的尝试，抛弃了平台渲染直接用skia进行dom树渲染，项目这里[react-native-skia](https://github.com/Shopify/react-native-skia)
-### *1.自定义native ui component*{:.header3-font}
+## *自定义native ui component*
 先来点代码示例看看如何定义并且使用native ui component
 
 native ui componetn 声明
@@ -178,9 +178,9 @@ const requireNativeComponent = <T>(uiViewClassName: string): HostComponent<T> =>
 
   
 
-### *2.react应用页面初次渲染*{:.header3-font}
+## *react应用页面初次渲染*
 
-#### *渲染阶段*{:.header3-font}
+#### *渲染阶段*
 渲染阶段会创建shadow树，shadow树用于布局(layout)ui，关于布局的计算会在提交阶段，那么来看看如何创建shadow树的。之前在react应用启动流程篇章里面，最后我们讲到调用ReactNativeRenderer-prod.js中render函数进行组件的渲染时，会先创建ReactRootView对应的根节点FiberRootNode，接下就updateContainer开始渲染各个组件。
 ```typescript
 //element：PerformanceLoggerContext.Provider 树  ，container：FiberRootNode
@@ -208,7 +208,6 @@ function updateContainer(element, container, parentComponent, callback) {
 workInProgress的tag为5或者6时调用`ReactNativePrivateInterface.UIManager.createView`创建组件
 
 UIManager.js
-{:.fileName}
 ```typescript
 //UIManagerJSInterface 接口声明
 export interface UIManagerJSInterface extends Spec {
@@ -328,11 +327,10 @@ public class UIImplementation {
 从UIImplementation的成员变量就能大概猜测其职能，维系一棵js侧树的shadow树来决定prop有没有发生变化，变化了就会发送操作指令create、update对真实的dom树进行更新。在createView阶段，会创建ShadowNode(LayoutShadowNode)对js侧的react dom树进行shadow。
 整棵shadow树的基石是yoga，关于yoga后续有空可以来讲解一下。NativeViewHierarchyOptimizer会将操作指令发送到UIViewOperationQueue。等到了下一帧绘制时，读取并且处理队列中的指令，比如ViewManager#createView方法。
 
-#### *提交阶段*{:.header3-font}
+#### *提交阶段*
 当渲染阶段的renderApplicatioin执行完成，cpp层的callFunctionReturnFlushedQueue_#call得到结果之后，经过一系列的调用链最后会调用UIManagerModule#onBatchComplete在mqt_native后台线程计算shadow树的布局。
 
 UIImplementation.java
-{:.fileName}
 ```java
 public class UIImplementation {
     /** Invoked at the end of the transaction to commit any updates to the node hierarchy. */
@@ -388,12 +386,11 @@ public class UIImplementation {
 
 
 
-#### *挂载阶段*{:.header3-font}
+#### *挂载阶段*
 
 挂载阶段为vsync信号发送到来之后，会调用DispatchUIFrameCallback。
 
 UIViewOperationQueue.java
-{:.fileName}
 ```java
 private final class CreateViewOperation extends ViewOperation {
   ...
@@ -416,7 +413,7 @@ private final class UpdateLayoutOperation extends ViewOperation {
 ```
 最先执行的ui原子操作指令为create，去构造某个View, 而update layout 指令是接下来负责将shadow树的layout结果更新到view树的每个节点
 
-### *3.react应用页面状态更新*{:.header3-font}
+## *react应用页面状态更新*
 ```java
 public class UIImplementation {
   ...
@@ -476,7 +473,7 @@ public class UIImplementation {
 之前我们讲过NativeViewHierarchyOptimizer#handleUpdateView会通过shadow树判断要不要更新属性，这块我们深挖一下。在UIImplementation#updateView过程中，会执行两个重要事情，一个updateProperties shadow树的节点，另外一个NativeViewHierarchyOptimizer#handleUpdateView。
 
 
-## *Reference*{:.header2-font}
+## *参考资料*
 
 [JS 层渲染之 diff 算法](https://juejin.cn/post/6844904197096226824)
 

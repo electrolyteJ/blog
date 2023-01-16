@@ -1,14 +1,13 @@
 ---
-layout: page 
+layout: page
 title: About
-
 ---
 
 如果你能够看到这里，说明我的某一个点让你产生了兴趣，可能是我对于技术的追求，可能是我对于自己的思考，亦或者是我们都有类似的经历，与世界格格不入却依然还活着，更有可能的是我们看着相似的书籍，听着类似的音乐。不管怎么样，相遇就是缘分。
 
-## *这是我*{:.header2-font}
+## _这是我_{:.header2-font}
 
----------
+---
 
 <!-- 我的id叫做`电解质的狗窝`,毕业于非名牌大学的非计算机专业，但是如老罗一样我并没有感到自卑。我认为兴趣和才能驱动的事情，至少不会让我迷失方向。
 
@@ -21,28 +20,59 @@ title: About
 我喜欢书店，纯粹就是为了装个逼
 我喜欢。。。。。。 -->
 
-我的id叫做`电解质(:Electrolyte)`，这是我写字的地方。
+我的 id 叫做`电解质(:Electrolyte)`，这是我写字的地方。
+在通信行业做过Android ROM开发，在互联网行业做过Android应用开发与Android端爬虫，喜爱技术，聚焦大前端，关注性能优化，分享大前端技术、摄影、股票、人生感悟，理性地尝试与这个世界建立感性的连接。
+业余时间也在做这些事情
+- 研究后端技术
+- 运营自己的微信技术公众号
+- 写自己的开源项目[bundles-assembler](https://github.com/electrolyteJ/bundles-assembler)、[padb](https://github.com/electrolyteJ/padb)、[pisces](https://github.com/big-frontend/pisces)、[super-retrofit](https://github.com/electrolyteJ/super-retrofit)
 
-曾经从事过Android ROM定制的工作，目前从事的工作是Android应用开发。
+如果你也在学习这些东西欢迎探讨
 
-喜爱技术，致力于成为全栈工程师，业余时间在学习前后端以及人工智能相关的知识，如果你也在学习这些方面的技术欢迎探讨。
+## _联系我_{:.header2-font}
 
-## *联系我*{:.header2-font}
----------
-由于在渐渐摆脱社交软件的使用，所以欢迎给我写邮件，我的邮箱地址是  `hawks.jamesf@gmail.com` ，除了这个，还可以在下面的地方找到我。
-<ul>
-<li>听歌的地方：网易云音乐id [ 电解质的音乐工作室 ]</li>
-</ul>
-<ul>
- {% if site.social.github %}
-    <li>
-     写代码的地方： <a title="{{ site.social.github }} on Github" href="https://github.com/{{ site.social.github }}" target="_blank"><i class="fa fa-github fa-2x"></i></a>
-    </li>
-  {% endif %}
-</ul>
+---
+
+由于在渐渐摆脱社交软件的使用，所以欢迎给我写邮件，我的邮箱地址是 `hawks.jamesf@gmail.com` ，除了这个，还可以在下面的地方找到我。
 
 <ul>
-  {% if site.social.douban %}
+<li>微信公众号：未知思考</li>
+{% if site.social.zhihu %}
+
+  <li>
+    知乎：<a title="{{ site.social.zhihu }} zhihu" href="https://www.zhihu.com/people/{{ site.social.zhihu }} " target="_blank">
+      <!-- <span class="fa-stack fa-lg"> -->
+      <!-- <i class="fa   fa-inverse  fa-2x">知</i> -->
+      <i class="fa   fa-stop-circle  fa-2x">知</i>
+      <!-- <i class="fa fa-check-circle fa-2x"></i> -->
+      <!-- <i class="fa fa-stack-1x fa-circle-o"></i> -->
+      <!-- </span> -->
+    </a>
+  </li>
+{% endif %} 
+{% if site.social.weibo %}
+  <li>
+    <a title="{{ site.social.weibo }} weibo" href="http://weibo.com/{{ site.social.weibo }} " target="_blank">
+      <i class="fa fa-weibo fa-2x"></i>
+    </a>
+  </li>
+{% endif %}
+<!-- {% if site.social.bilibili %}
+  <li>
+    做视频的地方：<a title="{{ site.social.bilibili }} bilibili" href="https://space.bilibili.com/{{ site.social.bilibili }} " target="_blank">
+      <i class="fa   fa-stop-circle  fa-2x">bilibili</i>
+    </a>
+  </li>
+{% endif %} -->
+
+{% if site.social.github %}
+<li>
+写代码的地方： <a title="{{ site.social.github }} on Github" href="https://github.com/{{ site.social.github }}" target="_blank"><i class="fa fa-github fa-2x"></i></a>
+</li>
+{% endif %}
+
+{% if site.social.douban %}
+
   <li>
     看书的地方：<a title="{{ site.social.douban }} douban" href="https://www.douban.com/people/{{ site.social.douban }} " target="_blank">
       <!-- <span class="fa-stack fa-lg"> -->
@@ -55,21 +85,3 @@ title: About
   </li>
 {% endif %}
 </ul>
-
-<ul>
- {% if site.social.bilibili %}
-  <li>
-    做视频的地方：<a title="{{ site.social.bilibili }} bilibili" href="https://space.bilibili.com/{{ site.social.bilibili }} " target="_blank">
-      <!-- <span class="fa-stack fa-lg"> -->
-      <!-- <i class="fa   fa-inverse  fa-2x">知</i> -->
-      <i class="fa   fa-stop-circle  fa-2x">bilibili</i>
-      <!-- <i class="fa fa-check-circle fa-2x"></i> -->
-      <!-- <i class="fa fa-stack-1x fa-circle-o"></i> -->
-      <!-- </span> -->
-    </a>
-  </li>
-  {% endif %}
-</ul>
-
-
-

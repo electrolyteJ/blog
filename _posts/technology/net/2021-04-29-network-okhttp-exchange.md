@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 网络|OkHttp的金牌讲师Exchange
+title: 网络 | OkHttp的金牌讲师Exchange
 description: HTTP1 && HTTP2
 author: 电解质
 date: 2021-04-29 22:50:00
@@ -8,7 +8,8 @@ share: true
 tag: 
 - elementary/network
 ---
-## *1.Introduction*{:.header2-font}
+* TOC
+{:toc}
 如果说Connection是ConnectInterceptor的最佳发言人，那么Exchange绝对是CallServerInterceptor的金牌讲师,接下来我们就来讲讲Exchange如何在CallServerInterceptor这里发光发热。
 
 CallServerInterceptor
@@ -215,7 +216,7 @@ class Http2ExchangeCodec(
 Http2Stream#takeHeaders获取头部帧，其数据来源于Http2Connection$ReaderRunnable任务，其任务会不停的重Http2Reader#nextFrame取并传给Http2Stream#takeHeaders
 
 
-## *2.Reference*{:.header2-font}
+## *参考资料*{:.header2-font}
 [HTTP 协议入门](http://www.ruanyifeng.com/blog/2016/08/http.html)
 [[译] HPACK：http2中沉默的杀手](https://juejin.im/post/6844904047594438670)
 [HTTP/2 中的帧定义](https://halfrost.com/http2-http-frames-definitions/)

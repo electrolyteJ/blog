@@ -1,18 +1,38 @@
 ---
 layout: post
-title: 这些Window们 --- Activity的Window创建
-description: 应用窗口
+title: Android | Window
+description: 打开窗口看UI
 author: 电解质
 date: 2018-03-23
-share: true
-comments: true
 tag:
 - android-framework-design
 ---
 * TOC
 {:toc}
 
-## *1.Introduction*{:.header2-font}
+Window在Android中是非常重要的，围绕其实现的系统也是非常的复杂，但是Android团队通过封装其Framework层接口，向外提供了WindowManager，能让开发者简单而又快速的add自己的view。不过对于想更加深入理解像应用窗口、子窗口、系统窗口如何被coding出来的程序员来说，阅读Activity、Dialog、Toast等是非常有用的。
+
+## *Window*
+### *窗口类型(type)*
+
+首先要知道Android中窗口的分布是按照z-order的，也就是指向屏幕外的z轴。z-order值越大，就会覆盖住值越小的，从而也就更能被我们看到。这些值被按照窗口类型分为：应用窗口（1-99）、子窗口（1000 - 1999）、系统窗口（2000-2999）
+
+![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-23-Window-types.png)
+
+### *窗口标识(flag)*
+其次，你还可以控制窗口的flag，是否焦点、是否允许在锁屏显示、是否全屏等。
+
+![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-23-Window-flags.png)
+
+### *软键盘与窗口的调校模式(soft input mode)*
+还有控制ime的参数
+
+![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-23-Window-softinput.png)
+
+
+当然了你还可以设置窗口的其他属性，比如宽高、透明度、gravity、margin等。
+
+## *Activity的应用窗口创建* 
 
 ### *attach*{:.header3-font}
 
@@ -434,4 +454,380 @@ frameworks/base/core/java/com/android/internal/policy/PhoneWindow.java
                 
 
 
+## *Dialog的子窗口创建*
 
+### *创建Dialog*{:.header3-font}
+
+```java
+    Dialog(@NonNull Context context, @StyleRes int themeResId, boolean createContextThemeWrapper) {
+        if (createContextThemeWrapper) {
+            if (themeResId == ResourceId.ID_NULL) {
+                final TypedValue outValue = new TypedValue();
+                context.getTheme().resolveAttribute(R.attr.dialogTheme, outValue, true);
+                themeResId = outValue.resourceId;
+            }
+            mContext = new ContextThemeWrapper(context, themeResId);
+        } else {
+            mContext = context;
+        }
+
+        mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+
+        final Window w = new PhoneWindow(mContext);
+        mWindow = w;
+        w.setCallback(this);
+        w.setOnWindowDismissedCallback(this);
+        w.setOnWindowSwipeDismissedCallback(() -> {
+            if (mCancelable) {
+                cancel();
+            }
+        });
+        w.setWindowManager(mWindowManager, null, null);
+        w.setGravity(Gravity.CENTER);
+
+        mListenersHandler = new ListenersHandler(this);
+    }
+```
+&emsp;&emsp;很简单的构造器就是初始化Window对象，并且设置监听Window变化的回调。接着再来看看窗口的DecorView的创建和布局加载
+
+### *setContentView*{:.header3-font}
+
+```java
+public void setContentView(@LayoutRes int layoutResID) {
+        mWindow.setContentView(layoutResID);
+    }
+```
+&emsp;&emsp;和Activity一样都是通过Window的setContentView方法，来完成DecorView的创建和布局的加载。完成了这些下面就是要让WMS把我们的布局展现出来了。Activity是在onResum阶段之后调用了Activity的makeVisible方法完成的。那么Dialog是怎么做的 ？答案是通过Dialog的show方法。
+
+### *show*{:.header3-font}
+
+```java
+ public void show() {
+
+        ...
+
+        mWindowManager.addView(mDecor, l);
+        mShowing = true;
+
+    }
+```
+&emsp;&emsp;除了给我们提供show添加View，Dialog还为我们提供了移除View的操作，看看下面的代码你就懂了。
+```java
+    @Override
+    public void dismiss() {
+        if (Looper.myLooper() == mHandler.getLooper()) {
+            dismissDialog();
+        } else {
+            mHandler.post(mDismissAction);
+        }
+    }
+
+    void dismissDialog() {
+        ...
+
+        try {
+            mWindowManager.removeViewImmediate(mDecor);
+        } finally {
+            if (mActionMode != null) {
+                mActionMode.finish();
+            }
+            mDecor = null;
+            mWindow.closeAllPanels();
+            onStop();
+            mShowing = false;
+
+            sendDismissMessage();
+        }
+    }
+```
+&emsp;&emsp;由于Dialog的type为TYPE_APPLICATION_ATTACHED_DIALOG，之前我们讲的Activity的type是TYPE_APPLICATION，所以Dialog必须依附于Activity，其使用的token id就是父Window的，而不是Activity的AppWindowToken id。而接下来要将的Toast的TYPE_TOAST，不需要依附于任何的窗口。我们也可以定义自己的系统窗口，需要在Android manifest中声明权限，并且配置type为TYPE_APPLICATION_OVERLAY，这个Android O之后的API变动，之前的版本都是使用TYPE_SYSTEM_OVERLAY。
+
+## *Toast的系统窗口创建*
+
+### *addView*{:.header3-font}
+
+frameworks/base/core/java/android/widget/Toast.java
+&emsp;&emsp;当调用show时，就能显示弹出Toas，所以看看它是如何show的。
+```java
+    public void show() {
+        if (mNextView == null) {
+            throw new RuntimeException("setView must have been called");
+        }
+
+        INotificationManager service = getService();
+        String pkg = mContext.getOpPackageName();
+        TN tn = mTN;
+        tn.mNextView = mNextView;
+
+        try {
+            service.enqueueToast(pkg, tn, mDuration);
+        } catch (RemoteException e) {
+            // Empty
+        }
+    }
+```
+
+&emsp;&emsp;主要是通过Binder将数据传给NMS，NMS将这些数据封装成ToastRecord，而这一些ToastRecord被保存在mToastQueue里面。通过showNextToastLocked来完成Toast显示。
+
+frameworks/base/services/core/java/com/android/server/notification/NotificationManagerService.java
+```java
+public class NotificationManagerService extends SystemService {
+
+   private final IBinder mService = new INotificationManager.Stub() {
+        // Toasts
+        // ============================================================================
+
+        @Override
+        public void enqueueToast(String pkg, ITransientNotification callback, int duration)
+        {
+            ...
+
+            synchronized (mToastQueue) {
+                int callingPid = Binder.getCallingPid();
+                long callingId = Binder.clearCallingIdentity();
+                try {
+                    ToastRecord record;
+                    int index = indexOfToastLocked(pkg, callback);
+                    // If it's already in the queue, we update it in place, we don't
+                    // move it to the end of the queue.
+                    if (index >= 0) {
+                        record = mToastQueue.get(index);
+                        record.update(duration);
+                    } else {
+                        // Limit the number of toasts that any given package except the android
+                        // package can enqueue.  Prevents DOS attacks and deals with leaks.
+                        if (!isSystemToast) {
+                            int count = 0;
+                            final int N = mToastQueue.size();
+                            for (int i=0; i<N; i++) {
+                                 final ToastRecord r = mToastQueue.get(i);
+                                 if (r.pkg.equals(pkg)) {
+                                     count++;
+                                     if (count >= MAX_PACKAGE_NOTIFICATIONS) {
+                                         Slog.e(TAG, "Package has already posted " + count
+                                                + " toasts. Not showing more. Package=" + pkg);
+                                         return;
+                                     }
+                                 }
+                            }
+                        }
+
+                        Binder token = new Binder();
+                        mWindowManagerInternal.addWindowToken(token, TYPE_TOAST, DEFAULT_DISPLAY);
+                        record = new ToastRecord(callingPid, pkg, callback, duration, token);
+                        mToastQueue.add(record);
+                        index = mToastQueue.size() - 1;
+                        keepProcessAliveIfNeededLocked(callingPid);
+                    }
+                    // If it's at index 0, it's the current toast.  It doesn't matter if it's
+                    // new or just been updated.  Call back and tell it to show itself.
+                    // If the callback fails, this will remove it from the list, so don't
+                    // assume that it's valid after this.
+                    if (index == 0) {
+                        showNextToastLocked();
+                    }
+                } finally {
+                    Binder.restoreCallingIdentity(callingId);
+                }
+            }
+        }
+}
+}
+```
+&emsp;&emsp;不过为了防止DOS攻击，限制了50次发送Toast。接下来让我们来看看showNextToastLocked方法。
+
+
+frameworks/base/services/core/java/com/android/server/notification/NotificationManagerService.java
+```java
+public class NotificationManagerService extends SystemService {
+   @GuardedBy("mToastQueue")
+    void showNextToastLocked() {
+        ToastRecord record = mToastQueue.get(0);
+        while (record != null) {
+            if (DBG) Slog.d(TAG, "Show pkg=" + record.pkg + " callback=" + record.callback);
+            try {
+                record.callback.show(record.token);
+                scheduleTimeoutLocked(record);
+                return;
+            } catch (RemoteException e) {
+                ...
+            }
+        }
+    }
+}
+```
+&emsp;&emsp;看到这里已经很清楚了吧，其实在Application层通过enqueueToast方法，已经将Application层的TN(Binder)传给了Framework层，当时机成熟之时就会回调给Application层。
+
+
+frameworks/base/core/java/android/widget/Toast.java
+```java
+private static class TN extends ITransientNotification.Stub {
+
+
+    TN(String packageName, @Nullable Looper looper) {
+        ...
+        mHandler = new Handler(looper, null) {
+                @Override
+                public void handleMessage(Message msg) {
+                    switch (msg.what) {
+                        case SHOW: {
+                            IBinder token = (IBinder) msg.obj;
+                            handleShow(token);
+                            break;
+                        }
+                        case HIDE: {
+                            handleHide();
+                            // Don't do this in handleHide() because it is also invoked by
+                            // handleShow()
+                            mNextView = null;
+                            break;
+                        }
+                        case CANCEL: {
+                            handleHide();
+                            // Don't do this in handleHide() because it is also invoked by
+                            // handleShow()
+                            mNextView = null;
+                            try {
+                                getService().cancelToast(mPackageName, TN.this);
+                            } catch (RemoteException e) {
+                            }
+                            break;
+                        }
+                    }
+                }
+            };
+
+    }
+}
+```
+&emsp;&emsp;Application层通过Handler调度到了在show出Toas的线程。
+
+frameworks/base/core/java/android/widget/Toast.java
+```java
+ public void handleShow(IBinder windowToken) {
+            ...
+            if (mView != mNextView) {
+                // remove the old view if necessary
+                handleHide();
+                mView = mNextView;
+                Context context = mView.getContext().getApplicationContext();
+                String packageName = mView.getContext().getOpPackageName();
+                if (context == null) {
+                    context = mView.getContext();
+                }
+                mWM = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+                // We can resolve the Gravity here by using the Locale for getting
+                // the layout direction
+                final Configuration config = mView.getContext().getResources().getConfiguration();
+                final int gravity = Gravity.getAbsoluteGravity(mGravity, config.getLayoutDirection());
+                mParams.gravity = gravity;
+                if ((gravity & Gravity.HORIZONTAL_GRAVITY_MASK) == Gravity.FILL_HORIZONTAL) {
+                    mParams.horizontalWeight = 1.0f;
+                }
+                if ((gravity & Gravity.VERTICAL_GRAVITY_MASK) == Gravity.FILL_VERTICAL) {
+                    mParams.verticalWeight = 1.0f;
+                }
+                mParams.x = mX;
+                mParams.y = mY;
+                mParams.verticalMargin = mVerticalMargin;
+                mParams.horizontalMargin = mHorizontalMargin;
+                mParams.packageName = packageName;
+                mParams.hideTimeoutMilliseconds = mDuration ==
+                    Toast.LENGTH_LONG ? LONG_DURATION_TIMEOUT : SHORT_DURATION_TIMEOUT;
+                mParams.token = windowToken;
+                if (mView.getParent() != null) {
+                    if (localLOGV) Log.v(TAG, "REMOVE! " + mView + " in " + this);
+                    mWM.removeView(mView);
+                }
+                ...
+                try {
+                    mWM.addView(mView, mParams);
+                    trySendAccessibilityEvent();
+                } catch (WindowManager.BadTokenException e) {
+                    /* ignore */
+                }
+            }
+        }
+```
+&emsp;&emsp;到这里我们就知道了，如何show出一个Toast，那么如何remove掉的。其实是通过NotificationManagerService的scheduleTimeoutLocked方法。
+
+### *removeView*{:.header3-font}
+
+frameworks/base/services/core/java/com/android/server/notification/NotificationManagerService.java
+```java
+
+        {
+        public WorkerHandler(Looper looper) {
+            super(looper);
+        }
+
+        @Override
+        public void handleMessage(Message msg)
+        {
+            switch (msg.what)
+            {
+                case MESSAGE_TIMEOUT:
+                    handleTimeout((ToastRecord)msg.obj);
+                    break;
+                case MESSAGE_SAVE_POLICY_FILE:
+                    handleSavePolicyFile();
+                    break;
+                case MESSAGE_SEND_RANKING_UPDATE:
+                    handleSendRankingUpdate();
+                    break;
+                case MESSAGE_LISTENER_HINTS_CHANGED:
+                    handleListenerHintsChanged(msg.arg1);
+                    break;
+                case MESSAGE_LISTENER_NOTIFICATION_FILTER_CHANGED:
+                    handleListenerInterruptionFilterChanged(msg.arg1);
+                    break;
+            }
+        }
+
+    }
+    ...
+    private void handleTimeout(ToastRecord record)
+    {
+        if (DBG) Slog.d(TAG, "Timeout pkg=" + record.pkg + " callback=" + record.callback);
+        synchronized (mToastQueue) {
+            int index = indexOfToastLocked(record.pkg, record.callback);
+            if (index >= 0) {
+                cancelToastLocked(index);
+            }
+        }
+    }
+    ...
+    @GuardedBy("mToastQueue")
+    private void scheduleTimeoutLocked(ToastRecord r)
+    {
+        mHandler.removeCallbacksAndMessages(r);
+        Message m = Message.obtain(mHandler, MESSAGE_TIMEOUT, r);
+        long delay = r.duration == Toast.LENGTH_LONG ? LONG_DELAY : SHORT_DELAY;
+        mHandler.sendMessageDelayed(m, delay);
+    }
+
+        @GuardedBy("mToastQueue")
+    void cancelToastLocked(int index) {
+        ToastRecord record = mToastQueue.get(index);
+        try {
+            record.callback.hide();
+        } catch (RemoteException e) {
+            Slog.w(TAG, "Object died trying to hide notification " + record.callback
+                    + " in package " + record.pkg);
+            // don't worry about this, we're about to remove it from
+            // the list anyway
+        }
+
+        ToastRecord lastToast = mToastQueue.remove(index);
+        mWindowManagerInternal.removeWindowToken(lastToast.token, true, DEFAULT_DISPLAY);
+
+        keepProcessAliveIfNeededLocked(record.pid);
+        if (mToastQueue.size() > 0) {
+            // Show the next one. If the callback fails, this will remove
+            // it from the list, so don't assume that the list hasn't changed
+            // after this point.
+            showNextToastLocked();
+        }
+    }
+```
+这回就明白了，原来是通过NMS中的Handler发送延时remove view的消息。然后通过TN会回到给Application层的应用，然后调用WindowManager的removeView方法。

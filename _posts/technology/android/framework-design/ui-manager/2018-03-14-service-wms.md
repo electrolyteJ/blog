@@ -1,19 +1,16 @@
 ---
 layout: post
-title: Framework层的服务 --- WMS启动流程
-description: 来一起聊聊WMS的启动流程
+title: Android | WMS服务
+description: Window的管理者
 author: 电解质
-date: 2018-03-14
+date: 2018-03-22
+tag:
+- android-framework-design
 ---
 * TOC
 {:toc}
-## *1.Summary*{:.header2-font}
-&emsp;&emsp;
-## *2.About*{:.header2-font}
-&emsp;&emsp;
-## *3.Introduction*{:.header2-font}
 
-
+## *启动流程*
 WMS启动流程中主要的方法也就是下面的三个：
 - main
 - displayReady

@@ -7,7 +7,7 @@ share: true
 comments: true
 tag:
 - build-tools
-# - AOSP(SYS)
+- android-framework-design
 ---
 ## *1.Summary*{:.header2-font}
 &emsp;&emsp;在阅读GNU make构建工具相关资料的时候，一直在思考几个问题，

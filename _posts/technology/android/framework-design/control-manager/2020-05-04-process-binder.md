@@ -1,13 +1,13 @@
 ---
 layout: post
-title: Framework层的进程 --- 通信
+title: Framework层的进程 | 通信
 description: 都是Binder惹的祸
 author: 电解质
 date: 2020-05-04
 share: true
 comments: false
 tag:
-  - android-framework-design
+- android-framework-design
 ---
 ## *1.Introduction*{:.header2-font}
 去年欠下的债要用今年来还，今天带来一篇之前笔记整理的文章Binder通信。

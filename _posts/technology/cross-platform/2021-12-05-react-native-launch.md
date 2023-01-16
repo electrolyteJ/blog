@@ -1,29 +1,34 @@
 ---
 layout: post
-title: React Native ---  启动流程
+title: React Native | 启动流程
 description: 启动一个React应用
 date: 2021-12-05 22:50:00
 share: false
 comments: false
 tag:
-# - react native
-- cross-platform
-published : true 
+  # - react native
+  - cross-platform
+published: true
 ---
-* TOC
-{:toc}
-## *宿主应用的启动*{:.header2-font}
-在宿主应用的Application中必须实现ReactApplication接口的getReactNativeHost方法，该方法对整个宿主应用提供ReactNativeHost对象，ReactNativeHost对象暴露了这么一些数据。
-- React应用的入口(getJSMainModuleName)：e.g. "index.android"
-- 要加载的js bundle的文件位置(getBundleAssetName/getJSBundleFile):e.g. "index.android.bundle"
-- 自定义js执行器(getJavaScriptExecutorFactory)：有苹果的JavaScriptCore 还有 facebook自研Hermes
-- Application对象
-- 用来管理React应用的ReactInstanceManager对象
-- ReactPackage集合(getPackages)：暴露给js使用的native api(NativeModule) 或者 native view
 
-宿主应用的启动这里讲的主要是从点击应用启动图标到Application#onCreate这样一个流程，不包括splash启动页，因为对于有些react native应用ReactActivit就是启动页，这一块应该是属于React应用的启动。对于宿主应用的启动我们都比较熟悉就不展开，主要来讲讲React应用的启动。
-## *React应用的启动*{:.header2-font}
-React应用的入口类为ReactActivity类,由于ReactActivity的生命周期都委托给ReactActivityDelegate对象，所以主要分析ReactActivityDelegate
+- TOC
+{:toc}
+
+## _宿主应用的启动_
+
+在宿主应用的 Application 中必须实现 ReactApplication 接口的 getReactNativeHost 方法，该方法对整个宿主应用提供 ReactNativeHost 对象，ReactNativeHost 对象暴露了这么一些数据。
+
+- React 应用的入口(getJSMainModuleName)：e.g. "index.android"
+- 要加载的 js bundle 的文件位置(getBundleAssetName/getJSBundleFile):e.g. "index.android.bundle"
+- 自定义 js 执行器(getJavaScriptExecutorFactory)：有苹果的 JavaScriptCore 还有 facebook 自研 Hermes
+- Application 对象
+- 用来管理 React 应用的 ReactInstanceManager 对象
+- ReactPackage 集合(getPackages)：暴露给 js 使用的 native api(NativeModule) 或者 native view
+
+宿主应用的启动这里讲的主要是从点击应用启动图标到 Application#onCreate 这样一个流程，不包括 splash 启动页，因为对于有些 react native 应用 ReactActivit 就是启动页，这一块应该是属于 React 应用的启动。对于宿主应用的启动我们都比较熟悉就不展开，主要来讲讲 React 应用的启动。
+
+## _React 应用的启动_
+React 应用的入口类为 ReactActivity 类,由于 ReactActivity 的生命周期都委托给 ReactActivityDelegate 对象，所以主要分析 ReactActivityDelegate
 
 ```java
 public class ReactActivityDelegate {
@@ -36,13 +41,13 @@ public class ReactActivityDelegate {
     mActivity = activity;
     mMainComponentName = mainComponentName;
   }
-  
+
   protected ReactRootView createRootView() {
     return new ReactRootView(getContext());
   }
 
   /**
-  * 入口组件，在index.android中注册的组件 
+  * 入口组件，在index.android中注册的组件
   * e.g. AppRegistry.registerComponent('RNTesterApp', () => RNTesterApp);
   */
   public String getMainComponentName() {
@@ -62,12 +67,12 @@ public class ReactActivityDelegate {
       loadApp(mainComponentName);
     }
   }
-  
+
   protected void loadApp(String appKey) {
     mReactDelegate.loadApp(appKey);
     getPlainActivity().setContentView(mReactDelegate.getReactRootView());
   }
-  
+
   protected void onPause() {
     mReactDelegate.onHostPause();
   }
@@ -93,13 +98,17 @@ public class ReactActivityDelegate {
 }
 
 ```
-### *1.onCreate*{:.header3-font}
-- 在onCreate中会yload React App，异步创建全局ReactApplicationContext 与 加载js bundle
-- 将ReactRootView对象setContentView，等待js引擎加载完js bundle并且通过bridge将js组件对应的native组件add到ReactRootView，然后等待页面的渲染
 
-#### *java侧的load js bundle*{:.header3-font}
-------
-接下来我们来看看load React App的关键过程
+![js bundle][1]
+
+- 在 onCreate 中会 yload React App，异步创建全局 ReactApplicationContext 与 加载 js bundle
+- 将 ReactRootView 对象 setContentView，等待 js 引擎加载完 js bundle 并且通过 bridge 将 js 组件对应的 native 组件 add 到 ReactRootView，然后等待页面的渲染
+
+#### _java 侧的 load js bundle_
+
+---
+
+接下来我们来看看 load React App 的关键过程
 
 ```java
 public class ReactRootView extends SizeMonitoringFrameLayout
@@ -129,7 +138,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
 }
 ```
 
-createReactContextInBackground的调用链路：
+createReactContextInBackground 的调用链路：
 createReactContextInBackground--->recreateReactContextInBackgroundInner--->recreateReactContextInBackgroundFromBundleLoader--->recreateReactContextInBackground--->runCreateReactContextOnNewThread--[loop]-->runCreateReactContextOnNewThread
 
 ```java
@@ -143,7 +152,7 @@ public class ReactInstanceManager {
             new Runnable() {
               @Override
               public void run() {
-                ...  
+                ...
 
                 try {
                   ...
@@ -194,26 +203,32 @@ public class ReactInstanceManager {
     mCreateReactContextThread.start();
   }
   ...
-}  
+}
 ```
-在创建ReactContext链路中runCreateReactContextOnNewThread是主要方法,该方法主要会有下面的核心步骤
-- createReactContext:会启动一个线程创建ReactApplicationContext 与 加载js bundle。
-- setupReactContext:监听来自native模块队列的消息，并且告知各个native模块js初始化完毕
 
-ReactApplicationContext的创建比较简单就set一些对象比如全局的NativeModuleCallExceptionHandler处理器，CatalystInstance对象.其中解析ReactPackage的逻辑我们来分析一下。
+在创建 ReactContext 链路中 runCreateReactContextOnNewThread 是主要方法,该方法主要会有下面的核心步骤
 
-#### *解析ReactPackage*{:.header3-font}
-------
+- createReactContext:会启动一个线程创建 ReactApplicationContext 与 加载 js bundle。
+- setupReactContext:在mqt_native_module线程执行，会将已经创建的Context 注入到 mqt_native_module 线程，以供模块调用过程中使用 且 通过attachRootViewToInstance方法启动react app开始渲染react页面。
+
+ReactApplicationContext 的创建比较简单就 set 一些对象比如全局的 NativeModuleCallExceptionHandler 处理器，CatalystInstance 对象.其中解析 ReactPackage 的逻辑我们来分析一下。
+
+#### _解析 ReactPackage_
+
+---
+
 ```
 ReactPackage
 |--- TurboReactPackage
-     |--- CoreModulesPackage 
+     |--- CoreModulesPackage
      |--- DebugCorePackage
 |--- CompositeReactPackage
 ```
-在processPackage过程中，TurboReactPackage中的模块使用时才会加载，CompositeReactPackage会立马被加载。 在早期React Native会加载所有模块，经过turbo改造之后，很多模块都是使用时才会被加载，NativeModuleRegistry的模块都被移步到TurboModuleRegistry
 
-CoreModulesPackage包含的模块如下
+在 processPackage 过程中，TurboReactPackage 中的模块使用时才会加载，CompositeReactPackage 会立马被加载。 在早期 React Native 会加载所有模块，经过 turbo 改造之后，很多模块都是使用时才会被加载，NativeModuleRegistry 的模块都被移步到 TurboModuleRegistry
+
+CoreModulesPackage 包含的模块如下
+
 ```java
 @ReactModuleList(
     // WARNING: If you modify this list, ensure that the list below in method
@@ -232,7 +247,9 @@ CoreModulesPackage包含的模块如下
       NativeDevSplitBundleLoaderModule.class,
     })
 ```
-DebugCorePackage包含模块如下
+
+DebugCorePackage 包含模块如下
+
 ```java
 @ReactModuleList(
     nativeModules = {
@@ -240,21 +257,24 @@ DebugCorePackage包含模块如下
     })
 ```
 
+我们主要关注的是有 CatalystInstace 负责的 js bundle 加载过程，这里我们需要说明一下，单单从 CatalystInstace 名字我们就能知道其职责，催生一个 React 应用实例，其是一个混合对象，一部分是由 JVM 堆分配的 java 对象，一部分是由操作系统分配的 cpp 对象。
 
-我们主要关注的是有CatalystInstace负责的js bundle加载过程，这里我们需要说明一下，单单从CatalystInstace名字我们就能知道其职责，催生一个React应用实例，其是一个混合对象，一部分是由JVM堆分配的java对象，一部分是由操作系统分配的cpp对象。
 ```
-CatalystInstanceImpl.java                      CatalystInstanceImpl.cpp 
+CatalystInstanceImpl.java                      CatalystInstanceImpl.cpp
  loadScriptFromAssets                           jniLoadScriptFromAssets
  loadScriptFromFile/loadSplitBundleFromFile     jniLoadScriptFromFile
 ```
-CatalystInstanceImpl的cpp对象持有Instace的cpp对象，Instance对象是整个java 与 js 通信的关键点，其内部通过NativeToJsBridge对象(封装了js引擎)加载bundle，也能调用js的方法。
 
-创建完ReactContext 与 加载完js bundle之后，就会执行setupReactContext方法，通知各个模块js实例初始化完毕。
+CatalystInstanceImpl 的 cpp 对象持有 Instace 的 cpp 对象，Instance 对象是整个 java 与 js 通信的关键点，其内部通过 NativeToJsBridge 对象(封装了 js 引擎)加载 bundle，也能调用 js 的方法。
 
+创建完 ReactContext 与 加载完 js bundle 之后，就会执行 setupReactContext 方法，通知各个模块 Context初始化完毕 和渲染react app
 
-#### *cpp层的load js bundle*{:.header3-font}
-------
-当CatalystInstanceImpl类被加载到classloader，就会调用其静态代码块的逻辑,`ReactBridge.staticInit();`开始load so。load的过程主要是将java侧的native方法与cpp层的方法进行映射.
+#### _cpp 层的 load js bundle_
+
+---
+
+当 CatalystInstanceImpl 类被加载到 classloader，就会调用其静态代码块的逻辑,`ReactBridge.staticInit();`开始 load so。load 的过程主要是将 java 侧的 native 方法与 cpp 层的方法进行映射.
+
 ```cpp
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
   return initialize(vm, [] {
@@ -278,7 +298,9 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
   });
 }
 ```
-当实例化一个CatalystInstanceImpl对象之后，会在构造器中，初始化native到js的桥，在这条桥上游两条消息通道，一条通往js，一条通往模块调用
+
+当实例化一个 CatalystInstanceImpl 对象之后，会在构造器中，初始化 native 到 js 的桥，在这条桥上游两条消息通道，一条通往 js，一条通往模块调用
+
 ```cpp
 void Instance::initializeBridge(
     std::unique_ptr<InstanceCallback> callback,
@@ -308,9 +330,11 @@ void Instance::initializeBridge(
   CHECK(nativeToJsBridge_);
 }
 ```
-当做完这些初始化工作之后，cpp层接到java侧调用加载接口就会将控制权接手过来，其加载过程都是用cpp实现的。加载js bundle按照加载的源分为从assets加载、从远程调试器加载、从网络加载等，其抽象接口为JSBundleLoader，我们从assets加载来分析，主要入口是jniLoadScriptFromAssets
+
+当做完这些初始化工作之后，cpp 层接到 java 侧调用加载接口就会将控制权接手过来，其加载过程都是用 cpp 实现的。加载 js bundle 按照加载的源分为从 assets 加载、从远程调试器加载、从网络加载等，其抽象接口为 JSBundleLoader，我们从 assets 加载来分析，主要入口是 jniLoadScriptFromAssets
 
 CatalystInstanceImpl.cpp
+
 ```cpp
 void CatalystInstanceImpl::jniLoadScriptFromAssets(
     jni::alias_ref<JAssetManager::javaobject> assetManager,
@@ -335,7 +359,8 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
   }
 }
 ```
-react native将bundle分为三种plain bundle、ram bundle、hbc bundle(hemers引擎支持)，在android中ram bundle的实现为file ram bundle(JniJSModulesUnbundle类)，也支持indexed ram bundle(JSIndexedRAMBundle类)，ios的实现则为indexed ram bundle,具体看[这文章](https://blog.csdn.net/gg_ios/article/details/100663016)，所以在选择哪种加载时，我们能看到对于ram bundle的判断有两种`JniJSModulesUnbundle::isUnbundle`与`Instance::isIndexedRAMBundle`
+
+react native 将 bundle 分为三种 plain bundle、ram bundle、hbc bundle(hemers 引擎支持)，在 android 中 ram bundle 的实现为 file ram bundle(JniJSModulesUnbundle 类)，也支持 indexed ram bundle(JSIndexedRAMBundle 类)，ios 的实现则为 indexed ram bundle,具体看[这文章](https://blog.csdn.net/gg_ios/article/details/100663016)，所以在选择哪种加载时，我们能看到对于 ram bundle 的判断有两种`JniJSModulesUnbundle::isUnbundle`与`Instance::isIndexedRAMBundle`
 
 ```cpp
     1. file ram bundle加载流程
@@ -354,13 +379,14 @@ react native将bundle分为三种plain bundle、ram bundle、hbc bundle(hemers�
       loadRAMBundle(std::move(registry), std::move(startupScript), sourceURL, true);
     }
 ```
-比较两种加载方式，我们就会发现他们都会调用loadRAMBundle函数，该函数有三个形参
-1.bundleRegistry：ram bundle的注册中心
+
+比较两种加载方式，我们就会发现他们都会调用 loadRAMBundle 函数，该函数有三个形参
+1.bundleRegistry：ram bundle 的注册中心
 2.startupScript：入口脚本的内容
 3.startupScriptSourceURL：入口脚本的地址
 4.loadSynchronously：加载方式，同步或者异步
 
-loadRAMBundle函数会调用NativeToJsBridge同步或者异步的load ram bundle，采用哪种方式主要看传入的参数loadSynchronously。
+loadRAMBundle 函数会调用 NativeToJsBridge 同步或者异步的 load ram bundle，采用哪种方式主要看传入的参数 loadSynchronously。
 
 ```cpp
 //同步
@@ -404,7 +430,9 @@ void NativeToJsBridge::loadBundle(
       });
 }
 ```
-对比两个函数的调用链都一样，唯一不同的是异步加载通过消息队列异步完成调用链。接下来就到了很关键的地方，通过JSExecutor#loadBundle方法可以完成加载。对于react native的JSExecutor衍生类有三种，HermesExecutor、JSCExecutor、ProxyExecutor。他们分别封装了hermes runtime 、 jsc runtime，而ProxyExecutor主要用于远程调试使用，他代理其余两个真正的执行器。那么我们就挑选JSCExecutor接下去往下读。
+
+对比两个函数的调用链都一样，唯一不同的是异步加载通过消息队列异步完成调用链。接下来就到了很关键的地方，通过 JSExecutor#loadBundle 方法可以完成加载。对于 react native 的 JSExecutor 衍生类有三种，HermesExecutor、JSCExecutor、ProxyExecutor。他们分别封装了 hermes runtime 、 jsc runtime，而 ProxyExecutor 主要用于远程调试使用，他代理其余两个真正的执行器。那么我们就挑选 JSCExecutor 接下去往下读。
+
 ```cpp
 class JSCExecutorFactory : public JSExecutorFactory {
  public:
@@ -449,12 +477,15 @@ void JSIExecutor::loadBundle(
   }
 }
 ```
-JSCExecutor是java对象，JSExecutor真正的衍生类为JSIExecutor，注入的runtime是jsc，所以当就会将js bundle内容注入到jsc 的evaluateJavaScript方法，jsc引擎开始渲染页面
 
+JSCExecutor 是 java 对象，JSExecutor 真正的衍生类为 JSIExecutor，注入的 runtime 是 jsc，所以当就会将 js bundle 内容注入到 jsc 的 evaluateJavaScript 方法，jsc 引擎开始渲染页面
 
-#### *javascript层的load js bundle*{:.header3-font}
-------
-一个简单的react native项目结构
+#### _javascript 层的 load js bundle_
+
+---
+
+一个简单的 react native 项目结构
+
 ```
 android/
 ios/
@@ -464,8 +495,10 @@ index.js
 package.json
 ...
 ```
-当js bundle被加载到内存中，index.js入口文件中的`AppRegistry.registerComponent(appName, () => App);`会被执行，通过appName与ComponentProvider函数类型的对象注册到AppRegistry中。
+
+当 js bundle 被加载到内存中，index.js 入口文件中的`AppRegistry.registerComponent(appName, () => App);`会被执行，通过 appName 与 ComponentProvider 函数类型的对象注册到 AppRegistry 中。
 AppRegistry.js
+
 ```javascript
   registerComponent(
     appKey: string,
@@ -503,15 +536,46 @@ AppRegistry.js
     return appKey;
   },
 ```
-AppRegistery通过注册表runnables存储以appName为key，类对象为value。当java侧想要运行App，就可以通过appName到AppRegistery查询并且运行。
 
-### *2.onResume*{:.header3-font}
-执行生命周期ReactInstanceManager#onHostResume，ReactContext#onHostResume,没有什么重要的事情。
+AppRegistery 通过注册表 runnables 存储以 appName 为 key，类对象为 value。当 java 侧想要运行 App，就可以通过 appName 到 AppRegistery 查询并且运行。
 
-### *3.make visibilty*{:.header3-font}
-#### *java侧的run application*{:.header3-font}
-------
-执行ReactRootView的绘制流程，在ReactRootView的onMeasure时会执行attachToReactInstanceManager，将ReactRootView注册到UIManagerModule，紧接着调用AppRegistry的runApplication启动整个js框架，接着就是js组件的渲染，这个我们留给React Native渲染机制再讲.
+![run application][2]
+
+#### _java 侧的 run application_
+
+---
+
+```java
+    if (reactRoot.getUIManagerType() == FABRIC) {
+      rootTag =
+          uiManager.startSurface(
+              reactRoot.getRootViewGroup(),
+              reactRoot.getJSModuleName(),
+              initialProperties == null
+                  ? new WritableNativeMap()
+                  : Arguments.fromBundle(initialProperties),
+              reactRoot.getWidthMeasureSpec(),
+              reactRoot.getHeightMeasureSpec());
+      reactRoot.setShouldLogContentAppeared(true);
+    } else {
+      rootTag =
+          uiManager.addRootView(
+              reactRoot.getRootViewGroup(),
+              initialProperties == null
+                  ? new WritableNativeMap()
+                  : Arguments.fromBundle(initialProperties),
+              reactRoot.getInitialUITemplate());
+      reactRoot.setRootViewTag(rootTag);
+      reactRoot.runApplication();
+    }
+```
+在老架构中启动react 应用使用runApplication接口，新架构fabric则是在startSurface(java FabricUIManager#startSurface --> ,,, --> cpp SurfaceRegistryBinding#startSurface --> js RN$SurfaceRegistry#renderSurface(兜底逻辑AppRegistry#runApplication))启动。新架构目前还不稳定所以我们来研究老架构中的runApplication。
+
+
+执行 ReactRootView 的绘制流程，在 ReactRootView 的 onMeasure 时会执行 attachToReactInstanceManager，将 ReactRootView 注册到 UIManagerModule，紧接着调用 AppRegistry 的 runApplication 启动整个 js 框架，接着就是 js 组件的渲染，这个我们留给 React Native 渲染机制再讲.
+
+
+
 ```java
 public interface AppRegistry extends JavaScriptModule {
 
@@ -522,10 +586,14 @@ public interface AppRegistry extends JavaScriptModule {
   void startHeadlessTask(int taskId, String taskKey, WritableMap data);
 }
 ```
-#### *javascript层的run application*{:.header3-font}
-------
-调用js接口主要采用了java的动态代理，JavaScriptModuleRegistry#getJavaScriptModule方法，返回一个AppRegistry的代理类。当调用runApplication方法，就会执行CatalystInstance#jniCallJSFunction,最后会执行JSIExecutor$callFunction方法，执行js的runApplication接口
+
+#### _javascript 层的 run application_
+
+---
+
+调用 js 接口主要采用了 java 的动态代理，JavaScriptModuleRegistry#getJavaScriptModule 方法，返回一个 AppRegistry 的代理类。当调用 runApplication 方法，就会执行 CatalystInstance#jniCallJSFunction,最后会执行 JSIExecutor$callFunction 方法，执行 js 的 runApplication 接口
 AppRegistry.js
+
 ```javascript
   //启动app
   runApplication(
@@ -556,7 +624,8 @@ AppRegistry.js
     runnables[appKey].run(appParameters, displayMode);
   },
 ```
-通过caller传递的appName，运行对应的App，而run函数体中会调用`renderApplication`接口进行组件的渲染。
+
+通过 caller 传递的 appName，运行对应的 App，而 run 函数体中会调用`renderApplication`接口进行组件的渲染。
 
 ```javascript
 function renderApplication<Props: Object>(
@@ -611,28 +680,30 @@ function renderApplication<Props: Object>(
   ...
 }
 ```
-上面我们可以看到PerformanceLoggerContext.Provider 、AppContainer 、 RootComponent，这是三个重要的类,其中的、AppContainer主要封装了Inspector, RootComponen为react应用的树根。react native为了优化渲染系统引入了fabric，这里我们先不对其进行分析，先来看看在正式环境下面非fabric的逻辑代码,也就是`require('../Renderer/shims/ReactNative').render(renderable, rootTag);`。在正式环境下require导入的是ReactNativeRenderer-prod.js文件，其中export的接口类如下。
+
+上面我们可以看到 PerformanceLoggerContext.Provider 、AppContainer 、 RootComponent，这是三个重要的类,其中的、AppContainer 主要封装了 Inspector, RootComponen 为 react 应用的树根。react native 为了优化渲染系统引入了 fabric，这里我们先不对其进行分析，先来看看在正式环境下面非 fabric 的逻辑代码,也就是`require('../Renderer/shims/ReactNative').render(renderable, rootTag);`。在正式环境下 require 导入的是 ReactNativeRenderer-prod.js 文件，其中 export 的接口类如下。
+
 ```javascript
 export type ReactNativeType = {
   findHostInstance_DEPRECATED<TElementType: ElementType>(
-    componentOrHandle: ?(ElementRef<TElementType> | number),
+    componentOrHandle: ?(ElementRef<TElementType> | number)
   ): ?ElementRef<HostComponent<mixed>>,
   findNodeHandle<TElementType: ElementType>(
-    componentOrHandle: ?(ElementRef<TElementType> | number),
+    componentOrHandle: ?(ElementRef<TElementType> | number)
   ): ?number,
   dispatchCommand(
     handle: ElementRef<HostComponent<mixed>>,
     command: string,
-    args: Array<mixed>,
+    args: Array<mixed>
   ): void,
   sendAccessibilityEvent(
     handle: ElementRef<HostComponent<mixed>>,
-    eventType: string,
+    eventType: string
   ): void,
   render(
     element: Element<ElementType>,
     containerTag: number,
-    callback: ?() => void,
+    callback: ?() => void
   ): ?ElementRef<ElementType>,
   unmountComponentAtNode(containerTag: number): void,
   unmountComponentAtNodeAndRemoveContainer(containerTag: number): void,
@@ -641,4 +712,8 @@ export type ReactNativeType = {
   ...
 };
 ```
-导出的ReactNativeType#render函数接下来就开始了渲染逻辑。其中传入的实参rootTag为java侧的ReactRootView,React会根据rootTag构造出一个js侧的根节点FiberRootNode，来与Java侧的ReactRootView一一对应。当组件从`PerformanceLoggerContext.Provider ---> AppContainer ---> RootComponent`，一层一层往下渲染到App，真正的页面渲染才开始。React Native如何渲染，让我们来一一剖析一下[React Native ---  渲染机制]({{site.baseurl}}/2022-03-20/react-native-render)
+
+导出的 ReactNativeType#render 函数接下来就开始了渲染逻辑。其中传入的实参 rootTag 为 java 侧的 ReactRootView,React 会根据 rootTag 构造出一个 js 侧的根节点 FiberRootNode，来与 Java 侧的 ReactRootView 一一对应。当组件从`PerformanceLoggerContext.Provider ---> AppContainer ---> RootComponent`，一层一层往下渲染到 App，真正的页面渲染才开始。React Native 如何渲染，让我们来一一剖析一下[React Native 初代渲染器]({{site.baseurl}}/2022-03-20/react-native-render)、[React Native Fabric渲染器]({{site.baseurl}}/2022-09-22/react-native-fabric-render)
+
+[1]:{{site.baseurl}}/asset/cross-platform/WX20221031-012241.png
+[2]:{{site.baseurl}}/asset/cross-platform/WX20221031-212526.png

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: AV --- RTMP Protocol
+title: AV | RTMP Protocol
 description: 
 author: 电解质
 date: 2020-10-12 22:50:00

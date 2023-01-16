@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 网络|Okhttp Connection的备胎之路
+title: 网络 | Okhttp Connection的备胎之路
 description: socket管理
 author: 电解质
 date: 2021-04-28 22:50:00
@@ -8,9 +8,10 @@ share: true
 tag: 
 - elementary/network
 ---
-## *1.Summary*{:.header2-font}
+<!-- * TOC
+{:toc} -->
 整理技术笔记才发现还有一些文章草稿没有收尾，2018年写到一半的文章准备发博客却因为一些不可控制的外力导致搁置，现在重新拿出来并且整理一下。Okhttp系列 ，I‘m back.
-## *2.Introduction*{:.header2-font}
+
 前面我们在Okhttp和Volley这两个开源项目比较重试/重定向、缓存、请求池的设计 ，出门左转文件传送门[网络 --- Volley vs. OkHttp]({{site.baseurl}}/2018-04-19/network-volley-okhttp)，接下来我们只讲Okhttp怎么设计连接池。
 
 这还得从一个call调用开始说起，当应用层调用请求，紧接而来的就是责任链的一系列调用，对于责任链模式可以看这里的[JavaChainOfResponsibility](https://github.com/electrolyteJ/DesignPatterns/blob/master/src/main/java/behavioral/JavaChainOfResponsibility.java)。简单理解就是一个请求经过一条链式时，链上的每个节点会根据情况选择性的处理，如果其中有一节点不处理了往下的节点也就不会处理了。咦？这味道是不是有点熟悉，Android View树事件的分发。我们再把话题重新拉回来，在Okhttp中称呼这条链上的节点叫做拦截器，从应用层往下分别是：RetryAndFollowUpInterceptor、BridgeInterceptor、CacheInterceptor、ConnectInterceptor、CallServerInterceptor，这一节我们要将的就是ConnectInterceptor这个拦截器了。
@@ -443,5 +444,5 @@ private fun connectTls(connectionSpecSelector: ConnectionSpecSelector) {
 ```
 每次有个新连接被put到连接池中，都会触发clean任务。它会清理那些超过保活时间5min的连接或者超过6以上个处于空闲的连接，简单说就是那些到35岁的人或者团队超过6以上长时间不干活的人。你以为这样就clean up只会发生一次，太年轻了。如果clean完一个连接，紧接着马不停蹄没有delay的又开始下一次清理。如果发现这次清理的没有超过35岁或者不干活的人低于5以下，那么就会采取两种判断，如果0< 不干活人数 <=5，那么就会用保活时间减去取空闲时间最长人空闲的时间(keepAliveDurationNs - longestIdleDurationNs),其差作为下次clean任务的delay，等下次clean时，如果还不干活，就clean这个人。还有一种是既然35岁还没有到，比如34岁，就等一年在把他clean掉。那么有没有一种办法终止这种末位淘汰机制，还真有，公司倒闭了没有人了，clean循环停止。
 
-### *3.Reference*{:.header2-font}
+## *参考资料*{:.header2-font}
 [Java使用SSLSocket通信](https://my.oschina.net/itblog/blog/651608)

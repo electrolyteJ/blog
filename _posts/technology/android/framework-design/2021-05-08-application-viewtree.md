@@ -1,16 +1,17 @@
 ---
 layout: post
-title: 再谈View树
-description: 整理出2017年的笔记View
+title: Android | 再谈Android View树
+description: 整理了2017年的View笔记
 author: 电解质
 date: 2021-05-08
 share: true
 tag:
 - android-framework-design
+- renderer
 ---
 * TOC
 {:toc}
-## *1.Introduction*{:.header2-font}
+
 最近整理2017年关于View的笔记，重新修改了一下发出来，那么接下来就让我们open the door。
 
 我们知道当ActivityThreead通过binder这条通道向framework取到apk包的Application info、ContentProvider info、Activity info等组件数据之后,按部就班的完成Application、ContentProvider生命周期，接踵而来的Activity生命周期到resume时，就开始UI的表演了。
@@ -76,13 +77,13 @@ public final class ActivityThread {
 - wm.addView
 - wm.updateViewLayout
 
-### *a.WindowManager#addView*{:.header3-font}
+## *WindowManager#addView*
 
 对于Activity、Dialog、Toast、PopupWindow这些UI控制器，内部都维护着一个窗口,窗口又是View树的画板。那么如何往窗口添加View呢？App内部有个全局单例WindowManagerGlobal，它负责application层的addView、removeView。每当add一个view树根节点的时候，都会创建一个ViewRootImpl用于管理View树，然后将对于View树的控制权交给了ViewRootImpl，ViewRootImpl会绘制所有节点,事件分发等操作。对于Activity、Dialog来说View树的根节点为DecorView。
 
-#### *WindowManager/ViewRootImpl*{:.header3-font}
+#### *WindowManager/ViewRootImpl*
+
 WindowManager
-{:.filename}
 ```java
     //保存View树的根节点
     private final ArrayList<View> mViews = new ArrayList<View>();
@@ -94,7 +95,6 @@ WindowManager
 当调用WIndowManager#addView,会将View树根节点注入到ViewRootImpl对象，并且马不停蹄地开始测绘整个View树。我们知道在Activity的onResume之前还有onCreate，onCreate方法体内会将用户自定义的View树挂到DecorView，所以整个测绘过程漫长而且繁琐。
 
 ViewRootImpl：
-{:.filename}
 ```
 mWinFrame(framework层wms给的窗口大小,mWidth/mHeight)
 mAttachInfo(App层的窗口信息，其中也包括当前的窗口大小)
@@ -104,7 +104,7 @@ setView
     - addToDisplay
 ```
 
-当进行View树遍历时，通过barrier将主线程中同步消息屏蔽(异步消息依然会被处理)只会专注处理Choreographer发来的异步消息,紧接着Choreographer等待GPU发来的vsync信号。信号一到就通过异步消息切换到主线程依次完成事件、动画、View树测绘(先去掉barrier再开始测绘)。
+当进行View树遍历时，通过barrier将主线程中同步消息屏蔽(异步消息依然会被处理)只会专注处理Choreographer发来的异步消息,紧接着Choreographer等待屏幕发来的vsync信号。信号一到就通过异步消息切换到主线程依次完成事件、动画、View树测绘(先去掉barrier再开始测绘)。
 
 ```
 performTraversals
@@ -127,32 +127,10 @@ performTraversals
 
 只有第一次进行遍历View树，会执行setup 1 2;如果不是第一次并且DecorView的可见性发生了变化，则会执行setup 3
 
-在讲View测绘之前，我们先来讲讲一个更为重要的角色Choreographer。
 
-#### *Choreographer*{:.header3-font}
-为了描述方便这里默认系统的刷新率为60hz。
-
-为了提高Android的UI流畅性，Android团队采用了vsync+三buffer。其中处理vsync的Choreographer这个类，其类主要是用来监听vsync和调度vsync。那么vsync能带来什么？vsync能解决屏幕撕裂、跳帧、视觉伪影(抖动)的问题,能帮助屏幕(刷新率eg.60Hz)和应用(GPU 帧率 60fps or 60hz)实现帧同步。
-
-Choreographer每次post一个回调，都会调用DisplayEventReceiver#scheduleVsync向底层发送需要vsync的通知。屏幕的刷新率为60hz，在接受到vsync这个信号之后会处理一下事情然后通知Choreographer，Choreographer会doFrame这一帧，在下一次vsync来临之前得提前将frame写入buffer供屏幕使用，在这一帧里面会通知UI有四种类型的需要回调。这一帧必须要在16ms处理完不然就会出现掉帧。其实如果帧率一直是50fps这样稳定还看不出掉帧，比较明显的掉帧是帧率不稳定，一会50fps一会60fps在一会40fps掉帧的感觉就会比较明显。
-
-这里要说一下一帧的消耗怎么算？MessageQueue每次接受到一条message就会触发主线程Handler#dispatchMessage(handleCallback,handleMessage),从而完成一次ui更新。其中处理一条message消费的时间即为一帧的消耗。其实还有一种计算一帧耗时的方法往Choreographer的callback每次在方法快结束就post一条FrameCallback，然后计算两次的时间差。对帧率监控有兴趣的可以看看这些项目：matrix、ArgusAPM
-```
-# size 为4，其类型为如下
-# 1.输入事件callback
-# 2.动画callback
-# 3.递归view树callback，处理layout 和draw
-# 4.提交callback，处理post-draw的操作
-# 执行顺序也是从数组头部到尾部。
-CallbackQueue[] mCallbackQueues
-```
-CallbackQueue将CallbackRecord遵循时间排序以链表结构存储起来，而其方法extractDueCallbacksLocked就是获取现在时间之前的CallbackRecord链表，及时处理回调链。
-
-每个线程拿到的Choreographer对象都是互不影响(ThreadLocal),那么也就意味着，事件线程、动画线程(InvalidateOnAnimationRunnable)，ui测绘线程都有一个Choreographer。
-
-#### *View Tree*{:.header3-font}
+#### *View Tree*
 好了接下来我们来讲View的测绘吧，借张图让大家了解一下测绘流程
-![]({{site.asseturl}}/ui/readering-pipline.png){: .center-image }_`图片来自“从架构到源码：一文了解Flutter渲染机制”该文章`_
+![]({{site.asseturl}}/android-framework/readering-pipline.png){: .center-image }_`图片来自“从架构到源码：一文了解Flutter渲染机制”该文章`_
 
 ```
 ViewRootImpl#performTraversals
@@ -204,10 +182,10 @@ View的生命周期
 绘制的流程Android团队已经在源码中告诉了我们，从根开始自顶向下绘制，那么从用户的观察角度来说的话，远离用户观察角度的先绘制，然后逐渐到达用户，对于FrameLayout、LinearLayout、RelativeLayout ViewGroup这样的容器其实不怎么需要draw，都是交给叶子绘制，它们更多用于布局子节点们
 
 在执行完测绘之后，我们就需要将测绘之后完成的窗口通过WindowSession发送给wms，之后如果成功wms会返回并且真个窗口就可见了。
-### *b.WindowManager#updateViewLayout*{:.header3-font}
+## *WindowManager#updateViewLayout*
 在执行完addView之后窗口就变为可见了，这一切本该完成了，但是这启动的时候出现弹窗输入法的要求，那么就会updateViewLayout，重新开始整个窗口参数的调整，由于篇幅有限就不继续看下去了。
 
-### *c.View树事件分发*{:.header3-font}
+## *View树事件分发*
 说完了View树的测绘过程，我们还需要来了解它的事件分发。
 ```
 input pipline
@@ -229,7 +207,6 @@ Performs synthesis of new input events from unhandled input events
 在ViewRootImpl#setView的最后会注册事件管道,这里我们只看ViewPostImeInputStage
 
 ViewRootImpl$ViewPostImeInputStage.java
-{:.filename}
 ```java
 final class ViewPostImeInputStage extends InputStage {
 
@@ -272,7 +249,6 @@ final class ViewPostImeInputStage extends InputStage {
 事件分发从View树的根节点开始(dispatchPointerEvent)，但是为了让事件也能经过Activity，根节点会先发Activity，Activity再发给Window，Window再给根节点，后面就是自顶向下发送，所以通过这样一种逻辑我们可以给根节点发送一个我们模拟的事件就能做到自动化控制页面的效果了。由于事件分发代码较多，我们这里用伪代码来简化一下。
 
 ViewGroup.java/View.java
-{:.filename}
 ```java
 ViewGroup.java
 @Override
@@ -314,7 +290,7 @@ View
 ```
 与叶子节点不同的是，其父节点具备拦截功能，在事件分发的过程如果子节点不希望父节点拦截事件,可以通过`requestDisallowInterceptTouchEvent`
 
-## *2.Reference*{:.header2-font}
+## *参考资料*
 [从架构到源码：一文了解Flutter渲染机制](https://developer.aliyun.com/article/770384)
 
 

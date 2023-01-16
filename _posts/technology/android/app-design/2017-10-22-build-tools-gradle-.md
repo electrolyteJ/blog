@@ -1,26 +1,24 @@
 ---
 layout: post
-title:  构建工具Gradle
+title:  Android构建工具Gradle
 description: 使用groovy定义的dsl语言描述构建过程
 date: 2017-10-22 22:50:00
-share: true
-comments: true
 tag:
 - build-tools
-# - AOSP(APP)
+- android-app-design
 ---
-## *1.Summary*{:.header2-font}
-&emsp;&emsp;从Android团队开始宣布放弃Eclipse转投Android Studio时，构建工具Gradle进入了Android开发者的视野。而随着热修复、插件化、编译时注解的流行，深入了解Gradle就变得很有必要了。那么什么是Gradle ？
-## *2.About*{:.header2-font}
-&emsp;&emsp;Gradle是一个基于Ant构建工具，用Groovy DSL描述依赖关系的jar包。我们都知道早期的Android开发使用的是Eclipse,而Eclipse的构建工具使用的是Ant，用XML描述依赖关系，而XML存在太多的弊端，不如编程语言。所以Groovy代替了XML，最后集成为Gradle。而Groovy的诞生正是由于Java在后端某些地方不足，所以Apache开发了这门语言并且开源了代码，比如Groovy借鉴了很多现代语言，函数式编程、动态声明变量等特性，和Kotlin比较类似。各家公司也对其进行了大量使用，其中LinkedIn公司开源了许多的Gradle插件，有兴趣的可以下载源码看看。Gradle的使用场景也很多，单元测试，自动化集成，依赖库管理等。既然说到了Java在后端的应用，必然要说道Android端的Java，与之搭配的就是最近很火的Kotlin，Kotlin也是一门编程语言，具备很多像动态语言的特性，而且Kotlin和Groovy一样也可以写build.gradle文件，它们都是基于JVM的编程语言，都可以使用DSL去描述项目依赖关系。讲到这里我不禁佩服JVM生态，除了Kotlin、Groovy，还有Scala、 Clojure等,通过这些不同的语言可以去写不同层级的代码，而最后都是字节码。
+* TOC
+{:toc}
 
-## *3.Introduction*{:.header2-font}
-&emsp;&emsp;我们会介绍DSL、Gradle相关知识。
+### *Groovy DSL*
 
-### *Groovy DSL*{:.header3-font}
-&emsp;&emsp;首先Groovy语言的基本知识我们不进行探讨，网上与之相关的资料有很多。我们来讲讲它的DSL，因为Gradle提供的build.gradle配置文件就是用DSL来写的。那么什么是DSL？[维基百科](https://en.wikipedia.org/wiki/Domain-specific_language)里面描述的很清楚，但是具体到代码有哪些呢?就像Android里面的AIDL（Java DSL）、HIDL，前端的JQUERY（JavaScript DSL）。由于DSL是一种为解决某种问题的领域特定语言，而不像Java这种通用型计算机语言有语法解析器，所以Android团队写了解析AIDL的语法解析器，Gradle团队写了解析Groovy DSL的语法解析器。如果想要开发针对自己公司业务的DSL，那么可以自行到网上查找相关的学习资料。不过对于中小公司都是使用成熟的DSL框架，而不是从零开始，我们只要学会使用某个DSL框架就可以了，就比如Gradle框架,只要理解框架中插件的创建，任务的定义就可以了。
+从Android团队开始宣布放弃Eclipse转投Android Studio时，构建工具Gradle进入了Android开发者的视野。而随着热修复、插件化、编译时注解的流行，深入了解Gradle就变得很有必要了。那么什么是Gradle ？
 
-&emsp;&emsp;说了这么多不如来个代码感受一下。
+Gradle是一个用Groovy DSL描述模块依赖关系、构建任务的构建工具。我们都知道早期的Android开发使用的是Eclipse,而Eclipse的构建工具使用的是Ant，用XML描述依赖关系，而XML存在太多的弊端，不如编程语言。所以Groovy代替了XML，最后集成为Gradle。而Groovy的诞生正是由于Java在后端某些地方不足，所以Apache开发了这门语言并且开源了代码，比如Groovy借鉴了很多现代语言，函数式编程、动态声明变量等特性，和Kotlin比较类似。各家公司也对其进行了大量使用，其中LinkedIn公司开源了许多的Gradle插件，有兴趣的可以下载源码看看。Gradle的使用场景也很多，单元测试，自动化集成，依赖库管理等。既然说到了Java在后端的应用，必然要说道Android端的Java，与之搭配的就是最近很火的Kotlin，Kotlin也是一门编程语言，具备很多像动态语言的特性，而且Kotlin和Groovy一样也可以写build.gradle文件，它们都是基于JVM的编程语言，都可以使用DSL去描述项目依赖关系。讲到这里我不禁佩服JVM生态，除了Kotlin、Groovy，还有Scala、 Clojure等,通过这些不同的语言可以去写不同层级的代码，而最后都是字节码。
+
+首先Groovy语言的基本知识我们不进行探讨，网上与之相关的资料有很多。我们来讲讲它的DSL，因为Gradle提供的build.gradle配置文件就是用DSL来写的。那么什么是DSL？[维基百科](https://en.wikipedia.org/wiki/Domain-specific_language)里面描述的很清楚，但是具体到代码有哪些呢?就像Android里面的AIDL（Java DSL）、HIDL，前端的JQUERY（JavaScript DSL）。由于DSL是一种为解决某种问题的领域特定语言，而不像Java这种通用型计算机语言有语法解析器，所以Android团队写了解析AIDL的语法解析器，Gradle团队写了解析Groovy DSL的语法解析器。如果想要开发针对自己公司业务的DSL，那么可以自行到网上查找相关的学习资料。不过对于中小公司都是使用成熟的DSL框架，而不是从零开始，我们只要学会使用某个DSL框架就可以了，就比如Gradle框架,只要理解框架中插件的创建，任务的定义就可以了。
+
+说了这么多不如来个代码感受一下。
 
 ```groovy
 apply plugin: 'com.android.application'
@@ -55,24 +53,11 @@ dependencies {
 ```
 
 
-&emsp;&emsp;如果你是第一次接触Gradle的话，你一定表示看不懂这门语言，但是如果把它看成配置文件，是不是就能理解了。Gradle使用了大量的闭包和lamda这样简洁的语法来表示配置信息，而且Gradle中很多地方做了省略。比如去掉分号，去掉方法括号等等，力求做到精简。
-&emsp;&emsp;如果你想要配置一些简单的属性，可以通过API查看，比如添加debug的配置。
-{% highlight groovy %}
-buildTypes {
-    debug{
-        println 'haha'
-    }
-    release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-{%endhighlight%}
+如果你是第一次接触Gradle的话，你一定表示看不懂这门语言，但是如果把它看成配置文件，是不是就能理解了。Gradle使用了大量的闭包和lamda这样简洁的语法来表示配置信息，而且Gradle中很多地方做了省略。比如去掉分号，去掉方法括号等等，力求做到精简，所以一般DSL形成的框架都要有足够完整的API，因为其专业性太强了，就是所谓的行话，一般人看不懂，要通过查文档才能明白。
 
-&emsp;&emsp;一般DSL形成的框架都要有足够完整的API，因为其专业性太强了，就是所谓的行话，一般人看不懂，要通过查文档才能明白。
-&emsp;&emsp;如果你想要根据公司的业务添加一些代码的话，那么就需要我们写任务或者插件，而这需要我们熟悉Gradle框架和Groovy语言了。
+如果你想要根据公司的业务添加一些代码的话，那么就需要我们写任务或者插件，而这需要我们熟悉Gradle框架和Groovy语言了。
 
-### *Gradle框架*{:.header3-font}
+### *Gradle生命周期*
 &emsp;&emsp;我们都知道Gradle的生命流程要经历三个部分：初始化、配置、执行。
 - 初始化阶段：settings.gradle
 在初始化阶段，Gradle会为每个项目创建Project对象（每个项目项目都会有一个build.gradle），那么系统是如何知道有哪些项目的，通过settings.gradle。
@@ -280,7 +265,7 @@ lib location end
 ```
 
 
-### *Gradle任务*{:.header3-font}
+### *Gradle任务*
 
 #### 配置阶段调用
 ----
@@ -459,7 +444,7 @@ task notALib {
 
 除了dependsOn，你还可以使用mustRunAfter、shouldRunAfter来进行排序。
 
-### *Gradle插件*{:.header3-font}
+### *Gradle插件*
 
 #### 编写Gradle插件
 ---
@@ -503,7 +488,7 @@ apply plugin: GreetingPlugin
 
 最最后在说一句，由于Kotlin的特性，我们可以用它来替代Groovy写Gradle脚本，这样就可以减少学习Groovy的成本，而且Kotlin自从被google扶正之后，也受到了很多开发者的喜爱，很多项目也在开始用它来做开发。不过千外不要说Java的地位又不行了，身为Java程序员又在自我恐慌，戒骄戒躁，以其浪费时间在恐慌还不如多学几门不同类型语言提升自己。
 
-## *4.Reference*{:.header2-font}
+## *参考资料*
 
 [Groovy官网](http://www.groovy-lang.org/learn.html)
 [使用 Groovy 构建 DSL](https://www.ibm.com/developerworks/cn/java/j-eaed15.html)

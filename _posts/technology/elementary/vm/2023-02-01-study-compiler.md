@@ -1,6 +1,6 @@
 ---
 layout: post
-title: java/cpp在Android平台的编译器与汇编器
+title: java家族与c家族在Android平台的编译器
 description:  编译器前端与后端
 share: true
 comments: true
@@ -10,7 +10,11 @@ tag:
 ---
 * TOC
 {:toc}
-编译器javac/gcc的编译大致过程
+
+java家族有java、kotlin、groovy等，而c家族有c、cpp、objective c/c++等,java家族的编译器有javac、kotlinc等，c家族编译器有gcc、llvm等，而编译器前端与编译器后端还出现了一些著名且影响很广的项目clang、gas、smali，让我们先从编译器的前端开始这趟路程。
+
+java家族与c家族编译器的编译大致过程
+
 - javac/kotlinc: `java/kotlin(高级语言)--->语法解析---> 字节码`
 - gcc/llvm: `cpp(高级语言)--->语法解析--->汇编(低级语言)---> 机器码和字节码都是二进制文件`
 

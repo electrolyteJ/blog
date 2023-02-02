@@ -33,6 +33,8 @@ tag:
 
 ## GAS
 
+- [GAS](https://tldp.org/HOWTO/Assembly-HOWTO/gas.html)
+
 ## 参考
 [Professional Assembly Language](http://blog.hit.edu.cn/jsx/upload/AT%EF%BC%86TAssemblyLanguage.pdf)
 [[Quora]What is smali in Android ? ](https://www.quora.com/What-is-smali-in-Android)

@@ -21,7 +21,7 @@ kotlin编译过程
  * kotlin源代码 --> 词法分析器 --> Token流 --> 语法分析器 --> 语法树/抽象语法树 -->语义分析器 --> 注解抽象语法树 --> 字节码生成器 ---> JVM字节码
  *
  * 1.词法分析器：使用JFlex开源库，_JetLexer(KotlinLexer)代表词法分析器
- * 2，语法分析器(syntax parser)：使用InteliJ项目中的PsiParser(KotlinParser),并且生成AST
+ * 2.语法分析器(syntax parser)：使用InteliJ项目中的PsiParser(KotlinParser),并且生成AST
  * 3.语义分析(semantic analyzer)：检查AST 上下文相关属性，并且生成中间代码。org.jetbrains.kotlin.resolve包下为语义分析，org.jetbrains.kotlin.ir包下为中间代码生成
  * 4.目标代码生成：org.jetbrains.kotlin.codegen
  *

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: java家族与c家族在Android平台的编译器
+title: java家族与c家族的编译器
 description:  编译器前端与后端
 share: true
 comments: true

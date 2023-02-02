@@ -1,7 +1,7 @@
 ---
 layout: post
-title: 编译器javac/gcc, 汇编器Smali/GAS
-description:  Smali是anroid虚拟机字节码的汇编器，gas是android机器码的汇编器
+title: java/cpp在Android平台的编译器与汇编器
+description:  编译器前端与后端
 share: true
 comments: true
 tag:
@@ -9,38 +9,42 @@ tag:
 - elementary/vm
 ---
 
-## 编译器javac/gcc
-
+编译器javac/gcc的编译大致过程
 - javac/kotlinc: `java/kotlin(高级语言)--->语法解析---> 字节码`
-- gcc/clang: `cpp(高级语言)--->语法解析--->汇编(低级语言)---> 机器码和字节码都是二进制文件`
+- gcc/llvm: `cpp(高级语言)--->语法解析--->汇编(低级语言)---> 机器码和字节码都是二进制文件`
 
-kotlin编译过程
+编译器分为前端和后端，前端主要是对源代码语法的处理，转换成语法树，后端则是关注字节码或者机器码的生成。开源项目llvm的clang项目就是编译器前端，是c家族语法的解析，而llvm项目早期主要是聚集在编译器后端，处理x86、arm等指令，只不过随着项目壮大clang、lld等项目产生逐渐变成一个构建编译器的工具箱。
+
+## kotlin编译
+
+### 编译流程
+
+kotlin源代码 --> 词法分析器 --> Token流 --> 语法分析器 --> 语法树/抽象语法树 -->语义分析器 --> 注解抽象语法树 --> 字节码生成器 ---> JVM字节码
+
+1. 词法分析器：使用JFlex开源库，_JetLexer(KotlinLexer)代表词法分析器
+2. 语法分析器(syntax parser)：使用InteliJ项目中的PsiParser(KotlinParser),并且生成AST
+3. 语义分析(semantic analyzer)：检查AST 上下文相关属性，并且生成中间代码。org.jetbrains.kotlin.resolve包下为语义分析，org.jetbrains.kotlin.ir包下为中间代码生成
+4. 目标代码生成：org.jetbrains.kotlin.codegen
+
+### 编译器前端与后端
+
+- 编译前端： build syntax tree and semantic info
+- 编译后端： generates target/machine code
+
 ```kotlin
 /**
- * https://developer.aliyun.com/article/662337
- * kotlin源代码 --> 词法分析器 --> Token流 --> 语法分析器 --> 语法树/抽象语法树 -->语义分析器 --> 注解抽象语法树 --> 字节码生成器 ---> JVM字节码
- *
- * 1.词法分析器：使用JFlex开源库，_JetLexer(KotlinLexer)代表词法分析器
- * 2.语法分析器(syntax parser)：使用InteliJ项目中的PsiParser(KotlinParser),并且生成AST
- * 3.语义分析(semantic analyzer)：检查AST 上下文相关属性，并且生成中间代码。org.jetbrains.kotlin.resolve包下为语义分析，org.jetbrains.kotlin.ir包下为中间代码生成
- * 4.目标代码生成：org.jetbrains.kotlin.codegen
- *
- *
- * [k2视频讲述](https://blog.jetbrains.com/zh-hans/kotlin/2021/10/the-road-to-the-k2-compiler/)
- * 编译前端： build syntax tree and semantic info
- * 编译后端： generates target/machine code
  *                      frontend
  * source code --> [ parser  -- syntax tree ---> semantic analyzer ] -- syntax tree + semantic info -->
- *      backend
+ *       backend
  * -->  [intermediate code:generator & optimizer -- intermediate representation --> machine code:generator & optimizer ] -- target/machine code-->
  *
  * kotlin在编译后端自动生成set/get代码(PropertyCodegen)，修改类为final
  */
 ```
 
-## 汇编器Smali/GAS
+## *汇编器Smali/GAS*
 
-什么是[汇编语言](https://en.wikipedia.org/wiki/Assembly_language) : 一种相对于高级语言最接近机器语言的低级语言，所以性能毋庸置疑，开发效率低。编译成机器码的汇编器有GAS(即GNU AS汇编编译器，基于AT&T syntax指令，生成.s文件)、NASM(基于Intel syntax指令，生成.asm文件)、MASM(Windows平台下的汇编编译器，也使用Intel风格),机器码的汇编语言风格有Intel和AT&T之分，编译成Java字节码的汇编器有Jasmin和Smali。
+什么是[汇编语言](https://en.wikipedia.org/wiki/Assembly_language) : 一种相对于高级语言最接近机器语言的低级语言，所以性能毋庸置疑，开发效率低。编译成机器码的汇编器有GAS(即GNU AS汇编编译器，基于AT&T syntax指令，生成.s文件)、NASM(基于Intel syntax指令，生成.asm文件)、MASM(Windows平台下的汇编编译器，也使用Intel风格),机器码的汇编语言风格有Intel和AT&T之分，编译成Java字节码的汇编器有Jasmin和Smali。Smali是anroid虚拟机字节码的汇编器，GAS是android机器码的汇编器
 
 ### Smali
 
@@ -66,5 +70,13 @@ kotlin编译过程
 - [GAS](https://tldp.org/HOWTO/Assembly-HOWTO/gas.html)
 
 ## 参考
+
 [Professional Assembly Language](http://blog.hit.edu.cn/jsx/upload/AT%EF%BC%86TAssemblyLanguage.pdf)
+
 [[Quora]What is smali in Android ? ](https://www.quora.com/What-is-smali-in-Android)
+
+[llvm](https://llvm.org/)
+
+[Kotlin 源代码编译过程分析](https://developer.aliyun.com/article/662337)
+
+[k2视频讲述](https://blog.jetbrains.com/zh-hans/kotlin/2021/10/the-road-to-the-k2-compiler/)

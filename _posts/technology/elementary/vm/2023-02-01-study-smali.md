@@ -1,18 +1,48 @@
 ---
 layout: post
-title: 编译器kotlinc/javac/gcc/clang，汇编器Smali/GAS
-description: java/cpp(高级语言)--->汇编(低级语言)---> 机器码和字节码都是二进制文件 , Smali是anroid虚拟机字节码的汇编器，gas是android机器码的汇编器
+title: 编译器javac/gcc, 汇编器Smali/GAS
+description:  Smali是anroid虚拟机字节码的汇编器，gas是android机器码的汇编器
 share: true
 comments: true
 tag:
 - inverse-engineering
 - elementary/vm
 ---
+
+## 编译器javac/gcc
+
+- javac/kotlinc: `java/kotlin(高级语言)--->语法解析---> 字节码`
+- gcc/clang: `cpp(高级语言)--->语法解析--->汇编(低级语言)---> 机器码和字节码都是二进制文件`
+
+kotlin编译过程
+```kotlin
+/**
+ * https://developer.aliyun.com/article/662337
+ * kotlin源代码 --> 词法分析器 --> Token流 --> 语法分析器 --> 语法树/抽象语法树 -->语义分析器 --> 注解抽象语法树 --> 字节码生成器 ---> JVM字节码
+ *
+ * 1.词法分析器：使用JFlex开源库，_JetLexer(KotlinLexer)代表词法分析器
+ * 2，语法分析器(syntax parser)：使用InteliJ项目中的PsiParser(KotlinParser),并且生成AST
+ * 3.语义分析(semantic analyzer)：检查AST 上下文相关属性，并且生成中间代码。org.jetbrains.kotlin.resolve包下为语义分析，org.jetbrains.kotlin.ir包下为中间代码生成
+ * 4.目标代码生成：org.jetbrains.kotlin.codegen
+ *
+ *
+ * [k2视频讲述](https://blog.jetbrains.com/zh-hans/kotlin/2021/10/the-road-to-the-k2-compiler/)
+ * 编译前端： build syntax tree and semantic info
+ * 编译后端： generates target/machine code
+ *                      frontend
+ * source code --> [ parser  -- syntax tree ---> semantic analyzer ] -- syntax tree + semantic info -->
+ *      backend
+ * -->  [intermediate code:generator & optimizer -- intermediate representation --> machine code:generator & optimizer ] -- target/machine code-->
+ *
+ * kotlin在编译后端自动生成set/get代码(PropertyCodegen)，修改类为final
+ */
+```
+
 ## 汇编器Smali/GAS
 
 什么是[汇编语言](https://en.wikipedia.org/wiki/Assembly_language) : 一种相对于高级语言最接近机器语言的低级语言，所以性能毋庸置疑，开发效率低。编译成机器码的汇编器有GAS(即GNU AS汇编编译器，基于AT&T syntax指令，生成.s文件)、NASM(基于Intel syntax指令，生成.asm文件)、MASM(Windows平台下的汇编编译器，也使用Intel风格),机器码的汇编语言风格有Intel和AT&T之分，编译成Java字节码的汇编器有Jasmin和Smali。
 
-## Smali
+### Smali
 
 如果你遇到没有源码的应用，又要对其进行修改，那么会使用Smali的汇编指令就很有必要了，而在没办法修改源代码，通过修改字节码（或者机器码）对应的反汇编代码，去改变应用逻辑的做法，就叫做插桩，属于静态二进制插桩(gralde transform也属于静态二进制插桩，inline hook属于动态二进制插桩)。哪些工作内容会用到插桩这门技术呢? 可以看一下这篇文章[基于原厂ROM移植MIUI](http://www.miui.com/thread-409543-1-1.html)。
 
@@ -31,7 +61,7 @@ tag:
     - [好几手资料](http://www.jianshu.com/p/80d22f66e042)
 - 关于[注释](http://blog.csdn.net/junjunyanyan/article/details/45726775)
 
-## GAS
+### GAS
 
 - [GAS](https://tldp.org/HOWTO/Assembly-HOWTO/gas.html)
 

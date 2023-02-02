@@ -7,6 +7,7 @@ share: true
 comments: true
 tag:
 - inverse-engineering
+- elementary/vm
 ---
 ## *1.Summary*{:.header2-font}
 &emsp;&emsp;如果你遇到没有源码的应用，又要对其代码进行修改，那么会使用Smali这门汇编语言就很有必要了。而在没办法修改源代码，通过修改字节码（或者机器码）对应的反汇编代码，去改变应用逻辑的做法，就叫做插桩。那些工作内容会用到插桩这门技术呢? 可以看一下这篇文章[基于原厂ROM移植MIUI](http://www.miui.com/thread-409543-1-1.html)。
@@ -21,7 +22,6 @@ tag:
 &emsp;&emsp;了解了这些内容，就可以简单的判断smali就是一款用于Dalvik虚拟机的汇编器，其反汇编器叫做baksmali，所以apktool其实是smali/baksmali的封装，兼具汇编和反汇编的功能。并且smali汇编器的语法是基于jasmin汇编器的语法。那为什么两者的语法时却有点不同 ？ 最终归结于虚拟机的不同导致的，官方虚拟机是基于内存中的堆栈实现，而Dalvik虚拟机是基于寄存器实现。但是jasmin语言的理念被保留了下来。
 
 ## *3.Introduction*{:.header2-font}
-资料看完了，有空再来填坑。
 
 - 数据类型、类的字段（field）和方法（method）定义：可以查看官方提供的[链接](https://github.com/JesusFreke/smali/wiki/TypesMethodsAndFields)
 - 用来存放数据的寄存器，可以查看官方提供的[链接](https://github.com/JesusFreke/smali/wiki/Registers)
@@ -31,7 +31,6 @@ tag:
 [好几手资料](https://smalinuxer.github.io/2015/12/07/smali-base-1.html#post__title) 
 [好几手资料](http://www.jianshu.com/p/80d22f66e042)
 - 关于[注释](http://blog.csdn.net/junjunyanyan/article/details/45726775)
-
 
 
 

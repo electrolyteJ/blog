@@ -13,7 +13,7 @@ tag:
 
 java家族有java、kotlin、groovy等，而c家族有c、cpp、objective c/c++等,java家族的编译器有javac、kotlinc等，c家族编译器有gcc、llvm等，而编译器前端与编译器后端还出现了一些著名且影响很广的项目clang、gas、smali，让我们先从编译器的前端开始这趟路程。
 
-java家族与c家族编译器的编译大致过程
+java家族与c家族编译器的工作流程
 
 - javac/kotlinc: `java/kotlin(高级语言)--->语法解析---> 字节码(二进制文件.class or .dex)`
 - gcc/llvm: `cpp(高级语言)--->语法解析--->汇编(低级语言)---> 机器码(二进制文件elf)`
@@ -73,6 +73,7 @@ kotlin源代码 --> 词法分析器 --> Token流 --> 语法分析器 --> 语法�
 ### GAS
 
 - [GAS](https://tldp.org/HOWTO/Assembly-HOWTO/gas.html)
+- [Using as](http://sourceware.org/binutils/docs/as/index.html)
 
 ## *参考*
 
@@ -89,3 +90,5 @@ kotlin源代码 --> 词法分析器 --> Token流 --> 语法分析器 --> 语法�
 [GCC 汇编分析](http://blog.ccyg.studio/article/6afa7afe-3312-4bc9-99aa-af1256e5db5b/#hello-world)
 
 [ARM Assembly By Example](https://armasm.com/docs/getting-to-hello-world/basics/)
+
+[C语言与汇编混合编程](https://blog.csdn.net/AllenWells/article/details/47422011?spm=1001.2014.3001.5502)

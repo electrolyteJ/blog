@@ -17,7 +17,7 @@ art工程结构
 - dex2oat: 字节码转机器码
 - oatdump/dexdump：oat(elf格式)与dex文件的dump
 - libexfile/libelffile:操作dex文件与elf文件的库
-- compiler：编译器
+- compiler：字节码编译成机器码
 - ...
 
 ### framework层的一些角色

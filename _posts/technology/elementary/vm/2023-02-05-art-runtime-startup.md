@@ -1,7 +1,7 @@
 ---
 layout: post
-title: Android ART 启动
-description:  Android Runtime
+title: ART的Runtime 启动
+description:  剖析Android虚拟机启动与Android zygote进程启动
 tag:
 - elementary/vm
 ---
@@ -17,6 +17,7 @@ art工程结构
 - dex2oat: 字节码转机器码
 - oatdump/dexdump：oat(elf格式)与dex文件的dump
 - libexfile/libelffile:操作dex文件与elf文件的库
+- compiler：编译器
 - ...
 
 ### framework层的一些角色

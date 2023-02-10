@@ -36,7 +36,7 @@ opensource:
   padb: https://github.com/electrolyteJ/padb
 
 # Google Analytics key, leave blank to ignore
-google_analytics_key:
+google_analytics_key: G-KQ42RF79ND
 # Yandex metrika (https://metrica.yandex.com/) leave blank to ignore or put true to use
 yandex_metrica:
 

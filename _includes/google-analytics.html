@@ -3,7 +3,8 @@
 
   (function() {
     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.googletagmanager.com/gtag/js?id=G-KQ42RF79ND';
+    // ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.googletagmanager.com/gtag/js?id={{ site.google_analytics_key }}';
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.googletagmanager.com/gtag/js?id=G-Q3HFPGNGMG';
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
 
@@ -14,6 +15,7 @@
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', 'G-KQ42RF79ND');
+  // gtag('config', '{{ site.google_analytics_key }}');
+  gtag('config', 'G-Q3HFPGNGMG');
 </script>
 {% endif %}

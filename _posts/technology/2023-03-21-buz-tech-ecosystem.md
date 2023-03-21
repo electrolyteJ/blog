@@ -1,7 +1,7 @@
 ---
 layout: post
-title: 技术生态 与商业生态
-description: 技术生态 与商业生态
+title: 技术生态 与 商业生态
+description: 技术生态与商业生态
 share: false
 comments: false
 tag:
@@ -24,7 +24,7 @@ tag:
 社区|微信小程序社区|reactjs社区+react native社区|flutter社区|都不错
 代码推送|支持|支持|不支持|react native在做得更好，即能支持热更新也可以实现热修复
 ui一致性|很好|一般| 很好|由于react native是依赖平台渲染所以ui存在差异，也是其特色，保持平台风格
-跨平台|Android/iOS/Window/MacOS|Android/iOS/Window/MacOS/Web|Android/iOS/Window/MacOS/Web|大家都在跨端
+跨平台|移动/PC|移动/PC/Web|移动/PC/Web|大家都在跨端
 
 微信小程序日活：4.5亿
 ColorOS日活:5亿

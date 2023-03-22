@@ -5,7 +5,7 @@ description: 使用groovy定义的dsl语言描述构建过程
 date: 2017-10-22 22:50:00
 tag:
 - build-tools
-- android-app-design
+- android
 ---
 * TOC
 {:toc}

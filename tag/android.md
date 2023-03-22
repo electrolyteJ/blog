@@ -1,4 +1,4 @@
 ---
 layout: tag_index
-tag: android-app-design
+tag: android
 ---

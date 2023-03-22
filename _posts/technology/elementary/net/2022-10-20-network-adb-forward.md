@@ -8,7 +8,7 @@ share: false
 comments: false
 tag: 
 - elementary/network
-published : true
+- android
 ---
 ```
 networking:

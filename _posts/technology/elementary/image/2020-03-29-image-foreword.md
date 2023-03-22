@@ -8,7 +8,7 @@ share: true
 comments: true
 tag: 
 - elementary/image
-published : true
+- android
 ---
 
 # Color(色彩的世界)

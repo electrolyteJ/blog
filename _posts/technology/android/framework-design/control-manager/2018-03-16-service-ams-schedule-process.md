@@ -5,7 +5,7 @@ description: 与sprint框架采用多线程管理多任务不同，android frame
 author: 电解质
 date: 2018-03-16
 tag:
-- android-framework-design
+- android
 ---
 * TOC
 {:toc}

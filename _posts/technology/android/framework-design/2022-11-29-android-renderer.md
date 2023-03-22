@@ -4,7 +4,7 @@ title: Android | Android渲染器
 description: SurfaceFlinger 、 Hardware Composer 、Gralloc 、 BufferQueue 、IGraphicBufferProducer
 author: 电解质
 tag:
-- android-framework-design
+- android
 - elementary/renderer
 ---
 

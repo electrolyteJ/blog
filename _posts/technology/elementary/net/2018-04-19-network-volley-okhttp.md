@@ -8,7 +8,7 @@ share: true
 comments: true
 tag: 
 - elementary/network
-published : true
+- android
 ---
 * TOC
 {:toc}

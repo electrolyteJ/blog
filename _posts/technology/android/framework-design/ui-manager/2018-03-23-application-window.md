@@ -5,7 +5,7 @@ description: 打开窗口看UI
 author: 电解质
 date: 2018-03-23
 tag:
-- android-framework-design
+- android
 ---
 * TOC
 {:toc}

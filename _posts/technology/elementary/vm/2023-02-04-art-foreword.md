@@ -4,6 +4,7 @@ title: Android ART |  前言
 description:  新一代Android虚拟机ART
 tag:
 - elementary/vm
+- android
 ---
 
 Android 5之后全面切换到了新的虚拟机ART，这是一款既支持JIT编译也能AOT编译的java虚拟机。

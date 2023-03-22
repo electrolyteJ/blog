@@ -7,8 +7,7 @@ comments: false
 tag:
 # - react native
 - cross-platform
-- android-app-design
-- android-framework-design
+- android
 ---
 
 # 技术生态(Technology Ecosystem)

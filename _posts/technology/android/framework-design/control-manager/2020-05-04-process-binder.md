@@ -7,7 +7,7 @@ date: 2020-05-04
 share: true
 comments: false
 tag:
-- android-framework-design
+- android
 ---
 ## *1.Introduction*{:.header2-font}
 去年欠下的债要用今年来还，今天带来一篇之前笔记整理的文章Binder通信。

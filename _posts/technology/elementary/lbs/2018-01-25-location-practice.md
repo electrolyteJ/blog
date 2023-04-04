@@ -7,7 +7,7 @@ date: 2018-01-25 22:50:00
 share: true
 comments: true
 tag:
-  - elementary/lbs
+  - lbs
   - android
 ---
 

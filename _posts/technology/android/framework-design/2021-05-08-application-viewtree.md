@@ -7,7 +7,7 @@ date: 2021-05-08
 share: true
 tag:
 - android
-- elementary/renderer
+- renderer
 ---
 * TOC
 {:toc}

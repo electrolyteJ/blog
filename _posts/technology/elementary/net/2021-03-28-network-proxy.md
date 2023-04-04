@@ -7,7 +7,7 @@ date: 2022-10-15 22:50:00
 share: false
 comments: false
 tag: 
-- elementary/network
+- network
 - inverse-engineering
 - android
 ---

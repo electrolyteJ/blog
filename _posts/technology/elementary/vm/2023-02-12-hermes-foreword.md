@@ -3,7 +3,7 @@ layout: post
 title: React Native |  Hermes前言
 description:  javascript引擎：Quickjs 、 Hermes 、V8
 tag:
-- elementary/vm
+- vm
 - cross-platform
 published : false 
 ---

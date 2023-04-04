@@ -4,7 +4,7 @@ title: 颜色滤镜
 description: 
 author: 电解质
 tag: 
-- elementary/image
+- image
 - android
 ---
 

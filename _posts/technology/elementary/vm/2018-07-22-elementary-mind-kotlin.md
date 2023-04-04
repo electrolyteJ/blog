@@ -7,10 +7,10 @@ date: 2018-07-22 22:50:00
 share: true
 comments: true
 tag: 
-- elementary/language
+- vm
 ---
 
-![kotlin]({{site.baseurl}}/asset/elementary/kotlin.png)
+![kotlin]({{site.baseurl}}/asset/vm/kotlin.png)
 
 ### reference
 [kotlin 官方网站](https://kotlinlang.org/docs/reference/)

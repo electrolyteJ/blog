@@ -3,7 +3,7 @@ layout: post
 title: Android ART |  前言
 description:  新一代Android虚拟机ART
 tag:
-- elementary/vm
+- vm
 - android
 ---
 

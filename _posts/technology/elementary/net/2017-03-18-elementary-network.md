@@ -6,13 +6,13 @@ date: 2017-03-18 22:50:00
 share: true
 comments: true
 tag: 
-- elementary/network
+- network
 - android
 ---
 
 ## *网络协议*{:.header2-font}
 ietf 组织负责网络协议
-![network_layer]({{ site.baseurl}}/asset/elementary/2017-03-18-network_layer.png)
+![network_layer]({{ site.baseurl}}/asset/network/2017-03-18-network_layer.png)
 
 ## *网络制式*{:.header2-font}
 网络制式也叫做网络类型，生活中常说的4g lte就是网络制式，其主要提供了蜂窝网络,由3gpp这个组织推广，有关3gpp可以看这个[文章](https://baike.baidu.com/item/3GPP/2373775#:~:text=3GPP%E7%AE%80%E4%BB%8B&text=3GPP%E6%88%90%E7%AB%8B%E4%BA%8E1998%E5%B9%B4,%E5%85%A5%E6%8A%80%E6%9C%AF%EF%BC%8C%E4%B8%BB%E8%A6%81%E6%98%AFUMTS%E3%80%82)

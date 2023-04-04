@@ -1,4 +1,4 @@
 ---
 layout: tag_index
-tag: elementary/storage
+tag: storage
 ---

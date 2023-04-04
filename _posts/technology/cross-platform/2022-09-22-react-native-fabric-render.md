@@ -8,7 +8,7 @@ comments: false
 tag:
 # - react native
 - cross-platform
-- elementary/renderer
+- renderer
 published : true 
 ---
 * TOC

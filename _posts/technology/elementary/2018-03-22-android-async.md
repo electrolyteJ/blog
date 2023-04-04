@@ -4,7 +4,7 @@ title:  线程通讯 AsyncTask、 IntentService
 description: 
 tag:
 - android
-- elementary/async
+- async
 ---
 * TOC
 {:toc}

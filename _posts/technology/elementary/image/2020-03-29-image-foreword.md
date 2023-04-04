@@ -7,7 +7,7 @@ date: 2020-03-29 22:50:00
 share: true
 comments: true
 tag: 
-- elementary/image
+- image
 - android
 ---
 

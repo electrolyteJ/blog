@@ -7,7 +7,7 @@ date: 2018-04-03 22:50:00
 share: true
 comments: false
 tag: 
-- elementary/network
+- network
 - android
 ---
 * TOC

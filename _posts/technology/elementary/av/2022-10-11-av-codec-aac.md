@@ -3,7 +3,7 @@ layout: post
 title: AV | AAC Codec 
 description: Audio Codec
 tag: 
-- elementary/av
+- av
 ---
 
 ## 重要的文件格式

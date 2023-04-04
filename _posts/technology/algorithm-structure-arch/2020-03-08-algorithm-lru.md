@@ -7,7 +7,7 @@ date: 2020-03-08 22:50:00
 share: false
 comments: false
 tag: 
-- algorithm-structure
+- algorithm-structure-arch
 ---
 ## *1.Introduction*{:.header2-font}
 Android系统提供了LruCache这么一个类用来管理资源，以防止出现OOM这样的问题。采用了LRU算法用来排序资源，最近最少被使用的资源在出现特定条件(管理的资源内存达到阈值或者管理的资源数量到达阈值)将面临着从集合中被remove。这就好比一个人在公司，每个绩效评审的周期最近最少做出贡献的人，就会被公司标记为团队中排名靠后的人，当出现裁员时那么排名靠后的人就会被remove。这里提到一个`最近最少被使用`要注意一下，因为从一个长周期来看，排名靠后的人在出现裁员之前由于贡献值多了，是有机会改变排名。

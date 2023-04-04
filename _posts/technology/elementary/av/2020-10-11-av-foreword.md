@@ -10,9 +10,8 @@ tag:
 - elementary/av
 published : true
 ---
-## *1.Summary*{:.header2-font}
 &emsp;&emsp;2016年，中国互联网掀起了一场直播浪潮，这一年被称为[中国直播元年](https://baike.baidu.com/item/%E4%B8%AD%E5%9B%BD%E7%BD%91%E7%BB%9C%E7%9B%B4%E6%92%AD%E5%85%83%E5%B9%B4)，元年相继涌现出了斗鱼、YY等直播服务型公司，直播市场爆发性增长，快速推动直播技术蓬勃发展。不过其业务盈利却始终是一个难点，直播业务应该如何从用户群里获取更多更肥沃的利益？时隔4年，抖音淘宝等平台给出了答案，“直播带货”。平台催生了李佳琦、薇娅等带货明星，就连罗永浩为了替公司还债也加入了这个最能挣到快钱的行业，可见其魅力。从2016年直播行业相较于其他行业盈利能力有待提高等待了4年，直播带货算是苦尽甘来，在加上疫情之后，实体行业惨淡恢复缓慢，5G即将来到，将再次催促直播行业增长，技术会再次爆发。而与直播相关的技术就是音视频这一块，能为业务带来盈利的技术最后才能引领技术，是时候引起技术人的重视了。
-## *2.Introduction*{:.header2-font}
+
 本系列文章我们要讲的主要有三个内容
 - [x] 编解码器 H264/AVC AAC
 - [x] 封装容器 MPEG transport stream(short as TS) 、 FLV
@@ -64,7 +63,46 @@ MP3 | LAME|
 
 &emsp;&emsp;理解了这些内容就相当于半只脚入了门。如果想了解如何实现一个从推流端到服务端再到播流端的代码实现，可以阅读这个项目的源代码[river](https://github.com/electrolyteJ/river)，当然也希望您能给予这个项目star，因为这个项目目前的维护者和开发者都是博主我，让博主感受感受来着读者的反馈。
 
-## *3.Reference*{:.header2-font}
+
+## 第三方播放器
+
+ijkplayer
+-
+Android/iOS video player based on FFmpeg n3.4, with MediaCodec, VideoToolbox support
+
+VLC
+-
+
+FFmpeg
+-
+软件解码，适应性强
+Libraries
+```
+libavcodec provides implementation of a wider range of codecs.
+libavformat implements streaming protocols, container formats and basic I/O access.
+libavutil includes hashers, decompressors and miscellaneous utility functions.
+libavfilter provides a mean to alter decoded Audio and Video through chain of filters.
+libavdevice provides an abstraction to access capture and playback devices.
+libswresample implements audio mixing and resampling routines.
+libswscale implements color conversion and scaling routines.
+```
+
+Tools
+
+```
+ffmpeg is a command line toolbox to manipulate, convert and stream multimedia content.
+ffplay is a minimalistic multimedia player.
+ffprobe is a simple analysis tool to inspect multimedia content.
+Additional small tools such as aviocat, ismindex and qt-faststart.
+```
+
+ExoPlayer
+-
+硬件解码，如绘制硬件加速一样，替CPU分担计算压力
+
+总结：由于ExoPlayer是基于Android平台的low-level API衍生而来的，所以跨平台性较差。FFmpeg本身就是跨平台的，所以均支持iOS和Android这两个平台。为了跨平台ijkplayer选择基于FFmpeg，但是FFmpeg有个问题，属于软件解码，必然会给CPU造成很大的压力，所以为了减压，ijkplayer在Android平台的编解码器使用MediaCodec，在iOS平台的编解码器使用VideoToolbox
+
+## 参考资料
 [七牛直播云](https://developer.qiniu.com/pili/sdk/3719/PLDroidMediaStreaming-function-using)
 [[总结]视音频编解码技术零基础学习方法](https://blog.csdn.net/leixiaohua1020/article/details/18893769)
 [如何搭建一个完整的视频直播系统？](https://www.zhihu.com/question/42162310)

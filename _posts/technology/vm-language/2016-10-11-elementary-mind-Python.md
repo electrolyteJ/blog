@@ -8,7 +8,7 @@ share: true
 comments: true
 
 tags: 
-- vm
+- vm-language
 # categories: 
 # - Script
 # - Backend2

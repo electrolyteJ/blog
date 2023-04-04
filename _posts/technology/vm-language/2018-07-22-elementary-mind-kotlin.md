@@ -7,7 +7,7 @@ date: 2018-07-22 22:50:00
 share: true
 comments: true
 tag: 
-- vm
+- vm-language
 ---
 
 ![kotlin]({{site.baseurl}}/asset/vm/kotlin.png)

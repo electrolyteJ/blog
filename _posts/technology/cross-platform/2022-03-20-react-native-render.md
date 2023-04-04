@@ -8,7 +8,7 @@ comments: false
 tag:
 # - react native
 - cross-platform
-- renderer
+- renderer-ui
 published : true 
 ---
 * TOC

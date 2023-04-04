@@ -7,7 +7,7 @@ date: 2021-05-08
 share: true
 tag:
 - android
-- renderer
+- renderer-ui
 ---
 
 为了描述方便这里默认系统的刷新率为60hz。

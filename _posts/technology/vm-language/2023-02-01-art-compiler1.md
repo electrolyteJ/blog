@@ -6,7 +6,7 @@ share: true
 comments: true
 tag:
 - inverse-engineering
-- vm
+- vm-language
 - android
 ---
 * TOC

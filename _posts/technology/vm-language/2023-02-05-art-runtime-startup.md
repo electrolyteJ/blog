@@ -3,7 +3,7 @@ layout: post
 title: Android ART |  AppRuntime与Runtime 启动
 description:  剖析Android zygote进程启动与Android虚拟机启动
 tag:
-- vm
+- vm-language
 - android
 ---
 

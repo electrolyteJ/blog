@@ -7,6 +7,7 @@ share: true
 comments: true
 tag:
 - android
+- tools
 ---
 
 ## *1.Summary*{:.header2-font}

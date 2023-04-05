@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Framework层的服务 --- SystemServer启动流程
+title: Framework层的服务 | SystemServer启动流程
 description: 简单梳理一下SystemServer的启动流程
 author: 电解质
 date: 2018-03-06

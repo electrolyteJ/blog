@@ -5,6 +5,7 @@ description:
 author: 电解质
 tag:
 - android
+- renderer-ui
 ---
 
 fling:手指离开(up)屏幕的速度大于系统给的(getScaledMinimumFlingVelocity、getScaledMaximumFlingVelocity),会继续滑行一段路程

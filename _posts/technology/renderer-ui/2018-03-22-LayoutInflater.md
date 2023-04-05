@@ -4,6 +4,7 @@ title:  LayoutInflater
 description: 
 tag:
 - android
+- renderer-ui
 ---
 
 通过getSystemService获得LayoutInflater对象，其为单例。

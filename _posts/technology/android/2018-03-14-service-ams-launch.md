@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Framework层的服务 --- AMS启动流程
+title: Framework层的服务 | AMS启动流程
 description: 来一起聊聊AMS的启动流程
 author: 电解质
 date: 2018-03-14

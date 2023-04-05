@@ -7,7 +7,7 @@ date: 2020-03-29 22:50:00
 share: true
 comments: true
 tag: 
-- image
+- image-graphic
 - android
 ---
 
@@ -94,9 +94,9 @@ SVG | Lossless / Vector
 
 
 ### Picasso vs. Glide vs. Fresco
-![image]({{site.baseurl}}/asset/image/picasso.png){:.center-image}*`Picasso`*
+![image]({{site.baseurl}}/asset/image-graphic/picasso.png){:.center-image}*`Picasso`*
 
-![image]({{site.baseurl}}/asset/image/glide.png){:.center-image}*`Glide`*
+![image]({{site.baseurl}}/asset/image-graphic/glide.png){:.center-image}*`Glide`*
 
 ## *参考资料*{:.header2-font}
 

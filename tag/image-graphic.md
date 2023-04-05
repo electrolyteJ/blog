@@ -1,4 +1,4 @@
 ---
 layout: tag_index
-tag: image
+tag: image-graphic
 ---

@@ -57,10 +57,11 @@ highlighter: rouge
 # highlighter: pygments
 # pygments: true
 
-markdown: kramdown
-kramdown:
-  input: GFM # Enable GitHub Flavored Markdown (fenced code blocks)
-  hard_wrap: true
+#markdown: kramdown
+#kramdown:
+#  input: GFM # Enable GitHub Flavored Markdown (fenced code blocks)
+#  hard_wrap: true
+markdown: GFM
 
 exclude: ['README.md', 'LICENSE']
 encoding: utf-8

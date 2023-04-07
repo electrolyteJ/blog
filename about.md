@@ -56,7 +56,7 @@ title: About
 
 <details>
 <summary>
-  🤝社交方式
+  👉🏻 🤝社交方式
 </summary>
 <ul>
 {% if site.social.zhihu %}

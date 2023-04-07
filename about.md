@@ -17,9 +17,9 @@ title: About
 
 <!-- BLOG-POST-LIST:START -->
 - [技术生态 与 商业生态](https://electrolyteJ.github.io/blog//2023-03-21/biz-tech-ecosystem)
-- [Android ART |  AppRuntime与Runtime 启动](https://electrolyteJ.github.io/blog//2023-02-05/art-runtime-startup)
-- [Android ART |  前言](https://electrolyteJ.github.io/blog//2023-02-04/art-foreword)
-- [Android ART | java家族与c家族的编译器](https://electrolyteJ.github.io/blog//2023-02-01/art-compiler1)
+- [Android ART \|  AppRuntime与Runtime 启动](https://electrolyteJ.github.io/blog//2023-02-05/art-runtime-startup)
+- [Android ART \|  前言](https://electrolyteJ.github.io/blog//2023-02-04/art-foreword)
+- [Android ART \| java家族与c家族的编译器](https://electrolyteJ.github.io/blog//2023-02-01/art-compiler1)
 - [2022年总结：风雪不赶夜归人](https://electrolyteJ.github.io/blog//2023-01-20/2022summary)
 <!-- BLOG-POST-LIST:END -->
 

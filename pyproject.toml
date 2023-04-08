@@ -1,0 +1,24 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "mkdocs-jtheme"
+version = "1.0.0"
+description = "mkdocs-jtheme"
+authors = ["electrolyteJ <hawks.jamesf@gmail.com>"]
+license = "BSD-2-Clause license"
+readme = "README.md"
+packages = [{ include = "jtheme" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+[tool.poetry.group.dev.dependencies]
+mkdocs = "^1.4.2"
+
+#[tool.poetry.scripts]
+#jtheme = 'jtheme'
+
+[tool.poetry.plugins."mkdocs.themes"]
+jtheme = 'jtheme'
+

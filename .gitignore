@@ -8,3 +8,6 @@ LICENSE
 .jekyll-cache
 _site/
 site/
+.idea
+__pycache__/
+poetry.lock

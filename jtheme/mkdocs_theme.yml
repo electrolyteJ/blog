@@ -1,0 +1,10 @@
+# Config options for 'bootstrap' theme
+
+extends: mkdocs
+
+hljs_style: github
+
+
+# Static pages to build
+static_templates:
+  - 404.html

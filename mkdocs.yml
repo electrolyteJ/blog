@@ -1,13 +1,19 @@
 site_name: My Docs
 site_url: https://example.com/
+site_description: MkDocs Bootstrap Theme
+site_author: Tom Christie & Dougal Matthews
+
+repo_url: https://github.com/mkdocs/mkdocs-bootstrap
+
+copyright: Copyright &copy; 2014 <a href="https://twitter.com/_tomchristie">Tom Christie</a>, <a href="http://www.dougalmatthews.com/">Dougal Matthews</a>.
+
 nav:
-    - Home: index.md
-    - About: about.md
-theme: 
-    name: null
-    custom_dir: 'jtheme'
-    static_templates:
-    - 404.html
-plugins: ['search',
-# 'jplugin'
+  - Home: index.md
+  - About: about.md
+theme:
+#  name: jtheme
+  name: null
+  custom_dir: 'jtheme'
+plugins: [ 'search',
+  # 'jplugin'
 ]

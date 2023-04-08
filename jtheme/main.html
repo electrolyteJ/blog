@@ -1,29 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
 
-<head>
-    <meta charset="utf-8">
-    {% block htmltitle %}
-        <title>{% if page.title %}{{ page.title }} - {% endif %}{{ config.site_name }}</title>
-    {% endblock htmltitle %}
+<!--<head>-->
+<!--    <meta charset="utf-8">-->
+<!--    {% block htmltitle %}-->
+<!--        <title>{% if page.title %}{{ page.title }} - {% endif %}{{ config.site_name }}</title>-->
+<!--    {% endblock htmltitle %}-->
 
-    {%- block site_meta %}
-        {% if config.site_description %}
-            <meta name="description" content="{{ config.site_description }}">
-        {% endif %}
+<!--    {%- block site_meta %}-->
+<!--        {% if config.site_description %}-->
+<!--            <meta name="description" content="{{ config.site_description }}">-->
+<!--        {% endif %}-->
 
-        {% if config.site_author %}
-            <meta name="author" content="{{ config.site_author }}">
-        {% endif %}
-            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    {%- endblock %}
-</head>
+<!--        {% if config.site_author %}-->
+<!--            <meta name="author" content="{{ config.site_author }}">-->
+<!--        {% endif %}-->
+<!--            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">-->
+<!--    {%- endblock %}-->
+<!--</head>-->
 
-<body>
-    {% block search %}
-    {% if 'search' in config['plugins'] %}{% include "searchbox.html" %}{% endif %}
-    <h1>
-    </h1>
-    {% endblock search %}
-</body>
-</html>
+<!--<body>-->
+<!--    {% block search %}-->
+<!--    {% if 'search' in config['plugins'] %}{% include "searchbox.html" %}{% endif %}-->
+<!--    <h1>-->
+<!--    </h1>-->
+<!--    {% endblock search %}-->
+<!--</body>-->
+<!--</html>-->
+{% extends "_layouts/home.html" %}

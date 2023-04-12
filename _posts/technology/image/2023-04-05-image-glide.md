@@ -156,6 +156,26 @@ public abstract class DiskCacheStrategy {
 Bitmap在内存中也是一块巨大的开销，所以Bitmap需要被缓存池管理起来方便复用。LruBitmapPool的池大小在app可用内存充足的情况下且Android N以下设备为开启硬件加速相当于四张全屏幕的大图占用的内存，其默认的策略在Android 4.4+用SizeConfigStrategy，以下用AttributeStrategy。
 
 
+Bitmap下采样的策略
+```java
+public abstract class DownsampleStrategy {
+  public static final DownsampleStrategy AT_LEAST = new AtLeast();
+
+  public static final DownsampleStrategy AT_MOST = new AtMost();
+
+  public static final DownsampleStrategy FIT_CENTER = new FitCenter();
+
+  public static final DownsampleStrategy CENTER_INSIDE = new CenterInside();
+
+  public static final DownsampleStrategy CENTER_OUTSIDE = new CenterOutside();
+
+  public static final DownsampleStrategy NONE = new None();
+
+  public static final DownsampleStrategy DEFAULT = CENTER_OUTSIDE;
+}
+```
+在Gilde中如果ImageView没有提供具体的宽高，那么就不会进行scale调整Bitmap，直接进行原图加载。Bitmap的下采样主要是针对外部定义了ImageView的宽高才能进行。
+
 ## 扩展性
 
 ### Fetcher设计

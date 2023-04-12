@@ -9,9 +9,9 @@ tag:
 ---
 * TOC
 {:toc}
-## *1.Summary*{:.header2-font}
+## *1.Summary*
 &emsp;&emsp;ActivityManagerService类是framework层的核心，对下它调度着cpu、电量、内存、进程的管理者，对上它调度着四大组件，让app使用者能够轻松简单的切换界面。由于其职能的复杂，所以需要管理的事务也就多了。只有了解了ActivityManagerService的启动流程，我们才能够更加深入的体会其内部构造。所以启动流程是我们深入的第一步。接下来让我们来看看ActivityManagerService的启动流程。
-## *3.Introduction*{:.header2-font}
+## *3.Introduction*
 
 AMS启动流程中主要的方法也就是下面的三个：
 - ActivityManagerService构造方法
@@ -20,7 +20,7 @@ AMS启动流程中主要的方法也就是下面的三个：
 
 其实AMS启动流程中还会初始化一些其他东西，比如将WMS对象注入到AMS这，这样就可以实现UI交互。
 
-### *ActivityManagerService构造方法*{:.header3-font}
+### *ActivityManagerService构造方法*
 
 ```java
     public ActivityManagerService(Context systemContext) {
@@ -148,7 +148,7 @@ AMS启动流程中主要的方法也就是下面的三个：
     - service process 
     - cached process
 
-### *start方法*{:.header3-font}
+### *start方法*
 
 ```java
  private void start() {
@@ -235,7 +235,7 @@ mProcessCpuThread = new Thread("CpuTracker") {
 ```
 &emsp;&emsp;通过ProcessCPUThread#notify刷新场景有很多，比如上面代码展示的，启动一个进程，就会刷新。如果你用过Linux终端程序Htop的话，那么Htop就相当于ProcessCpuTracker。这里在说一下，AMS中除了监控CPU，还有监控内存的MemInfoReader和电量。
 
-### *systemReady方法*{:.header3-font}
+### *systemReady方法*
 
 ```java
 public void systemReady(final Runnable goingCallback, BootTimingsTraceLog traceLog) {
@@ -452,5 +452,5 @@ resumeTopActivityUncheckedLocked会将存储Activity的栈推到最前面并且�
 
 
 
-<!-- ## *4.Reference*{:.header2-font} -->
+<!-- ## *4.Reference* -->
 

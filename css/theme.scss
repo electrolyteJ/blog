@@ -56,6 +56,25 @@ h4 { font-size: 1.12em; }
 h5 { font-size: .83em; }
 h6 { font-size: .75em; }
 
+.post-content h1 { font-size: 2em; 
+  color: #52B54B;
+  font-weight:bold;
+  font-style:italic;
+  text-decoration-line:underline;
+  text-decoration-style:dotted;
+  text-decoration-color:blanchedalmond;
+  text-underline-offset:10px;
+
+}
+.post-content h2 { font-size: 1.5em; 
+  color: #D2E354;
+  font-weight:bold;
+}
+.post-content h3 { font-size: 1.17em; 
+  color: #a9b54b;
+}
+
+
 .author {
   color: #ee4444;
 }
@@ -85,15 +104,6 @@ blockquote {
 .white-bg-image
 {
   background-color: #ffffff;
-}
-.header2-font
-{
-  color: #52B54B;
-  font-weight:bold;
-}
-.header3-font
-{
-  color: #D2E354;
 }
 
 

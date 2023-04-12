@@ -10,20 +10,20 @@ tag:
 # - AOSP(SYS)
 ---
 
-## *1.Summary*{:.header2-font}
+## *1.Summary*
 &emsp;&emsp;还是老样子，我们先来谈谈为什么要写这篇文章的原由。我们知道在阅读Android Open Source Project(简称AOSP)源码可以使用的工具有很多，轻量级的有Sublime Text、Notepad++、Atom、Vim等编辑器，重量级有Eclipse（简称ES）、Android Studio（简称AS）、Source Insight（简称SI）等IDE。而选择一款好工具，将会给你带来成倍的收益。需要工具给你提供的信息无非是，类继承结构图、被调用方法的定义或者声明的位置，文件的目录结构图，强大的搜索功能，类成员变量和成员方法的结构图，强大的编辑能力（如果需要修改AOSP的源码），集成这些功能的只有IDE这种类型的工具了。想AS、ES、SI这些都是支持导入整个工程的源码，所以使用起来非常方便。AS和ES由于设计语言的问题，对AOSP中C/C++文件支持不是很好，比如不能显示C/C++整个文件的方法、函数、类、变量，不支持函数、方法的跳转。而这一缺点SI却弥补了。所以对于Framework层以上的Java代码我使用AS/ES来阅读，其他的用SI阅读。不明白Android整个架构的可以看一下这个图。
 
 ![architecture]({{site.baseurl}}/asset/2017-04-29/2017-04-29-android_architecture.png){:.white-bg-image}
 
 &emsp;&emsp;但是SI就只有这一点吸引了我，其他的功能相对AS/ES还是差太多。由于这不是一篇争论谁优谁劣，所以不做细究。只要知道，想看C/C++文件用SI是最好的。而对于ES和AS我选择了AS，google已经明确声明今后不在ES上更新ADT插件了，而且AS不断更新的新功能也吸引了我。
 
-## *2.About*{:.header2-font}
+## *2.About*
 &emsp;&emsp;关于AS和google的关系网上资料很多，不做讨论。我给大家提供一个[AS的官网博客](http://tools.android.com/recent)。AS源于Jetbrains的产品IntelliJ IDEA，可以看看IntelliJ IDEA对Android平台的支持--->[IDEA官网博客](https://www.jetbrains.com/help/idea/2017.1/android.html)
 
-## *3.Introduction*{:.header2-font}
+## *3.Introduction*
 &emsp;&emsp;那么接下来就讲讲，我使用AS阅读AOSP源码的一些习惯吧。
 
-### _导入整个AOSP源码工程_{:.header3-font}
+### _导入整个AOSP源码工程_
 &emsp;&emsp;Android团队已经为我们提供了idegen工具去[制作AOSP源码的索引](https://android.googlesource.com/platform/development/+/master/tools/idegen/README)，有了索引才能让AS加载AOSP源码。这里说个题外话，著名的[AndroidXref](http://androidxref.com/)源码查询网址使用的是[OpenGrok](http://opengrok.github.io/OpenGrok/)搜索引擎，如果想要搭建自己项目的AndroidXref，也需要创建项目的索引，可见索引的重要性。那么接下来我们就按照Android团队提供的文档生成项目对应的索引。
 
 - 1）全编之后，生产out目录，再单编development/tools/idegen/这个模块，可以使用make命令也可以使用mmm命令,将会在out目录下生成idegen.jar
@@ -33,7 +33,7 @@ tag:
 上面的操作执行下来确实挺浪费时间的，如果不进行编译想要直接导入AOSP源码的话，只要有android.ipr和android.iml就可以。这里我上传一份自己的配置文件，下载路径：[配置文件]({{site.baseurl}}/asset/2017-04-29/configuration)，或者使用idegen.jar生成android.ipr和android.iml
 获得两个配置文件之后就是加载整个项目到AS，但是由于没有缓存，初次加载将会导致内存紧张，电脑卡顿。所以我们需要优化一下加载。
 
-### _性能优化_{:.header3-font}
+### _性能优化_
 可以从下面几个方面优化。
 
 - 优化加载项
@@ -80,7 +80,7 @@ tag:
 
 可以通过[这个博客](http://blog.csdn.net/xyxjn/article/details/46906909)了解以上各个参数，优化AS其实并没有抱很大期望，因为这个是Android团队的事情。所以，我毅然决然的选择了第三种方式换电脑。
 
-### _使用中的一些细节_{:.header3-font}
+### _使用中的一些细节_
 1.依赖库的选择
 
 依赖库只导入framework、jdk，也可以选择性的添加external（主要是一些开源库wpa_supplicant、libhevc）。这样在进行代码跳转时就可以调到源码framework，而不是sdk的framework。
@@ -152,5 +152,5 @@ tag:
 
 
 
-## *4.Reference*{:.header2-font}
+## *4.Reference*
 [制作AOSP源码索引](https://android.googlesource.com/platform/development/+/master/tools/idegen/README)

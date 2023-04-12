@@ -17,7 +17,7 @@ WMS启动流程中主要的方法也就是下面的三个：
 - displayReady
 - systemReady
 
-### *main方法*{:.header3-font}
+### *main方法*
 ```java
 public static WindowManagerService main(final Context context, final InputManagerService im,
             final boolean haveInputMethods, final boolean showBootMsgs, final boolean onlyCore,
@@ -177,7 +177,7 @@ WindowManagerService构造器
     }
 ```
 
-### *displayReady方法*{:.header3-font}
+### *displayReady方法*
 ```java
    public void displayReady() {
         for (Display display : mDisplays) {
@@ -213,7 +213,7 @@ WindowManagerService构造器
     }
 ```
 
-### *systemReady方法*{:.header3-font}
+### *systemReady方法*
 ```java
  public void systemReady() {
         mPolicy.systemReady();
@@ -262,5 +262,5 @@ WindowManagerPolicy是一个接口，其实现类为PhoneWindowManager,所以sys
 
 
 
-<!-- ## *4.Reference*{:.header2-font} -->
+<!-- ## *4.Reference* -->
 

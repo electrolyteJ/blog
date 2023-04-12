@@ -7,6 +7,8 @@ tag:
 - image
 - android
 ---
+* TOC
+{:toc}
 
 # Color(色彩的世界)
 ## Color Space(色域)
@@ -90,11 +92,11 @@ SVG | Lossless / Vector
 
 
 
-### Picasso vs. Glide vs. Fresco
+# 图库：Picasso vs. Glide vs. Fresco
 ![image]({{site.baseurl}}/asset/image/picasso.png){:.center-image}*`Picasso`*
 
 ![image]({{site.baseurl}}/asset/image/glide.png){:.center-image}*`Glide`*
 
-## *参考资料*{:.header2-font}
+# *参考资料*
 
 [关于显示器的颜色深度、色域、HDR，以及它们的关系和区别](https://kejiweixun.com/blog/explain-display-color-depth-color-space-hdr/)

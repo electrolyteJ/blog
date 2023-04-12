@@ -8,10 +8,10 @@ comments: true
 tag:
 - ai
 ---
-## *1.Summary*{:.header2-font}
+## *1.Summary*
 &emsp;&emsp;正在吐血酝酿中，敬请期待
-## *2.About*{:.header2-font}
+## *2.About*
 &emsp;&emsp;
-## *3.Introduction*{:.header2-font}
+## *3.Introduction*
 &emsp;&emsp;
-## *4.Reference*{:.header2-font}
+## *4.Reference*

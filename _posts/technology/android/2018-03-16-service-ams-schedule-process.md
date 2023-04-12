@@ -9,7 +9,7 @@ tag:
 ---
 * TOC
 {:toc}
-## *1.Summary*{:.header2-font}
+## *1.Summary*
 &emsp;&emsp;对于kernel来说，进程、线程是不分家的，多线程或者多进程都会共享资源，但是由于需要确保每个应用在user space中都相对独立、相对安全，彼此不能轻易地操作彼此的数据，就急需做分离。所以进程和线程在user space其实是不同的。进程拥有独立的内存。多个进程中某个进程发生crash并不会影响其他的进程运行，借由进程的这个特性，对于需要放在后台工作的任务来说，进程是个非常好的选择，即使由于内存吃紧被回收，代码发生crash挂了，也都不影响前台UI进程。
 &emsp;&emsp;对于android framework来说，一个app中可以有多个进程，面向用户的前台UI进程存活率指定是比其他后台进程更高。android framework采用了多进程管理多个app，应用层存在大量的承载着app的虚拟机，一个虚拟机跑在一个进程中。
 对于多进程的设计我们可以先推测一下：
@@ -20,7 +20,7 @@ tag:
 
 &emsp;&emsp;我们都知道Android操作系统是基于Linux操作系统的，所以很多东西会沿用了Linux，但又在其基础之上做了定制。想要了解Android中的进程，需要简单了解一下Linux中的进程。
 
-### *Process state*{:.header3-font}
+### *Process state*
 #### linux process state
 ```
 -   R  running or runnable (on run queue)
@@ -55,7 +55,7 @@ tag:
     }
 ```
 &emsp;&emsp;相对于linux的process state，android process state更加细化。
-### *Process types*{:.header3-font}
+### *Process types*
 #### linux process types
 
 ```
@@ -85,7 +85,7 @@ Services that have been running for a long time (such as 30 minutes or more) may
 4. cached process
 These processes often hold one or more Activity instances that are not currently visible to the user (the `onStop()` method has been called and returned)
 
-### *Process priority*{:.header3-font}
+### *Process priority*
 #### linux priority
 通过设置进程的nice值，取值范围为-20～+19，来改变其priority
 
@@ -194,7 +194,7 @@ These processes often hold one or more Activity instances that are not currently
 ```
 android 的priority值，并没有做什么变动，还是和linux的保持一致。
 
-### *Process policy*{:.header3-font}
+### *Process policy*
 #### linux policy
 ```
 - SCHED_FIFO:First in-first out scheduling
@@ -243,7 +243,7 @@ android 的priority值，并没有做什么变动，还是和linux的保持一�
      */
      public static final int SCHED_RESET_ON_FORK = 0x40000000;
 ```
-### *Process group*{:.header3-font}
+### *Process group*
 #### linux group 
 
 #### android group
@@ -315,7 +315,7 @@ android 的priority值，并没有做什么变动，还是和linux的保持一�
     public static final int THREAD_GROUP_RESTRICTED = 7;
 ```
 
-### *Process siganl*{:.header3-font}
+### *Process siganl*
 #### linux siganl
 ```
        SIGHUP        1       Term    Hangup detected on controlling terminal
@@ -349,10 +349,10 @@ android 的priority值，并没有做什么变动，还是和linux的保持一�
 ```
 
 &emsp;&emsp;总的来说主要有变化的是process state和process types。
-## *2.Introduction*{:.header2-font}
+## *2.Introduction*
 android进程管理采用LRU算法排序进程，使用oom_adj值和占用内存大小来决定在内存紧张的时候回收哪个进程。
 
-### *进程LRU排序*{:.header3-font}
+### *进程LRU排序*
 mLruProcesses为进程的cache列表，越靠近列表的尾部越不会被kill掉，存活下来的希望越大。当插入一个正在使用的进程那么会发生如下变化 ：
 - 插入的当前进程会被放置于尾部
 - 与其相关联的进程将会尽可能被推到靠近尾部，提高其level，免于被kill
@@ -509,7 +509,7 @@ final void updateLruProcessLocked(ProcessRecord app, boolean activityChange,
 &emsp;&emsp;如果当前进程存在service connection，则帮助绑定的service进程提高在mLruProcessses中的index。
 &emsp;&emsp;如果当前进程存在provider reference，则帮助ContentProvider进程提高在mLruProcesses中的index。
 
-### *进程oom_adj调整*{:.header3-font}
+### *进程oom_adj调整*
 
 adj级别 |取值|介绍
 ---|---|---|

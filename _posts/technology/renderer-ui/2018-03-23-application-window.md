@@ -35,7 +35,7 @@ Window在Android中是非常重要的，围绕其实现的系统也是非常的�
 
 ## *Activity的应用窗口创建* 
 
-### *attach*{:.header3-font}
+### *attach*
 
 &emsp;&emsp;当Activity被ClassLoader加载到应用进程之后，初始化的过程就最先调用attach方法,不明白的可以看看[Framework层的服务 --- AMS管理四大组件]({{site.baseurl}}/2018-03-15/framework-service-ams-component)
 
@@ -149,7 +149,7 @@ ViewRootImpl$ViewRootHandler#handleMessage
 ```
 
 
-### *setTheme*{:.header3-font}
+### *setTheme*
 ```java
   @Override
     public void setTheme(int resid) {
@@ -213,7 +213,7 @@ frameworks/base/core/java/android/content/res/ResourcesImpl.java
 &emsp;&emsp;到这里我们基本就知道了原来是通过AssetManager的native方法applyThemeStyle进行主题加载的。
 
 
-### *onCreate*{:.header3-font}
+### *onCreate*
 
 在Activity这一阶段我们最常使用的就是通过setContentView加载自定义的布局，所以我们直接来看看如何其过程。
 
@@ -457,7 +457,7 @@ frameworks/base/core/java/com/android/internal/policy/PhoneWindow.java
 
 ## *Dialog的子窗口创建*
 
-### *创建Dialog*{:.header3-font}
+### *创建Dialog*
 
 ```java
     Dialog(@NonNull Context context, @StyleRes int themeResId, boolean createContextThemeWrapper) {
@@ -491,7 +491,7 @@ frameworks/base/core/java/com/android/internal/policy/PhoneWindow.java
 ```
 &emsp;&emsp;很简单的构造器就是初始化Window对象，并且设置监听Window变化的回调。接着再来看看窗口的DecorView的创建和布局加载
 
-### *setContentView*{:.header3-font}
+### *setContentView*
 
 ```java
 public void setContentView(@LayoutRes int layoutResID) {
@@ -500,7 +500,7 @@ public void setContentView(@LayoutRes int layoutResID) {
 ```
 &emsp;&emsp;和Activity一样都是通过Window的setContentView方法，来完成DecorView的创建和布局的加载。完成了这些下面就是要让WMS把我们的布局展现出来了。Activity是在onResum阶段之后调用了Activity的makeVisible方法完成的。那么Dialog是怎么做的 ？答案是通过Dialog的show方法。
 
-### *show*{:.header3-font}
+### *show*
 
 ```java
  public void show() {
@@ -545,7 +545,7 @@ public void setContentView(@LayoutRes int layoutResID) {
 
 ## *Toast的系统窗口创建*
 
-### *addView*{:.header3-font}
+### *addView*
 
 frameworks/base/core/java/android/widget/Toast.java
 &emsp;&emsp;当调用show时，就能显示弹出Toas，所以看看它是如何show的。
@@ -752,7 +752,7 @@ frameworks/base/core/java/android/widget/Toast.java
 ```
 &emsp;&emsp;到这里我们就知道了，如何show出一个Toast，那么如何remove掉的。其实是通过NotificationManagerService的scheduleTimeoutLocked方法。
 
-### *removeView*{:.header3-font}
+### *removeView*
 
 frameworks/base/services/core/java/com/android/server/notification/NotificationManagerService.java
 ```java

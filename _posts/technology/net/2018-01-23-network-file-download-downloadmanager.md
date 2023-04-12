@@ -21,14 +21,14 @@ tag:
 
 &emsp;&emsp;接下来，我准备先从数据层来分析，然后在自上而下，从用户角度分析
 
-## *DataBase ORM*{:.header2-font}
+## *DataBase ORM*
 &emsp;&emsp;先来看看数据的表形式和Java Bean关联。
 
 ![]({{site.baseurl}}/asset/2018-01-23/2018-01-23-DownloadProvider-orm.png)
 
 &emsp;&emsp;数据库一共创建两张表：request_headers、download。通过DownloadManager$Request，向数据库插入开发者提供的数据，比如下载地址、下载到sd卡后的文件名等等。而通过将两张表的数据都保存到DownloadInfo类之后，就可以开始从服务端下载资源了，为了处理网络环境的不稳定的问题，DownloadThread$DownloadInfoDelta提供了某个时刻下载的进度，并且会将数据更新到数据库中。这样可以提供断点续传的功能。当下载完成会通过广播发送通知，提醒用户。
 
-## *DownloadProvider uri设计*{:.header2-font}
+## *DownloadProvider uri设计*
 &emsp;&emsp;知道了数据的关系之后，由于使用了ContentProvider来暴露数据，所以还需要设计uri，从而让外部能过安全的访问数据。
 
 ![]({{site.baseurl}}/asset/2018-01-23/2018-01-23-DownloadProvider-uri.png)
@@ -48,7 +48,7 @@ tag:
 
 从这里我们可以看出my_downloads是给外部插入数据用的，而在数据库更新和删除的代码中all_downloads是用来更新数据、删除数据，all_downloads更多是提供给内部使用，不过DownloadManager#setAccessAllDownloads可以设置外部访问是的uri为all_downloads。
 
-## *DownloadProvider的下载流程*{:.header2-font}
+## *DownloadProvider的下载流程*
 
 
 ![]({{site.baseurl}}/asset/2018-01-23/2018-01-23-DownloadProvider-flowchart.png)
@@ -62,6 +62,6 @@ tag:
 
 
 
-## *参考资料*{:.header2-font}
+## *参考资料*
 [Creating a Content Provider](https://developer.android.com/guide/topics/providers/content-provider-creating.html)
 [在Android 5.0中使用JobScheduler](http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0403/2685.html)

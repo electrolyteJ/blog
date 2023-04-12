@@ -36,7 +36,7 @@ gRPC+protobuf(未来) ​​​​
 - [x] [改造Retrofit][6]
 - [ ]  [DNSHttp]()
 
-## *考资料*{:.header2-font}
+## *考资料*
 
 [HTTP - Hypertext Transfer Protocol](https://www.w3.org/Protocols/)
 [HTTP 协议入门](https://www.ruanyifeng.com/blog/2016/08/http.html)

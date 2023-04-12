@@ -10,11 +10,11 @@ tag:
 # - AOSP(APP)
 published : true 
 ---
-## *Introduction*{:.header2-font}
+## *Introduction*
 
 
 [module-manager-intellij-plugin](https://github.com/electrolyteJ/bundles-assembler/tree/main/module-manager-intellij-plugin)
 
-## *Reference*{:.header2-font}
+## *Reference*
 [ECTranslation](https://github.com/Skykai521/ECTranslation)
 [Creating Your First Plugin](https://plugins.jetbrains.com/docs/intellij/getting-started.html)

@@ -14,18 +14,18 @@ tag:
 - TOC
   {:toc}
 
-## _1.Summary_{:.header2-font}
+## _1.Summary_
 
 &emsp;&emsp;正在吐血酝酿中，敬请期待
 
-## _2.About_{:.header2-font}
+## _2.About_
 
 &emsp;&emsp;
 
-## _3.Introduction_{:.header2-font}
+## _3.Introduction_
 
-### _编译 AOSP 的过程_{:.header3-font}
+### _编译 AOSP 的过程_
 
 &emsp;&emsp;
 
-## _4.Reference_{:.header2-font}
+## _4.Reference_

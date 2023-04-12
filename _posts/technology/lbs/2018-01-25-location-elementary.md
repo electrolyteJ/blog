@@ -12,13 +12,13 @@ tag:
 ---
 * TOC
 {:toc}
-## *1.Summary*{:.header2-font}
+## *1.Summary*
 &emsp;&emsp;我总是在思考一个问题，如果一件事情你重来没有做过，那么要如何才能入门并且熟练上手 ？ 我认为就是把API看几遍，把相关的资料看几遍。然后再去实践，不懂在回头查看之前的资料。那么现在就让我们先入门吧
 
-## *2.About*{:.header2-font}
+## *2.About*
 &emsp;&emsp;这一篇主要讲的是API的基本使用，以及一些定位的概念，不会涉及太深的实现原理。由于现如今定位库有很多，比如google、百度、高德、腾讯，已经拿到许可证的滴滴也在做自己的定位系统。然而Android提供的定位框架却更加值得我们去阅读学习，毕竟是开源项目。所以这里的API都是Android API，而不是google在Android开发者文档推荐自己的google API。
 
-## *3.Introduction*{:.header2-font}
+## *3.Introduction*
 &emsp;&emsp;要想使用定位，就必须通过`getSystemService(Context.LOCATION_SERVICE)`获得LocationManager对象，通过LocationManager对象可以做下面三件事
 
 - 通过确定使用哪个LocationProvider去获取定位数据
@@ -29,7 +29,7 @@ tag:
 
 &emsp;&emsp;所以让我们来看看底层都会给我们提供哪些数据。
 
-### *阅读API*{:.header3-font}
+### *阅读API*
 &emsp;&emsp;
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-01-25-location-system-api-overview.png)
 
@@ -56,7 +56,7 @@ tag:
     GnssNavigationMessage.Callback：导航的回调信息
     GnssStatus.Callback：卫星的状态回调。
 
-### *Location 策略*{:.header3-font}
+### *Location 策略*
 &emsp;&emsp;
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-01-25-location-system-location-strategies.png)
 
@@ -139,7 +139,7 @@ private boolean isSameProvider(String provider1, String provider2) {
 看完上面的代码我们可以知道通过`时间间隔`、`精确度`来判断哪个定位数据更有用。其实有时候我们还需要考虑其他因素。
 
 
-## *4.Reference*{:.header2-font}
+## *4.Reference*
 [Location Strategies](https://developer.android.com/guide/topics/location/strategies.html)
 [Raw GNSS Measurements](https://developer.android.com/guide/topics/sensors/gnss.html)
 [Android地理位置服务解析](http://unclechen.github.io/2016/09/02/Android%E5%9C%B0%E7%90%86%E4%BD%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E8%A7%A3%E6%9E%90/)

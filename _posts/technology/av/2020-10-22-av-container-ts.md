@@ -10,7 +10,7 @@ tag:
 - av
 published : true
 ---
-## *1.Summary*{:.header2-font}
+## *1.Summary*
 MPEG transport stream(short as TS)
 
 ```
@@ -73,7 +73,7 @@ program_map_PID=12  ---->  ...
 
 理解了这些那么接一下我们就可以来看看PAT 、 PMT 、 PES
 
-## *2.Introduction*{:.header2-font}
+## *2.Introduction*
 
 ###  PAT((Program Associate Table) Packet
 ts头字段pid固定为0x0000
@@ -321,7 +321,7 @@ Stuffing Bytes|variable|length	0xff
 
 
 
-## *3.Reference*{:.header2-font}
+## *3.Reference*
 [MPEG-TS 格式解析](https://blog.csdn.net/Kayson12345/article/details/81266587)
 [MPEG2-TS基础](https://blog.csdn.net/rootusers/article/details/42772657)
 [MPEG-TS基础2](https://blog.csdn.net/rootusers/article/details/42970859)

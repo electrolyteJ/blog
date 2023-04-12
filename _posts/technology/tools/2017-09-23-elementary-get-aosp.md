@@ -10,12 +10,12 @@ tag:
 - tools
 ---
 
-## *1.Summary*{:.header2-font}
+## *1.Summary*
 &emsp;&emsp;在获取和编译AOSP代码遇到了一些坑，所以特意来写个文章记录一下，不然回头又忘记当初怎么解决坑的。健忘真是程序员的专长，今天出门之前提醒自己要带伞，结果出了门才发现没带。
 
-## *2.About*{:.header2-font}
+## *2.About*
 &emsp;&emsp;其实AOSP官方已经有详细的教程不过针对的是Linux（Ubuntu版本），MacOS并没有。所以本文针对的是在macOS环境下获取和编译AOSP。可是在Linux和macOS中获取和编译AOSP操作步骤是一样的，只是存在一些库版本或者库类型问题。这里推荐AOSP官网的["Downloading and Building"](https://source.android.com/source/requirements)文章供初学者学习，需要自带梯子。外面的世界还是不错的，有一些只能通过肢体语言来表达情感的内容还是值得一看的。如果看不懂英文，没关系，我这里在推荐几个中文的网站，如：[中科大](https://lug.ustc.edu.cn/wiki/mirrors/help/aosp)、[清华](https://mirrors.tuna.tsinghua.edu.cn/help/AOSP/)。我用的是中科大的镜像。知道怎么获取和编译AOSP之后，接下来就开始分析会遇到有哪些坑吧。说个提问话，如果不知道什么是repo的话可以看看这一篇文章[Android源码解析之repo仓库]({{site.baseurl}}/2017-04/study-repo)
-## *3.Introduction*{:.header2-font}
+## *3.Introduction*
 &emsp;&emsp;通过观看了上面提供的的资料之后，我们终于知道了怎么来获取和编译AOSP。下面主要从两方面入手：获取AOSP的过程和编译AOSP的过程
 
 配置环境：
@@ -27,12 +27,12 @@ java version：java 1.8.0_144
 python version：python 2.7.10
 ```
 
-### *获取AOSP的过程*{:.header3-font}
+### *获取AOSP的过程*
 
 ### repo sync被莫名终止
 &emsp;&emsp;使用repo工具过程中可能由于网络不稳定或者其他原因导致repo sync终止，其实大可不用担心，重新repo sync即可，并且会在断掉的地方继续获取AOSP源码。这里说个题外话。获取代码的顺序是从.repo/manifest.xml文件来的(.repo/manifest.xml是.repo/manifests/default.xml的符号链接,任意修改任何一处都会使得两个文件有变化，Linux下的符号链接存在的意义可以理解为Windows下的快捷方式，但是功能不同于Windows下的快捷方式)，仔细观察可以发现manifest.xml文件中目录的排序规则就是按照字母表顺序来的，所以当拉取源码到tools目录时，我们就知道快要完事了。
 
-### *编译AOSP的过程*{:.header3-font}
+### *编译AOSP的过程*
 
 ### 需要使用设置AOSP目录的文件系统
 &emsp;&emsp;主要是AOSP文件系统区分大小写，于是创建一块区分大小的分区供AOSP使用。
@@ -76,13 +76,13 @@ brew install xz
 
 如果后续还有问题在继续写，continue。。。
 
-### *其他*{:.header3-font}
+### *其他*
 如果编译完成，想使用Android Studio阅读源码可以观看这一篇文章[使用Android Studio阅读AOSP源码]({{site.baseurl}}/2017-04-29/elementary-using-AS-reading-code)
 
 
 
 
-## *4.Reference*{:.header2-font}
+## *4.Reference*
 [在 OS X 上编译 AOSP 源码](weibo.com/u/1785464290/home?wvr=5)
 
 [在Mac 10.11编译最新的Android 6.0](http://blog.zhaiyifan.cn/2015/11/24/BuildAndroid6OnMacElCapitan/)

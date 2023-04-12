@@ -10,9 +10,9 @@ tag:
 - av
 published : false
 ---
-## *1.Summary*{:.header2-font}
+## *1.Summary*
 &emsp;&emsp;
-## *2.About*{:.header2-font}
-## *3.Introduction*{:.header2-font}
-## *4.Reference*{:.header2-font}
+## *2.About*
+## *3.Introduction*
+## *4.Reference*
 [Android RTMP推流之MediaCodec硬编码一（H.264进行flv封装）](https://blog.csdn.net/tanningzhong/article/details/78893881)

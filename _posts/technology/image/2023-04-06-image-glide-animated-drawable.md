@@ -15,7 +15,7 @@ Glide在Gif动图采用了第三方提供的编解码库，再次基础上适配
 - com.bumptech.glide.load.resource.gif包
 - com.bumptech.glide.load.resource.transcode.GifDrawableBytesTranscoder类
 
-## Gif加载流程
+# Gif加载流程
 当Gif从网络或者本地文件读取到数据之后，接下里就开始进行`decode -> transform -> encode -> transcode -> target`流程.
 
 - decode: StreamGifDecoder/ByteBufferGifDecoder：数据流转GifDrawable
@@ -48,10 +48,10 @@ GifFrameLoader类会从GifDecoder加载一帧，然后调用invalidateSelf绘制
 ```
 GifDecoder解码这一帧给DelayTarget需要GifFrameResourceDecoder解码出一帧Bitmap(GifDecoder#getNextFrame)，然后调用onFrameReady回调告诉GifDrawable调用invalidateSelf绘制新的一帧，从这里我们看出渲染一帧与解码一帧是在串行的，那么是否存在渲染与解码分开并行的优化方案，framesequence应运而生。
 
-## Gif加载优化
+# Gif加载优化
 [animated-drawable-integration](https://github.com/electrolyteJ/animated-drawable-integration)实现了采用framesequence方案加载Gif的代码。FrameSequenceDrawable调用start之后会在内部创建一个名为FrameSequence decoding thread的HandlerThread线程，用来解码Gif到一个mBackBitmap，当触发了Drawable的draw方法，mBackBitmap会于用于渲染的mFrontBitmap进行swap，并且解码线程会继续解码到mBackBitmap，等待下一次的swap，这样就实现了渲染与解码流程分开，提高了Gif渲染的流畅性。
 
-## Webp/AVIF动图
+# Webp/AVIF动图
 Gile 在Android P+使用了基于ImageDecoder的解码器，目前该解码器主要用来解码Android P+平台的Webp与Android S+平台的AVIF
 ```java
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -69,7 +69,7 @@ Gile 在Android P+使用了基于ImageDecoder的解码器，目前该解码器�
 ```
 ImageDecoder也是采用渲染与解码分开的方案，当数据解码时会通过OnHeaderDecodedListener#onHeaderDecoded回调一帧的信息ImageInfo，继而能让我们根据设备条件、app内存情况等信息将真实的Bitmap decode 为另外一个Bitmap
 
-## 图片网络请求优化
+# 图片网络请求优化
 
 1. 图片的下载占用时间较多的往往是io，而cpu常常处于等待阶段，基于此我们可以优化网络请求库的请求池，采用2*cpu + 1
 ```java

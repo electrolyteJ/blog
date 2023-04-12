@@ -17,7 +17,7 @@ Glide的设计灵感部分借鉴了square的picasso的设计思想，并且做�
 
 从图中我们先从缓存开始，内存与磁盘缓存都有两级，缓存获取的路径 `ActiveResources(EngineKey) -> LruResourceCache(EngineKey) -> DiskLruCache(ResourceCacheKey -> DiskLruCache(DataCacheKey)`，缓存的key表示了缓存资源的特性，EngineKey表示资源宽高、transform 、transcode、optioin等值，ResourceCacheKey表示资源的宽高、transformation、options等值，DataCacheKey基本表示了原图，未经处理的资源。
 
-## 内存缓存
+# 内存缓存
 
 内存缓存ActiveResources、LruResourceCache，他们的key都为EngieKey。
 ```java
@@ -82,7 +82,7 @@ public enum MemoryCategory {
 }
 ```
 
-## 磁盘缓存
+# 磁盘缓存
 
 磁盘也有两级缓存分别为使用ResourceCacheKey和DataCacheKey的DiskLruCache,使用ResourceCacheKey的DiskLruCache在ResourceCacheGenerator迭代器获取，使用DataCacheKey在DataCacheGenerator迭代器获取
 
@@ -152,7 +152,7 @@ public abstract class DiskCacheStrategy {
       public static final DiskCacheStrategy RESOURCE =...
 }
 ```
-## Bitmap 与 Array 缓存
+# Bitmap 与 Array 缓存
 Bitmap在内存中也是一块巨大的开销，所以Bitmap需要被缓存池管理起来方便复用。LruBitmapPool的池大小在app可用内存充足的情况下且Android N以下设备为开启硬件加速相当于四张全屏幕的大图占用的内存，其默认的策略在Android 4.4+用SizeConfigStrategy，以下用AttributeStrategy。
 
 
@@ -176,16 +176,16 @@ public abstract class DownsampleStrategy {
 ```
 在Gilde中如果ImageView没有提供具体的宽高，那么就不会进行scale调整Bitmap，直接进行原图加载。Bitmap的下采样主要是针对外部定义了ImageView的宽高才能进行。
 
-## 扩展性
+# 扩展性
 
-### Fetcher设计
+## Fetcher设计
 
 可定制：Loader/Fetcher Model 为 Data
 
 
 源数据的获取主要是通过Model，Uri、Url、File、Asset Folder等，在`api "com.squareup.okhttp3:okhttp:${OK_HTTP_4_VERSION}"`库中使用了Okhttp Fetcher拉取数据，Glide具备Fetcher的扩展性，外部只要继承`ModelLoader<GlideUrl, InputStream> ` 与 `DataFetcher<InputStream>` 并且在注册中心映射Model与Data的关系标明数据从GideUrl服务器流到InputStream,，Glide库就能在需要使用的时候去注册中心找到对应的类。
 
-### Decode设计
+## Decode设计
 
 下面三个地方都是可定制的
 
@@ -197,8 +197,8 @@ public abstract class DownsampleStrategy {
 比如，SVG资源如何转换为Android平台的Drawable类 ？通过 继承`ResourceDecoder<InputStream, SVG>`并且进行资源的转码
 
 
-### Target设计
+## Target设计
 
 Glide通过外部继承CustomViewTarget类实现Android View绘制具体的资源，内部监听ViewTreeObserver.OnPreDrawListener#onPreDraw开始绘制才会触发资源做加载请求，真正做到按需加载。
 
-<!-- ### 资源流的预加载 -->
+<!-- ## 资源流的预加载 -->

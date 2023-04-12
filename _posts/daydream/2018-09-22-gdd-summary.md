@@ -28,19 +28,19 @@ share: true
 
 &emsp;&emsp;展台的内容和演讲内容比较一致，有AI方向的TensorFlow，IoT方向的穿戴设备、Android Things，当然还有ARCore和跨平台技术Flutter ( 这里有个猜测，在演讲的内容中PWA也是跨平台的一种，但是在展台却没有看到，可能google自己对于这个也不是很看好吧，尽管在演讲的时候总能听到高效、便捷这些词。)，等一些其他的，比如营销策略、工具，产品设计。
 
-# *TensorFlow*{:.header2-font}
+# *TensorFlow*
 &emsp;&emsp;展台里面除了有TensorFlow的礼物之外，google还提供了很多机器学习的资源，有汉化的[机器学习](https://developers.google.com/machine-learning/crash-course/ml-intro?hl=zh-cn)网站；面向在校学生的机器学习冬令营；还有一些机器学习的具体应用场景，比如猜画小歌、在Android Things上面的应用、其他大厂的应用。在演讲方面，机器学习也是受到了高度重视，包括了从入门到深入的分享。这里说一个题外话，当时有个叫做“编写机器学习的7个步骤”的分享，我晚到了5分钟，结果门口挤满了人在听演讲。可见对于这样一个实操性强的、能有大神带你入门的机器学习分享是多么受到欢迎。以及午餐的时候也听到旁人都讨论关于机器学习的方方面面。所以相对于Android，google对于TensorFlow的推广来的更加重视，Android这位宠儿正在渐渐地被TensorFlow这位新宠取代。不光是google在大力推广，市场上的媒体争相报道，培训机构的AI课程越来越多，所以很多的工程师都在学习AI，拥抱AI。
 
 ![]({{site.baseurl}}/asset/summary/2018-09-22/gdd-10.jpg){:.center-image}*`机器学习应用`*
 
 ![]({{site.baseurl}}/asset/summary/2018-09-22/gdd-57.jpg)
 
-# *ARCore*{:.header2-font}
+# *ARCore*
 &emsp;&emsp;我在体验ARCore时，最为尴尬的莫过于软件突然卡住了，在场的人都面面相觑，然后仔细一看手机型号vivo nex，升降摄像头。当时差点没有憋住笑出来，这款手机竟然没能驾驭得了google的软件。工作人员还一顿解释道，之前是不会这样的可能是由于使用时间过长了。对于AR的推广不光有google自己在shopping方面的软件，还有其他公司，比如网易云推出的AR游戏。除了这些，这次还有ARCore Codelab,偏向于实操性的。需要提前报名现场签到才能进入，我对于这个并不是很感兴趣所以就没有报名。不过有朋友进去之后据她说可以拿到礼物，才感觉自己错过什么。
 ![]({{site.baseurl}}/asset/summary/2018-09-22/gdd-11.jpg)
 
 
-# *IoT*{:.header2-font}
+# *IoT*
 &emsp;&emsp;google在穿戴方面主要是推广一些设备制造公司和一些手表公司的穿戴设备。在演讲内容也有这部分的分享，比如wear OS应用的设计、表盘的设计。正好自己对于这方面也想多了解一下，所以在智能手表展台体验了很久。现如今的Android手机市场并不如前些年那么暴力挣钱，市场更多趋于正常，当时在风口飞翔的猪，有的掉下来，有的长了翅膀。大部分手机厂商都在求变，做智能穿戴设备、做智能硬件等，都希望在落地之前长出翅膀或者拥抱另外一个风口。有人，有市场，所以穿戴设备还是有很多的发展空间的。
 &emsp;&emsp;在体验`Wear OS 家居管理`时，可以通过手表的按钮控制房间里的灯，突然想到有没有一种可能，是通过一些定义好的手势或者定义好的约定来唤醒房间里的灯。比如，拍个掌、或者轻轻敲击手表两下等。当然了，手表应该不会发展到《名侦探柯南》里面那种能够发射麻醉针的地步吧，然后给医务人员使用。
 
@@ -50,14 +50,14 @@ share: true
 
 ![]({{site.baseurl}}/asset/summary/2018-09-22/gdd-1.jpeg)
 
-# *Flutter*{:.header2-font}
+# *Flutter*
 &emsp;&emsp;终于说到这里了，Flutter想必才是现如今Android开发者最为关心的。有的人说赶紧学，有的人说先不要学，那么到底学不学？先保持关注，感受感受风口有没有风吧。不过说到学，google在这次大会中也从入门到深入的为我们讲解了Flutter，就是不知道Flutter是`扶不起的阿斗`还是`生子当如孙仲谋`。而在国内闲鱼对于lutter的使用是首当其冲的，还是挺配这种愿意踩坑的勇气。 现如今的大前端趋势越来越明显了，只会一门java语言会越来越限制自身的发展，还需要学习HTML、CSS、JavaScript这些前端知识。这真的是学无止境了。
 
 ![]({{site.baseurl}}/asset/summary/2018-09-22/gdd-23.jpg)
 
 ![]({{site.baseurl}}/asset/summary/2018-09-22/gdd-35.jpg)
 
-# *google 游乐园*{:.header2-font}
+# *google 游乐园*
 &emsp;&emsp;第一天晚上的google游乐园，有打碟的小姐姐，有精美的礼物，有各种游戏，还有各种吃的。
 ![]({{site.baseurl}}/asset/summary/2018-09-22/gdd-38.jpg)
 
@@ -69,14 +69,14 @@ share: true
 
 ![]({{site.baseurl}}/asset/summary/2018-09-22/gdd-43.jpg)
 
-# *饮食*{:.header2-font}
-![]({{site.baseurl}}/asset/summary/2018-09-22/gdd-52.jpg){:.header2-font}*午餐*
+# *饮食*
+![]({{site.baseurl}}/asset/summary/2018-09-22/gdd-52.jpg)*午餐*
 
-![]({{site.baseurl}}/asset/summary/2018-09-22/gdd-53.jpg){:.header2-font}*午餐场地*
+![]({{site.baseurl}}/asset/summary/2018-09-22/gdd-53.jpg)*午餐场地*
 
-![]({{site.baseurl}}/asset/summary/2018-09-22/gdd-59.jpg){:.header2-font}*茶歇*
+![]({{site.baseurl}}/asset/summary/2018-09-22/gdd-59.jpg)*茶歇*
 
-# *其他*{:.header2-font}
+# *其他*
 &emsp;&emsp;放一些妹子和有趣的照片，让大家感受一下，我眼里看到的程序员和媒体看到的程序员是两种群体，工程师也可以生活得有趣。
 ![]({{site.baseurl}}/asset/summary/2018-09-22/gdd-54.jpg)
 

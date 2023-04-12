@@ -7,13 +7,13 @@ tag:
 - lbs
 - android
 ---
-## *1.Summary*{:.header2-font}
+## *1.Summary*
 
 由于现在的共享单车、滴滴打车、外卖等LBS应用的持续火热和烧钱，导致定位技术在这些行业中担当着举足轻重的角色，定位技术之于LBS应用，就像音视频编解码技术之于视频应用。所以研究定位能让我们更加适应这个社会的变化，而我相信采集有效的定位数据是这些行业实现智能化（人工智能）的基石。
 
 首先我们需要普及一下定位系统的相关知识。
 
-### *GPS*{:.header3-font}
+### *GPS*
 
 国际性组织GNSS，有四大成员：美国GPS、俄罗斯格洛纳斯GLONASS、中国北斗COMPASS、欧洲伽利略GALILEO。
 现如今的共享单车都在使用中国北斗，比如摩拜、小黄车，也不能说它的技术已经远超GPS，而是政府对于北斗的推广确实上心了，在加上北斗在中国大陆上空确实布局的不错，所以卫星数据准确性高。有兴趣可以看看这篇文章
@@ -55,13 +55,13 @@ MTK给出了它们在open sky,有6颗卫星SNR》40db的条件下的测量数据
 
     HOT start TTFF：小于5s。
 
-### *CellID*{:.header3-font}
+### *CellID*
 这个就是我们常见的基站定位。
-### *WiFi MACID*{:.header3-font}
+### *WiFi MACID*
 
 主要采用无线AP的MAC地址定位。手机会保存用户一周之内的数据，通过网络将数据传给服务器，服务器会检索每一个AP地址并结合RSSI（接收信号强度），计算出一个合理的位置。
 
-### *其他*{:.header3-font}
+### *其他*
 除了以上几种还有蓝牙、传感器定位。但在手机端较为少用。
 
 对于这些定位方式如果有兴趣的话可以参考这一篇文章[室内定位（总结：种类，方法，特点）](http://www.cnblogs.com/lesliexong/p/7050360.html), 由于本文的重点是讲解Location系统，上面的内容只是作为一个背景知识，所以不进行深入挖掘。
@@ -77,7 +77,7 @@ MTK给出了它们在open sky,有6颗卫星SNR》40db的条件下的测量数据
 - [ ] [Location系统---Map]({{site.baseurl}}/2018-01-25/location-system-map)
 - [ ] [Location系统---项目实战]({{site.baseurl}}/2018-01-25/location-system-practice)
 
-## *2.Reference*{:.header2-font}
+## *2.Reference*
 
 [Android Location Providers – gps, network, passive – Tutorial](https://developerlife.com/2010/10/20/gps/)
 

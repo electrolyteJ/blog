@@ -12,14 +12,14 @@ tag:
 ---
 * TOC
 {:toc}
-## *1.Summary*{:.header2-font}
+## *1.Summary*
 &emsp;&emsp;不想写
-## *2.About*{:.header2-font}
+## *2.About*
 &emsp;&emsp;不想写
-## *3.Introduction*{:.header2-font}
+## *3.Introduction*
 
 更新数据的开始都是源于requestLocationUpdates或者requestSingleUpdate接口，那么接下来让我们来看看下面的解析吧。
-### *Application层*{:.header3-font}
+### *Application层*
 &emsp;&emsp;
 
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-01-25-location-system-launch-api.png)
@@ -122,7 +122,7 @@ ILocationListener的实现类ListenerTransport通过外部调用者提供的Loop
 3.PendingIntent类对象
 &emsp;&emsp;该类用于也是用于获取来自底层的定位数据，不过与ILocationListener不同的是，注册ILocationListener的界面会收到更新的定位数据，而PendingIntent则是将更新的定位数据传给其他的界面。还有一点需要注意的ILocationListener和PendingIntent不能同时存在，请求数据更新时，只能二选一。
 
-### *Framework-Java层*{:.header3-font} 
+### *Framework-Java层* 
 
 frameworks/base/services/core/java/com/android/server/LocationManagerService.java
 ```java
@@ -734,5 +734,5 @@ ProviderPropertiesUnbundled PROPERTIES = ProviderPropertiesUnbundled.create(
 这个就是优化的算法。
 
 &emsp;&emsp;接着回到ILocationProvider的setRequest方法调用，这下我们就可以轻松的知道LocationProviderProxy通过binder将请求发送给网络端的服务，而网络端的ILocationProvider接口就是接受者。
-## *4.Reference*{:.header2-font}
+## *4.Reference*
 Android Open Source Project

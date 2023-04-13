@@ -56,7 +56,7 @@ ActiveResources采用HashMap存储资源的软引用，当gc触发回收时，�
 ```
 - targetMemoryCacheSize(两张全屏幕的大图)：targetMemoryCacheSize的值默认等于两块屏幕占用的内存
 - targetBitmapPoolSize(bitmap池子大小)：在开启硬件加速的android O+的targetBitmapPoolSize大小等于一块屏幕占用的内存，在android O以下等于四块屏幕占用的内存。
-- availableSize(app可用内存)：可用内存大小 = app堆内存(低内存缩小0.33倍，高内存缩小0.4倍) - 减去数组池大小(在低内存设备(包括android 4.3以下和部分4.4以上的机器)中 数组池(字节或者整型)的容量为2MB，高内存则为4MB)
+- availableSize(可用内存)：可用内存大小 = app堆内存(低内存缩小0.33倍，高内存缩小0.4倍) - 减去数组池大小(在低内存设备(包括android 4.3以下和部分4.4以上的机器)中 数组池(字节或者整型)的容量为2MB，高内存则为4MB)
 
 当可用内存大于bitmap池子+targetMemoryCacheSize,那么内存缓存的大小等于targetMemoryCacheSize，反之，内存缓存不太足够时，内存缓存会对可用内存进行等分，要么在开启硬件加速的设备2/3(1+2），要么在没有开启的设备 2/6(4+2)等分。
 
@@ -153,7 +153,7 @@ public abstract class DiskCacheStrategy {
 }
 ```
 # Bitmap 与 Array 缓存
-Bitmap在内存中也是一块巨大的开销，所以Bitmap需要被缓存池管理起来方便复用。LruBitmapPool的池大小在app可用内存充足的情况下且Android N以下设备为开启硬件加速相当于四张全屏幕的大图占用的内存，其默认的策略在Android 4.4+用SizeConfigStrategy，以下用AttributeStrategy。
+Bitmap在内存中也是一块巨大的开销，所以Bitmap需要被缓存池管理起来方便复用。LruBitmapPool的池大小在可用内存充足的情况下且Android N以下设备为开启硬件加速相当于四张全屏幕的大图占用的内存，其默认的策略在Android 4.4+用SizeConfigStrategy，以下用AttributeStrategy。
 
 
 Bitmap下采样的策略

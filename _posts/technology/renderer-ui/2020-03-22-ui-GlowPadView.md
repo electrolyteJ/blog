@@ -1,8 +1,7 @@
 ---
 layout: post
-title: 自定义View：GlowPadView
+title: Android | 自定义View：GlowPadView
 description: 来电时电话拨盘页面
-author: 电解质
 tag:
 - android
 - renderer-ui

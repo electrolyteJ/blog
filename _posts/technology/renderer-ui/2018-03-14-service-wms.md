@@ -11,13 +11,13 @@ tag:
 * TOC
 {:toc}
 
-## *启动流程*
+# *启动流程*
 WMS启动流程中主要的方法也就是下面的三个：
 - main
 - displayReady
 - systemReady
 
-### *main方法*
+## *main方法*
 ```java
 public static WindowManagerService main(final Context context, final InputManagerService im,
             final boolean haveInputMethods, final boolean showBootMsgs, final boolean onlyCore,
@@ -177,7 +177,7 @@ WindowManagerService构造器
     }
 ```
 
-### *displayReady方法*
+## *displayReady方法*
 ```java
    public void displayReady() {
         for (Display display : mDisplays) {
@@ -213,7 +213,7 @@ WindowManagerService构造器
     }
 ```
 
-### *systemReady方法*
+## *systemReady方法*
 ```java
  public void systemReady() {
         mPolicy.systemReady();
@@ -262,5 +262,5 @@ WindowManagerPolicy是一个接口，其实现类为PhoneWindowManager,所以sys
 
 
 
-<!-- ## *4.Reference* -->
+<!-- # *4.Reference* -->
 

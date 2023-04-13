@@ -8,7 +8,7 @@ tag:
 - renderer-ui
 ---
 
-## 名词解释
+# 名词解释
 
 基础概念：
 
@@ -138,7 +138,7 @@ CanvasContext* CanvasContext::create(RenderThread& thread,
 react native 实现了异步布局，而android实现了异步渲染，他们的目的都是为了减轻主线程(UI线程)的负担，降低掉帧率。
 
 
-## *参考资料*
+# *参考资料*
 [硬件加速](https://developer.android.com/guide/topics/graphics/hardware-accel?hl=zh-cn) 
 [图形](https://source.android.com/docs/core/graphics)
 [EGL](https://www.khronos.org/egl)

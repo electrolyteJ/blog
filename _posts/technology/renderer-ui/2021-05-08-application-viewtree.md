@@ -77,11 +77,11 @@ public final class ActivityThread {
 - wm.addView
 - wm.updateViewLayout
 
-## *WindowManager#addView*
+# *WindowManager#addView*
 
 对于Activity、Dialog、Toast、PopupWindow这些UI控制器，内部都维护着一个窗口,窗口又是View树的画板。那么如何往窗口添加View呢？App内部有个全局单例WindowManagerGlobal，它负责application层的addView、removeView。每当add一个view树根节点的时候，都会创建一个ViewRootImpl用于管理View树，然后将对于View树的控制权交给了ViewRootImpl，ViewRootImpl会绘制所有节点,事件分发等操作。对于Activity、Dialog来说View树的根节点为DecorView。
 
-#### *WindowManager/ViewRootImpl*
+## *WindowManager/ViewRootImpl*
 
 WindowManager
 ```java
@@ -128,7 +128,7 @@ performTraversals
 只有第一次进行遍历View树，会执行setup 1 2;如果不是第一次并且DecorView的可见性发生了变化，则会执行setup 3
 
 
-#### *View Tree*
+## *View Tree*
 好了接下来我们来讲View的测绘吧，借张图让大家了解一下测绘流程
 ![]({{site.asseturl}}/android-framework/readering-pipline.png){: .center-image }_`图片来自“从架构到源码：一文了解Flutter渲染机制”该文章`_
 
@@ -182,10 +182,10 @@ View的生命周期
 绘制的流程Android团队已经在源码中告诉了我们，从根开始自顶向下绘制，那么从用户的观察角度来说的话，远离用户观察角度的先绘制，然后逐渐到达用户，对于FrameLayout、LinearLayout、RelativeLayout ViewGroup这样的容器其实不怎么需要draw，都是交给叶子绘制，它们更多用于布局子节点们
 
 在执行完测绘之后，我们就需要将测绘之后完成的窗口通过WindowSession发送给wms，之后如果成功wms会返回并且真个窗口就可见了。
-## *WindowManager#updateViewLayout*
+# *WindowManager#updateViewLayout*
 在执行完addView之后窗口就变为可见了，这一切本该完成了，但是这启动的时候出现弹窗输入法的要求，那么就会updateViewLayout，重新开始整个窗口参数的调整，由于篇幅有限就不继续看下去了。
 
-## *View树事件分发*
+# *View树事件分发*
 说完了View树的测绘过程，我们还需要来了解它的事件分发。
 ```
 input pipline
@@ -290,7 +290,7 @@ View
 ```
 与叶子节点不同的是，其父节点具备拦截功能，在事件分发的过程如果子节点不希望父节点拦截事件,可以通过`requestDisallowInterceptTouchEvent`
 
-## *参考资料*
+# *参考资料*
 [从架构到源码：一文了解Flutter渲染机制](https://developer.aliyun.com/article/770384)
 
 

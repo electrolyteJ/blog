@@ -13,19 +13,19 @@ tag:
 
 Window在Android中是非常重要的，围绕其实现的系统也是非常的复杂，但是Android团队通过封装其Framework层接口，向外提供了WindowManager，能让开发者简单而又快速的add自己的view。不过对于想更加深入理解像应用窗口、子窗口、系统窗口如何被coding出来的程序员来说，阅读Activity、Dialog、Toast等是非常有用的。
 
-## *Window*
-### *窗口类型(type)*
+# *Window*
+## *窗口类型(type)*
 
 首先要知道Android中窗口的分布是按照z-order的，也就是指向屏幕外的z轴。z-order值越大，就会覆盖住值越小的，从而也就更能被我们看到。这些值被按照窗口类型分为：应用窗口（1-99）、子窗口（1000 - 1999）、系统窗口（2000-2999）
 
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-23-Window-types.png)
 
-### *窗口标识(flag)*
+## *窗口标识(flag)*
 其次，你还可以控制窗口的flag，是否焦点、是否允许在锁屏显示、是否全屏等。
 
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-23-Window-flags.png)
 
-### *软键盘与窗口的调校模式(soft input mode)*
+## *软键盘与窗口的调校模式(soft input mode)*
 还有控制ime的参数
 
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-23-Window-softinput.png)
@@ -33,9 +33,9 @@ Window在Android中是非常重要的，围绕其实现的系统也是非常的�
 
 当然了你还可以设置窗口的其他属性，比如宽高、透明度、gravity、margin等。
 
-## *Activity的应用窗口创建* 
+# *Activity的应用窗口创建* 
 
-### *attach*
+## *attach*
 
 &emsp;&emsp;当Activity被ClassLoader加载到应用进程之后，初始化的过程就最先调用attach方法,不明白的可以看看[Framework层的服务 --- AMS管理四大组件]({{site.baseurl}}/2018-03-15/framework-service-ams-component)
 
@@ -149,7 +149,7 @@ ViewRootImpl$ViewRootHandler#handleMessage
 ```
 
 
-### *setTheme*
+## *setTheme*
 ```java
   @Override
     public void setTheme(int resid) {
@@ -213,7 +213,7 @@ frameworks/base/core/java/android/content/res/ResourcesImpl.java
 &emsp;&emsp;到这里我们基本就知道了原来是通过AssetManager的native方法applyThemeStyle进行主题加载的。
 
 
-### *onCreate*
+## *onCreate*
 
 在Activity这一阶段我们最常使用的就是通过setContentView加载自定义的布局，所以我们直接来看看如何其过程。
 
@@ -455,9 +455,9 @@ frameworks/base/core/java/com/android/internal/policy/PhoneWindow.java
                 
 
 
-## *Dialog的子窗口创建*
+# *Dialog的子窗口创建*
 
-### *创建Dialog*
+## *创建Dialog*
 
 ```java
     Dialog(@NonNull Context context, @StyleRes int themeResId, boolean createContextThemeWrapper) {
@@ -491,7 +491,7 @@ frameworks/base/core/java/com/android/internal/policy/PhoneWindow.java
 ```
 &emsp;&emsp;很简单的构造器就是初始化Window对象，并且设置监听Window变化的回调。接着再来看看窗口的DecorView的创建和布局加载
 
-### *setContentView*
+## *setContentView*
 
 ```java
 public void setContentView(@LayoutRes int layoutResID) {
@@ -500,7 +500,7 @@ public void setContentView(@LayoutRes int layoutResID) {
 ```
 &emsp;&emsp;和Activity一样都是通过Window的setContentView方法，来完成DecorView的创建和布局的加载。完成了这些下面就是要让WMS把我们的布局展现出来了。Activity是在onResum阶段之后调用了Activity的makeVisible方法完成的。那么Dialog是怎么做的 ？答案是通过Dialog的show方法。
 
-### *show*
+## *show*
 
 ```java
  public void show() {
@@ -543,9 +543,9 @@ public void setContentView(@LayoutRes int layoutResID) {
 ```
 &emsp;&emsp;由于Dialog的type为TYPE_APPLICATION_ATTACHED_DIALOG，之前我们讲的Activity的type是TYPE_APPLICATION，所以Dialog必须依附于Activity，其使用的token id就是父Window的，而不是Activity的AppWindowToken id。而接下来要将的Toast的TYPE_TOAST，不需要依附于任何的窗口。我们也可以定义自己的系统窗口，需要在Android manifest中声明权限，并且配置type为TYPE_APPLICATION_OVERLAY，这个Android O之后的API变动，之前的版本都是使用TYPE_SYSTEM_OVERLAY。
 
-## *Toast的系统窗口创建*
+# *Toast的系统窗口创建*
 
-### *addView*
+## *addView*
 
 frameworks/base/core/java/android/widget/Toast.java
 &emsp;&emsp;当调用show时，就能显示弹出Toas，所以看看它是如何show的。
@@ -752,7 +752,7 @@ frameworks/base/core/java/android/widget/Toast.java
 ```
 &emsp;&emsp;到这里我们就知道了，如何show出一个Toast，那么如何remove掉的。其实是通过NotificationManagerService的scheduleTimeoutLocked方法。
 
-### *removeView*
+## *removeView*
 
 frameworks/base/services/core/java/com/android/server/notification/NotificationManagerService.java
 ```java

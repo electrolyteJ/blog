@@ -8,7 +8,7 @@ tag:
 ---
 
 # Model
-## 1.数据可观察设计
+# 1.数据可观察设计
 
 ```
 观察者
@@ -31,9 +31,9 @@ tag:
     }
 ```
 当外部调用notifyDataSetChanged就会通知观察者调用onChanged，给外部提供的是全局刷新，显然这里的处理不如RecyclerView，即提供全局刷新也提供局部刷新，所以性能效率都很差。
-## 2.数据可复用设计(cache view)
+# 2.数据可复用设计(cache view)
 
-### RecycleBin
+## RecycleBin
 - 在屏幕内的View(on-screen): mActiveViews
 - 在屏幕外的View(off-screen)：mScrapViews
 - 内存双缓存：mActiveViews,mScrapViews（RecycledViewPool的祖先）
@@ -58,7 +58,7 @@ scrapActiveViews //move active views to scarp heap
 fullyDetachScrapViews //scrapview全部从view树remove
 removeDetachedView //从view树remove某个view
 ```
-### 获取View的缓存机制
+## 获取View的缓存机制
 - mRecycler.getTransientStateView(position)
 - mRecycler.getScrapView(position)
 
@@ -126,7 +126,7 @@ deltaY > 0 表示手势下拉(moving down)，内容向上填充（fill up）
 
 向下滚动（手势下拉，内容向下填充）：fillGap--->fillUp(position为顶部位置值，在顶部的位置填充一个itemView)
 
-## 1.执行滚动(data changed = false, onInterceptTouchEvent/onTouchEvent)
+# 1.执行滚动(data changed = false, onInterceptTouchEvent/onTouchEvent)
 ```
     static final int TOUCH_MODE_REST = -1;//初始位置
  
@@ -145,7 +145,7 @@ deltaY > 0 表示手势下拉(moving down)，内容向上填充（fill up）
 当用户手势进行move时，如果其mode为TOUCH_MODE_SCROLL，之会执行scrollIfNeeded，该方法主要介绍了三个参数，x,y为手势距离屏幕的距离，以及event。在其方法体内的代码逻辑整合了TOUCH_MODE_SCROLL和TOUCH_MODE_OVERSCROLL
 
 
-### touch move:TOUCH_MODE_SCROLL/TOUCH_MODE_OVERSCROLL
+## touch move:TOUCH_MODE_SCROLL/TOUCH_MODE_OVERSCROLL
 ```
   if (mTouchMode == TOUCH_MODE_SCROLL) {
         
@@ -247,14 +247,14 @@ deltaY > 0 表示手势下拉(moving down)，内容向上填充（fill up）
 2. overScrollBy：越界处理，将mode改为TOUCH_MODE_OVERSCROLL
 
 
-#### trackMotionScroll
+## trackMotionScroll
 1. 回收View到mCurrentScrap或者mScrapViews
 2. 从指定的index开始detach 指定的count
 3. 通过offsetChildrenTopAndBottom滚动内容
 4. 之后调用fillGap填充即将出现的itemView
 5. 之后remove detached的itemView，但是itemView仍然在缓冲池中。
 
-### touch up: TOUCH_MODE_SCROLL/TOUCH_MODE_OVERSCROLL
+## touch up: TOUCH_MODE_SCROLL/TOUCH_MODE_OVERSCROLL
 当手离开屏幕，mode依然为TOUCH_MODE_SCROLL时，则将会继续滑行一段
 ```
 mFlingRunnable.start(-initialVelocity)
@@ -270,9 +270,9 @@ mFlingRunnable.start(-initialVelocity)
 TOUCH_MODE_FLING/TOUCH_MODE_OVERFLING
 
 
-## 2.执行刷新(data changed = true,onMeasure/onLayout)
+# 2.执行刷新(data changed = true,onMeasure/onLayout)
 
-### onChanged
+## onChanged
 当有新数据来时，就会通知观察者回调onChanged
 ```
    class AdapterDataSetObserver extends DataSetObserver {

@@ -28,7 +28,7 @@ tag:
  
  span有20种（在android.text.style包下）：
  
-### CharacterStyle的子类
+## CharacterStyle的子类
  text appearance affecting spans or text metrics affecting spans(character affection spans)
  
 
@@ -67,7 +67,7 @@ tag:
      - URLSpan
      - TextLinkSpan,
 
-### ParagraphStyle的子类
+## ParagraphStyle的子类
 paragraph affecting spans
  - AlignmentSpan,
       - AlignmentSpan.Standard,文字对其方式
@@ -84,7 +84,7 @@ paragraph affecting spans
 
  - BulletSpan,每行的小原点
 
-### 自定义span
+## 自定义span
 
 Scenario|	Class or interface
 --|---

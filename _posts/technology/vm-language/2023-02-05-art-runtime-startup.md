@@ -10,13 +10,13 @@ tag:
 * TOC
 {:toc}
 
-## 预先知识
+# 预先知识
 
-### framework层的一些角色
+## framework层的一些角色
 
 AppRuntime/AndroidRuntime 、zygote进程(app_main)
 
-### art的一些角色
+## art的一些角色
 
 Runtime/RuntimeCallbacks、Instrumentation、Thread
 
@@ -34,7 +34,7 @@ ClassRoot映射表
  ...|...
  
  
-### oat文件读取流程
+## oat文件读取流程
 
 dex class --index--> oat class -->oat method/oat field --(begin_+code_offset_)--> native code
 1. ClassAccessor:从dexfile文件读class成员数据ClassAccessor::Method与 ClassAccessor::Field
@@ -42,7 +42,7 @@ dex class --index--> oat class -->oat method/oat field --(begin_+code_offset_)--
 3. ClassLinker、ArtMethod(java类成员函数)、ArtField(java类成员变量)
 
 
-## AppRuntime预热
+# AppRuntime预热
 
 app_main.cpp
 ```
@@ -103,7 +103,7 @@ AndroidRuntime#start方法
 
 如果启动的是应用进程则会触发RuntimeInit.java类的mian入口函数执行，且回调生命周期onStarted；如果启动的是zygote进程且预热AppRuntime则会触发ZygoteInit.java类的main入口函数执行，且回调生命周期onZygoteInit。
 
-## 1. AndroidRuntime#startVm
+# 1. AndroidRuntime#startVm
 1. 资源预加载：系统属性加载
 2. 类预加载:JDK加载
 3. 创建vm(JNI_CreateJavaVM):创建并且启动Runtime，然后调用GetJniEnv与GetJavaVM获取jni env指针与java vm指针且保存到全局p_env与p_vm。
@@ -142,11 +142,11 @@ extern "C" jint JNI_CreateJavaVM(JavaVM** p_vm, JNIEnv** p_env, void* vm_args) {
 ```
 JNI_CreateJavaVM代码很简单，创建并启动Runtime且将jni运行环境与vm实例全局保存。
 
-### Runtime#Create and Start
+## Runtime#Create and Start
 
 创建Runtime对象时，调用其构造器会初始化大量成员变量，其中有heap_(gc::Heap对象)，java_vm_(JavaVMExt::Create对象,外部调用者使用GetJavaVM函数即可获取到java_vm_)等。
 
-## 2. Java主线程的入口方法：ZygoteInit#main
+# 2. Java主线程的入口方法：ZygoteInit#main
 
 ```cpp
 1.找启动类 slashClassName为com.android.internal.os.ZygoteInit.java
@@ -213,7 +213,7 @@ struct JniNativeInterfaceFunctions {
 
 接下来我们就展开看看这几个函数的执行。
 
-### 找启动类:FindClass
+## 找启动类:FindClass
 
 ```cpp
 class JNI {
@@ -483,11 +483,11 @@ ObjPtr<mirror::Class> ClassLinker::DefineClass(Thread* self,
 - LoadClass: 从dex file加载class成员数据method、field
 - LinkClass: 链接class
 
-### 找启动入口:GetStaticMethodID
+## 找启动入口:GetStaticMethodID
 
 `JNIEnv::CallStaticVoidMethod --> FindMethodID --> FindMethodJNI  --> Class::FindClassMethod`
 
-### 调用启动入口:CallStaticVoidMethod
+## 调用启动入口:CallStaticVoidMethod
 
 函数调用链
 `JNIEnv::CallStaticVoidMethod --> JNIImpl::CallStaticVoidMethod -->InvokeWithVarArgs --> ArtMethod::Invoke`
@@ -651,11 +651,11 @@ blx函数用于函数跳转，ip保存了ART_METHOD_QUICK_CODE_OFFSET_32地址�
 关于函数的调用我们这里还有一些没有展开讲，比如解释器执行的代码调用机器码，执行机器码时调用了解释器，解释器调用解释器，感兴趣可以看这一篇文章[Android运行时ART执行类方法的过程分析](https://blog.csdn.net/luoshengyang/article/details/40289405)。
 
 
-## Android 热修复
+# Android 热修复
 
 基于art实现的热修复，主要是dest artmethod替换src artmethod整个函数的内存(memcpy),阿里提供的技术沉淀[《深入探索Android热修复技术原理》电子书](https://developer.aliyun.com/ebook/296?spm=a2c6h.26392470.ebook-read.2.227f6bbbsIdaen)
 
-## 参考资料
+# 参考资料
 
 [AndFix](https://github.com/alibaba/AndFix)
 

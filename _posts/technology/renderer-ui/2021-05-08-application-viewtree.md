@@ -157,7 +157,7 @@ View的生命周期
 
 `measure`
 
-在measure阶段从根节点开始dfs measure，每一个父节点会计算子节们点给的layout params(width、height、margin等)和自身的一些情况总结出一份新的宽高测量specification，然后在递归传给子节点们，当一个每个节点measure完成都会给被打上PFLAG_MEASURED_DIMENSION_SET的flag标记并且确定宽高(measure得到的宽高只是理想状态的宽高，还需要经过layout才会确定最终宽高)。
+在measure阶段从根节点开始dfs View数，每个父节点会将所有子节的layout params(width、height、margin等)和自身的宽高、padding值总结出一份新的宽高测量specification，然后传给其子节点，子节点如果是View则会自测量，如果自测量的宽高不满足会让父节点重新计算spec，所以确定宽高并不是一次measure就完成的。每个节点measure完成都会被打上PFLAG_MEASURED_DIMENSION_SET的flag标记表明measure之后的宽高(measure得到的宽高只是理想状态的宽高，还需要经过layout才会确定最终宽高)。
 
 `layout`
 

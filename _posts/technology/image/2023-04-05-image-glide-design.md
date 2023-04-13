@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 图像 | Glide设计
+title: 图像 | Glide的设计
 description: 缓存设计、Fetch数据源设计、解码设计
 author: 电解质
 tag: 

@@ -30,7 +30,7 @@ DisplayListCanvas|android_view_DisplayListCanvas|Canvas(、SkiaRecordingCanvas�
 FrameInfo| 没有jni类|FrameInfo|FrameInfo
 
 
-> ps: hybrid类 除了类名不同，角色职能差不多，分两部分内存一份在java heap ， 一部分在cpp heap。
+> ps: hybrid类 除了类名不同，角色职能差不多，分两部分内存,一部分在java heap ， 一部分在cpp heap。
 
 ThreadedRenderer的hybrid类对象持有RenderThread单例对象 、 CanvasContext对象、DrawFrameTask对象、root RenderNode对象
 

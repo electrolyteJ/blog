@@ -71,7 +71,7 @@ public final class ActivityThread {
     }
 }
 ```
-当performResumeActivity完成之后(也就是Activity#onResume)，窗口还不是可见的，那么什么时候可见？接下来我们就来看看。
+当performResumeActivity中的Activity#onResume完成之后，窗口还是不可见可交互的，要等到完成Activity#onWindowFocusChanged，窗口才真正可交互，接下来我们就来看看。
 
 上面的代码主要有两部分需要关注
 - wm.addView
@@ -183,7 +183,7 @@ View的生命周期
 
 在执行完测绘之后，我们就需要将测绘之后完成的窗口通过WindowSession发送给wms，之后如果成功wms会返回并且真个窗口就可见了。
 # *WindowManager#updateViewLayout*
-在执行完addView之后窗口就变为可见了，这一切本该完成了，但是这启动的时候出现弹窗输入法的要求，那么就会updateViewLayout，重新开始整个窗口参数的调整，由于篇幅有限就不继续看下去了。
+在执行完addView之后这一切本该完成了，但是这启动的时候出现弹窗输入法的要求，那么就会updateViewLayout，重新开始整个窗口参数的调整，由于篇幅有限就不继续看下去了。
 
 # *View树事件分发*
 说完了View树的测绘过程，我们还需要来了解它的事件分发。

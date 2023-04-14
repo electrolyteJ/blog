@@ -15,7 +15,7 @@ published : false
 
 ![devMenu][1]
 
-## reload & fast refresh
+# reload & fast refresh
 
 reload
 - normal reload

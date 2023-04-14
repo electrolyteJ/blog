@@ -12,9 +12,9 @@ published : true
 ---
 * TOC
 {:toc}
-## *java 与 javascript 互操作原理*
+# *java 与 javascript 互操作原理*
 
-#### *1.java 与 cpp 通信*
+## *1.java 与 cpp 通信*
 
    java    | jni     | 内存分配|描述
    |---|---|---|---|
@@ -110,7 +110,7 @@ jni
 - global_ref:引用计数指针。用于类成员变量，return到java侧并不会自动释放
 ```
 
-#### *2.javascript 与 cpp 通信*
+## *2.javascript 与 cpp 通信*
 
    javascript    | jsi 
    |---|---
@@ -169,12 +169,12 @@ createFromHostFunction函数参数如下
 
 在react native中使用了jsi技术将cpp层的函数映射js侧的函数，就能相互调用.
 
-#### *3.java 与 javascript 通信*
+## *3.java 与 javascript 通信*
 react native的java与javascript通信是基于前面两种融合实现的，前者使用jni后者使用jsi，cpp层作为了两者的桥梁。
 ![arch]({{site.baseurl}}/asset/cross-platform/react-native-arch.jpeg)
 
 
-## *javascript调用java接口*
+# *javascript调用java接口*
 这里我们来案例分析一个例子，js如何调用java的接口。
 
 在native模块接口实现
@@ -251,7 +251,7 @@ export default NewModuleButton;
 - 查找到对于的native模块
 - 调用native模块中的函数
 
-#### *1.获取native module*
+## *1.获取native module*
 
 当NativeModules被import之后，NativeModules.js模块会被初始化，由于使用了jsi接口架构，NativeModule就是全局对象global的nativeModuleProxy
 ```typescript
@@ -306,7 +306,7 @@ let NativeModules: {[moduleName: string]: $FlowFixMe, ...} = {};
 ```
 cpp层的JSINativeModules得到生成的模块之后会先缓存一份再给js侧解构之后的变量。
 
-#### *2.调用native module的函数*
+## *2.调用native module的函数*
 当js侧执行`CalendarModule.createCalendarEvent('testName', 'testLocation');`指令时，就会调用之前在生成模块与函数时埋下的回调。
 ```javascript
 function genMethod(moduleID: number, methodID: number, type: MethodType) {
@@ -388,14 +388,14 @@ MethodCallResult MethodInvoker::invoke(
 
 #define PRIMITIVE_CASE(METHOD)                                             \
   {                                                                        \
-    auto result = env->Call##METHOD##MethodA(module.get(), method_, args); \
+    auto result = env->Call#METHOD#MethodA(module.get(), method_, args); \
     throwPendingJniExceptionAsCppException();                              \
     return folly::dynamic(result);                                         \
   }
 
 #define PRIMITIVE_CASE_CASTING(METHOD, RESULT_TYPE)                        \
   {                                                                        \
-    auto result = env->Call##METHOD##MethodA(module.get(), method_, args); \
+    auto result = env->Call#METHOD#MethodA(module.get(), method_, args); \
     throwPendingJniExceptionAsCppException();                              \
     return folly::dynamic(static_cast<RESULT_TYPE>(result));               \
   }
@@ -481,7 +481,7 @@ MethodCallResult MethodInvoker::invoke(
 ```
 
 
-#### *3.升级版turbo*
+## *3.升级版turbo*
 
 2022年react native架构进行了升级，提出了一种turbo package，使用turbo方式编写的模块使用懒加载，需要实现TurboReactPackage包与TurboModule模块。下面是一个sample的代码。
 
@@ -730,7 +730,7 @@ struct JTurboModule : jni::JavaClass<JTurboModule> {
 };
 ```
 
-## *java调用javascript接口*
+# *java调用javascript接口*
 那么java如何调用javascript接口呢？
 javascript接口实现
 ```javascript
@@ -821,7 +821,7 @@ MessageQueue|NativeToJsBridge|desc
 callFunctionReturnFlushedQueue|callFunction|回调时都会切换到mqt_js线程
 invokeCallbackAndReturnFlushedQueue|invokeCallback|回调时都会切换到mqt_js线程
 
-## *参考资料*
+# *参考资料*
 [Java中PhantomReference和ReferenceQueue的使用方法和工作机制](https://www.greetingtech.com/articles/1572710400000)
 
 [C++11学习](http://blog.csdn.net/innost/article/details/52583732)

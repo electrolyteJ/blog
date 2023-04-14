@@ -14,7 +14,7 @@ published: true
 - TOC
 {:toc}
 
-## _宿主应用的启动_
+# _宿主应用的启动_
 
 在宿主应用的 Application 中必须实现 ReactApplication 接口的 getReactNativeHost 方法，该方法对整个宿主应用提供 ReactNativeHost 对象，ReactNativeHost 对象暴露了这么一些数据。
 
@@ -27,7 +27,7 @@ published: true
 
 宿主应用的启动这里讲的主要是从点击应用启动图标到 Application#onCreate 这样一个流程，不包括 splash 启动页，因为对于有些 react native 应用 ReactActivit 就是启动页，这一块应该是属于 React 应用的启动。对于宿主应用的启动我们都比较熟悉就不展开，主要来讲讲 React 应用的启动。
 
-## _React 应用的启动_
+# _React 应用的启动_
 React 应用的入口类为 ReactActivity 类,由于 ReactActivity 的生命周期都委托给 ReactActivityDelegate 对象，所以主要分析 ReactActivityDelegate
 
 ```java
@@ -104,7 +104,7 @@ public class ReactActivityDelegate {
 - 在 onCreate 中会 yload React App，异步创建全局 ReactApplicationContext 与 加载 js bundle
 - 将 ReactRootView 对象 setContentView，等待 js 引擎加载完 js bundle 并且通过 bridge 将 js 组件对应的 native 组件 add 到 ReactRootView，然后等待页面的渲染
 
-#### _java 侧的 load js bundle_
+## _java 侧的 load js bundle_
 
 ---
 
@@ -213,7 +213,7 @@ public class ReactInstanceManager {
 
 ReactApplicationContext 的创建比较简单就 set 一些对象比如全局的 NativeModuleCallExceptionHandler 处理器，CatalystInstance 对象.其中解析 ReactPackage 的逻辑我们来分析一下。
 
-#### _解析 ReactPackage_
+## _解析 ReactPackage_
 
 ---
 
@@ -269,7 +269,7 @@ CatalystInstanceImpl 的 cpp 对象持有 Instace 的 cpp 对象，Instance 对�
 
 创建完 ReactContext 与 加载完 js bundle 之后，就会执行 setupReactContext 方法，通知各个模块 Context初始化完毕 和渲染react app
 
-#### _cpp 层的 load js bundle_
+## _cpp 层的 load js bundle_
 
 ---
 
@@ -480,7 +480,7 @@ void JSIExecutor::loadBundle(
 
 JSCExecutor 是 java 对象，JSExecutor 真正的衍生类为 JSIExecutor，注入的 runtime 是 jsc，所以当就会将 js bundle 内容注入到 jsc 的 evaluateJavaScript 方法，jsc 引擎开始渲染页面
 
-#### _javascript 层的 load js bundle_
+## _javascript 层的 load js bundle_
 
 ---
 
@@ -541,7 +541,7 @@ AppRegistery 通过注册表 runnables 存储以 appName 为 key，类对象为 
 
 ![run application][2]
 
-#### _java 侧的 run application_
+## _java 侧的 run application_
 
 ---
 
@@ -587,7 +587,7 @@ public interface AppRegistry extends JavaScriptModule {
 }
 ```
 
-#### _javascript 层的 run application_
+## _javascript 层的 run application_
 
 ---
 

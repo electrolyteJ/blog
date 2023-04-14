@@ -33,7 +33,7 @@ React Native在iOS平台使用的是WebKit，而在Android平台目前使用的�
 <!-- - [ ] [DevMenu开发者工具 debug]({{site.baseurl}}/2022-10-21/react-native-devmenu-debug) -->
 <!-- - [ ] [DevMenu开发者工具 profiler]({{site.baseurl}}/2022-10-21/react-native-devmenu-profiler) -->
 
-## *工程结构*
+# *工程结构*
 - react native项目结构
     - Libraries：react应用js框架
     - packages
@@ -53,7 +53,7 @@ React Native在iOS平台使用的是WebKit，而在Android平台目前使用的�
     - cli-server-api:start命令启动的server api
     - 其他命令..
 
-## *参考资料*
+# *参考资料*
 
 [1]:http://www.ruanyifeng.com/blog/2015/02/future-of-dom.html
 [2]:http://blog.csdn.net/luoshengyang/article/details/46569161

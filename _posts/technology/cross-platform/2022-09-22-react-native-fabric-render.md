@@ -167,12 +167,12 @@ module.exports = FabricUIManager;
 React应用初始化的时候，hybrid Binding#installFabricUIManager会将cpp层的FabricMountingManager与java侧的FabricUIManager绑定，也会将cpp层的UIManager与js侧的FabricUIManager绑定(通过 UIManagerBinding#createAndInstallIfNeeded进行绑定)。前者管理Android平台的View树，后者管理的是介于React元素树与View树之间的Shadow树。
 
 
-## *自定义fabric ui component*
+# *自定义fabric ui component*
 自定义fabric ui component自定义配置文件较多就不放出了，可以查看React Native官网核心设计的Fabric 组件章节，也可以查看我写的github 项目demo，使用的expo框架，代码有些地方与React Native有差异，但是一些核心的类配置相同,项目名[spacecraft-plan/spacecraft-rn][1]
 
-## *react应用页面初次渲染*
+# *react应用页面初次渲染*
 
-<!-- ### *页面初始化*
+<!-- ## *页面初始化*
 
 ```java
 //ReactInstanceManager
@@ -200,7 +200,7 @@ React应用初始化的时候，hybrid Binding#installFabricUIManager会将cpp�
     }
 ``` -->
 
-### *渲染阶段*
+## *渲染阶段*
 渲染阶段会创建shadow节点，通过调用UIManagerBinding原生接口createNode,UIManagerBinding主要用来绑定js侧的FabricUIManager与cpp层的UIManager，所以紧接着就调用了UIManager的createNode函数。
 
 ```cpp
@@ -254,7 +254,7 @@ ShadowNode::Shared UIManager::createNode(
 ```
 componentDescriptor对象是shadow node的工厂，提供构造shadow node的函数，在应用启动加载so时会将各个组件的ComponentDescriptor注册到ComponentDescriptorRegistry注册中心。创建完shadow node之后经过调用链`Scheduler#uiManagerDidCreateShadowNode-->Binding#schedulerDidRequestPreliminaryViewAllocation-->Binding#preallocateView-->FabricMountingManager#preallocateShadowView-->FabricUIManager#preallocateView-->MountItemDispatcher#addPreAllocateMountItem`最后会将rootTag(surfaceId)、reactTag、componentName、props、stateWrapper等参数构建PreAllocateViewMountItem并传给mPreMountItems队列，等到下一帧到来时再从队列取出数据进行处理，这块属于挂载阶段后面再剖开讲。
 
-### *提交阶段*
+## *提交阶段*
 渲染阶段负责创建shadow node并没有计算shadow node的布局尺寸，计算布局尺寸这块放在了提交阶段，js侧调用completeRoot原生接口触发了提交阶段的开始。
 
 ```cpp
@@ -306,7 +306,7 @@ UIManagerBinding接收到js层的completeRoot函数调用后会在fabric_bg线�
 - ShadowTree#emitLayoutEvents：将计算完的布局尺寸发送到js侧
 - ShadowTree#mount: 调用链`UIManager#shadowTreeDidFinishTransaction-->Scheduler#uiManagerDidFinishTransaction-->Binding#schedulerDidFinishTransaction-->FabricUIManager#scheduleMountItem` ， 最后调到java侧的FabricUImanager将IntBufferBatchMountItem对象(参数rootTag, intBuffer, objBuffer, commitNumbe)push到mMountItems队列。IntBufferBatchMountItem被处理的前提是PreAllocateViewMountItem先被处理创建出ViewState,IntBufferBatchMountItem才能将计算后的布局尺寸传给ViewState.mView进行原生平台的测绘流程。
 
-### *挂载阶段*
+## *挂载阶段*
 
 下一帧到来之后会依次处理PERF_MARKERS、DISPATCH_UI、NATIVE_ANIMATED_MODULE、TIMERS_EVENTS、IDLE_EVENT。
 
@@ -412,8 +412,8 @@ EventQueue
 --> ReactFabric-dev#dispatchEvent
 ```
 
-<!-- ## *react应用页面再次渲染* -->
-## *参考资料*
+<!-- # *react应用页面再次渲染* -->
+# *参考资料*
 [1]:https://github.com/spacecraft-plan/spacecraft-rn
 [React as a UI Runtime](https://overreacted.io/react-as-a-ui-runtime/#renderers)
 [在 Android 上启用 Fabric](https://reactnative.cn/docs/next/new-architecture-app-renderer-android)

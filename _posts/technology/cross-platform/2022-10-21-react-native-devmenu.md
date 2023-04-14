@@ -14,7 +14,7 @@ tag:
 {:toc}
 
 
-## 开发者工具项目结构
+# 开发者工具项目结构
 
 - metro : 打包器
     - metro:server
@@ -27,7 +27,7 @@ tag:
     - 其他命令..
 - react native packagerconnection包/devsupport包: 与cli的server创建连接且通信相关, 还有react native开发工具功能的实现，包括reload、fast refresh、debug等功能
 
-## DevMenu
+# DevMenu
 
 ![devMenu][1]
 
@@ -39,7 +39,7 @@ Http|DevServerHelper#openUrl|connect.Server,openURLMiddleware|http://%s/open-url
 
 
 
-### reload & fast refresh
+## reload & fast refresh
 
 协议|client|server|url |desc
 |--|--|--|--|--
@@ -49,7 +49,7 @@ WS|JSPackagerClient/ReconnectingWebSocket|connect.Server(wss)|ws://%s/message?de
 Http|XMLHttpRequest|connect.Server(wss)|${window.location.origin}/reload|debugger ui发送reload指令到cli server
 
 
-### element inspector & debug
+## element inspector & debug
 
 协议|client|server|url to processor |desc
 |--|--|--|--|--
@@ -61,7 +61,7 @@ Http|OpenStackFrameTask|connect.Server|http://%s/open-stack-frame to openStackFr
 
 
 
-### perf monitor & sampling profiler
+## perf monitor & sampling profiler
 - perf monitor为fps view
 - hermes 支持 samping profiler,jsc不支持
 

@@ -103,7 +103,7 @@ AndroidRuntime#start方法
 
 如果启动的是应用进程则会触发RuntimeInit.java类的mian入口函数执行，且回调生命周期onStarted；如果启动的是zygote进程且预热AppRuntime则会触发ZygoteInit.java类的main入口函数执行，且回调生命周期onZygoteInit。
 
-# 1. AndroidRuntime#startVm
+## 1. AndroidRuntime#startVm
 1. 资源预加载：系统属性加载
 2. 类预加载:JDK加载
 3. 创建vm(JNI_CreateJavaVM):创建并且启动Runtime，然后调用GetJniEnv与GetJavaVM获取jni env指针与java vm指针且保存到全局p_env与p_vm。
@@ -142,11 +142,11 @@ extern "C" jint JNI_CreateJavaVM(JavaVM** p_vm, JNIEnv** p_env, void* vm_args) {
 ```
 JNI_CreateJavaVM代码很简单，创建并启动Runtime且将jni运行环境与vm实例全局保存。
 
-## Runtime#Create and Start
+### Runtime#Create and Start
 
 创建Runtime对象时，调用其构造器会初始化大量成员变量，其中有heap_(gc::Heap对象)，java_vm_(JavaVMExt::Create对象,外部调用者使用GetJavaVM函数即可获取到java_vm_)等。
 
-# 2. Java主线程的入口方法：ZygoteInit#main
+## 2. Java主线程的入口方法：ZygoteInit#main
 
 ```cpp
 1.找启动类 slashClassName为com.android.internal.os.ZygoteInit.java
@@ -213,7 +213,7 @@ struct JniNativeInterfaceFunctions {
 
 接下来我们就展开看看这几个函数的执行。
 
-## 找启动类:FindClass
+### 找启动类:FindClass
 
 ```cpp
 class JNI {
@@ -483,11 +483,11 @@ ObjPtr<mirror::Class> ClassLinker::DefineClass(Thread* self,
 - LoadClass: 从dex file加载class成员数据method、field
 - LinkClass: 链接class
 
-## 找启动入口:GetStaticMethodID
+### 找启动入口:GetStaticMethodID
 
 `JNIEnv::CallStaticVoidMethod --> FindMethodID --> FindMethodJNI  --> Class::FindClassMethod`
 
-## 调用启动入口:CallStaticVoidMethod
+### 调用启动入口:CallStaticVoidMethod
 
 函数调用链
 `JNIEnv::CallStaticVoidMethod --> JNIImpl::CallStaticVoidMethod -->InvokeWithVarArgs --> ArtMethod::Invoke`

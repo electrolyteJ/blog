@@ -217,7 +217,7 @@ class Http2ExchangeCodec(
 Http2Stream#takeHeaders获取头部帧，其数据来源于Http2Connection$ReaderRunnable任务，其任务会不停的重Http2Reader#nextFrame取并传给Http2Stream#takeHeaders
 
 
-## *参考资料*
+# *参考资料*
 [HTTP 协议入门](http://www.ruanyifeng.com/blog/2016/08/http.html)
 [[译] HPACK：http2中沉默的杀手](https://juejin.im/post/6844904047594438670)
 [HTTP/2 中的帧定义](https://halfrost.com/http2-http-frames-definitions/)

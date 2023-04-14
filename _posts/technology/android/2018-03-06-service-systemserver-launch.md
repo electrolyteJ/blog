@@ -2,21 +2,15 @@
 layout: post
 title: Framework层的服务 | SystemServer启动流程
 description: 简单梳理一下SystemServer的启动流程
-author: 电解质
-date: 2018-03-06
-share: true
-comments: true
 tag:
 - android
 ---
 * TOC
 {:toc}
-## *1.Summary*
 &emsp;&emsp;熟悉软件的启动过程能让我们快速了解整个系统运作流程，这是入门学习一样新事物的绝佳路径，所以，让我们来了解一下Android系统framework层是如何被启动的。由于这一篇文章我们只关注framework-java层，所以SystemServer是我们要攻克的类。SystemServer是system_server进程的启动入口类，而system_server进程承载着整个framework-java层，负责与application层交互。SystemServer类会启动大都是我们熟知的类，比如ActivityManagerService、PackageManagerService、WindowManagerService，这些类都是一些binder，用来进行和application层的某个应用进程通信。为了让system_server进程常驻内存中，会开启一个looper。该looper存在于system_server进程的主线程，用来切换工作线程的任务到主线程。比如WindowManagerService$H类。
-## *2.Introduction*
 
 &emsp;&emsp;SystemServer启动流程中涉及到很多的服务，由于我们重点关注AMS、PKMS、WMS所以就让我们讲这三个服务吧。
-### *SystemServer启动流程*
+# *SystemServer启动流程*
 &emsp;&emsp;SystemServer的启动流程主要有下面这几个阶段需要我们关注一下。
 - main方法
 - SystemServer构造器
@@ -87,7 +81,7 @@ tag:
 
 对于这些初始化我们并没有必要都去看，只要关注初始化的Context和Service。
 
-### *初始化Context*
+# *初始化Context*
 ```java
  private void createSystemContext() {
         ActivityThread activityThread = ActivityThread.systemMain();
@@ -143,7 +137,7 @@ systemuiContext    |                 null, systemContext.mMainThread,          p
 systemContext      |                 null,                mainThread,          packageInfo,                   null,               null,           null,         0,                 null
 ```
 
-### *初始化众多的Service*
+# *初始化众多的Service*
 &emsp;&emsp;服务被分为三种：
 - 开机服务（ActivityManagerService、PackageManagerService、PowerManagerService、LightsService、RecoverySystemService、DeviceIdentifiersPolicyService、DisplayManagerService、UserManagerService等）
 - 核心服务（DropBoxManagerService、UsageStatsService、BatteryService、WebViewUpdateService等）
@@ -152,7 +146,7 @@ systemContext      |                 null,                mainThread,          p
 开机服务和核心服务都是在主线程初始化的，而其他服务部分是在工作线程初始化，这样可以让其加快启动速度。
 
 
-#### ActivityManagerServicee
+## ActivityManagerServicee
 ---
 
 先来看看ActivityManagerServicee
@@ -237,7 +231,7 @@ private void startOtherServices() {
 - setInstaller
 - systemReady
 
-#### PackageManagerService
+## PackageManagerService
 ---
 
 PKMS:
@@ -311,7 +305,7 @@ PKMS:
 - systemReady
 
 
-#### WindowManagerService
+## WindowManagerService
 ---
 
 WMS:

@@ -9,7 +9,6 @@ tag:
 ---
 * TOC
 {:toc}
-## *1.Summary*
 &emsp;&emsp;对于kernel来说，进程、线程是不分家的，多线程或者多进程都会共享资源，但是由于需要确保每个应用在user space中都相对独立、相对安全，彼此不能轻易地操作彼此的数据，就急需做分离。所以进程和线程在user space其实是不同的。进程拥有独立的内存。多个进程中某个进程发生crash并不会影响其他的进程运行，借由进程的这个特性，对于需要放在后台工作的任务来说，进程是个非常好的选择，即使由于内存吃紧被回收，代码发生crash挂了，也都不影响前台UI进程。
 &emsp;&emsp;对于android framework来说，一个app中可以有多个进程，面向用户的前台UI进程存活率指定是比其他后台进程更高。android framework采用了多进程管理多个app，应用层存在大量的承载着app的虚拟机，一个虚拟机跑在一个进程中。
 对于多进程的设计我们可以先推测一下：
@@ -20,8 +19,8 @@ tag:
 
 &emsp;&emsp;我们都知道Android操作系统是基于Linux操作系统的，所以很多东西会沿用了Linux，但又在其基础之上做了定制。想要了解Android中的进程，需要简单了解一下Linux中的进程。
 
-### *Process state*
-#### linux process state
+# *Process state*
+## linux process state
 ```
 -   R  running or runnable (on run queue)
 -   D  uninterruptible sleep (usually IO)
@@ -29,7 +28,7 @@ tag:
 -   Z  defunct/zombie, terminated but not reaped by its parent
 -   T  stopped, either by a job control signal or because it is being traced
 ```
-#### android process state
+## android process state
 ```java
     // Map from process states to the states we track.
     private static final int[] PROCESS_STATE_TO_STATE = new int[] {
@@ -55,8 +54,8 @@ tag:
     }
 ```
 &emsp;&emsp;相对于linux的process state，android process state更加细化。
-### *Process types*
-#### linux process types
+# *Process types*
+## linux process types
 
 ```
 - 交互进程:由shell启动的进程,通过终端控制台(tty)控制。终端控制台关闭，进程也就被关闭了。
@@ -64,7 +63,7 @@ tag:
 - daemon process:脱离于tty运行的进程。
 ```
 
-#### android process types
+## android process types
 
 >It is important that application developers understand how different application components (in particular Activity, Service, and BroadcastReceiver) impact the lifetime of the application's process. Not using these components correctly can result in the system killing the application's process while it is doing important work
 
@@ -85,11 +84,11 @@ Services that have been running for a long time (such as 30 minutes or more) may
 4. cached process
 These processes often hold one or more Activity instances that are not currently visible to the user (the `onStop()` method has been called and returned)
 
-### *Process priority*
-#### linux priority
+# *Process priority*
+## linux priority
 通过设置进程的nice值，取值范围为-20～+19，来改变其priority
 
-#### android priority
+## android priority
 ```java
     /**
      * Standard priority of application threads.
@@ -194,8 +193,8 @@ These processes often hold one or more Activity instances that are not currently
 ```
 android 的priority值，并没有做什么变动，还是和linux的保持一致。
 
-### *Process policy*
-#### linux policy
+# *Process policy*
+## linux policy
 ```
 - SCHED_FIFO:First in-first out scheduling
 - SCHED_RR:Round-robin scheduling
@@ -205,7 +204,7 @@ android 的priority值，并没有做什么变动，还是和linux的保持一�
 - SCHED_IDLE:Scheduling very low priority jobs
 ```
 
-#### android policy
+## android policy
 ```java
     /**
      * Default scheduling policy
@@ -243,10 +242,10 @@ android 的priority值，并没有做什么变动，还是和linux的保持一�
      */
      public static final int SCHED_RESET_ON_FORK = 0x40000000;
 ```
-### *Process group*
-#### linux group 
+# *Process group*
+## linux group 
 
-#### android group
+## android group
 ```java
     /**
      * Default thread group -
@@ -315,8 +314,8 @@ android 的priority值，并没有做什么变动，还是和linux的保持一�
     public static final int THREAD_GROUP_RESTRICTED = 7;
 ```
 
-### *Process siganl*
-#### linux siganl
+# *Process siganl*
+## linux siganl
 ```
        SIGHUP        1       Term    Hangup detected on controlling terminal
                                      or death of controlling process
@@ -341,7 +340,7 @@ android 的priority值，并没有做什么变动，还是和linux的保持一�
        SIGTTOU   22,22,27    Stop    Terminal output for background process
        ...
 ```
-#### android siganl
+## android siganl
 ```java
     public static final int SIGNAL_QUIT = 3;
     public static final int SIGNAL_KILL = 9;
@@ -352,12 +351,12 @@ android 的priority值，并没有做什么变动，还是和linux的保持一�
 ## *2.Introduction*
 android进程管理采用LRU算法排序进程，使用oom_adj值和占用内存大小来决定在内存紧张的时候回收哪个进程。
 
-### *进程LRU排序*
+# *进程LRU排序*
 mLruProcesses为进程的cache列表，越靠近列表的尾部越不会被kill掉，存活下来的希望越大。当插入一个正在使用的进程那么会发生如下变化 ：
 - 插入的当前进程会被放置于尾部
 - 与其相关联的进程将会尽可能被推到靠近尾部，提高其level，免于被kill
 
-#### 插入当前的进程
+## 插入当前的进程
 > AMS#updateLruProcessLocked
 {:.filename}
 ```java
@@ -481,7 +480,7 @@ final void updateLruProcessLocked(ProcessRecord app, boolean activityChange,
 其他的进程：
 &emsp;&emsp;该进程没有存在Activity组件，绑定的进程也没有Activity组件，比如绑定Service进程的Service进程。首先比较client进程的index和当前进程的index，两者取其最大值，这样保证了存活率最高，然后再和mLruProcessServiceStart比较，两者之间取最小值，这样保证了位置紧邻"上一个其他的进程"。从这里可以看出，client进程的index如果大于当前进程，将帮助当前进程往前添加。如果小于，当前进程还是呆在原地不动。如果不存在client进程，也就对于当前进程的位置没有什么帮助，直接依次添加mLruProcesses列表的头部。这么说对于那些无依无靠的进程，就很容易被回收。
 
-#### 重排序相关联的进程
+## 重排序相关联的进程
 >AMS#updateLruProcessLocked
 {:.filename}
 ```java
@@ -509,7 +508,7 @@ final void updateLruProcessLocked(ProcessRecord app, boolean activityChange,
 &emsp;&emsp;如果当前进程存在service connection，则帮助绑定的service进程提高在mLruProcessses中的index。
 &emsp;&emsp;如果当前进程存在provider reference，则帮助ContentProvider进程提高在mLruProcesses中的index。
 
-### *进程oom_adj调整*
+# *进程oom_adj调整*
 
 adj级别 |取值|介绍
 ---|---|---|
@@ -533,7 +532,7 @@ UNKNOWN_ADJ |1001|
 {:.inner-borders}
 
 
-#### ASS#rankTaskLayersIfNeeded
+## ASS#rankTaskLayersIfNeeded
 ---
 >AMS#updateOomAdjLocked
 {:.filename}
@@ -602,7 +601,7 @@ UNKNOWN_ADJ |1001|
 ```
 从ActivityDisplay的尾部开始遍历得到ActivityStack，每一个ActivityStack都包含着一组TaskRecord在mTaskHistory。紧急着从mTaskHistory尾端开始遍历得到TaskRecord。最尾端的TaskRecord为最近使用的。ActivityStack会从尾端到头部依次递增给TaskRecord的mLayerRank复制。显然越往后数值越大。
 
-#### computeOomAdjLocked
+## computeOomAdjLocked
 -----
 ```java
         for (int i=N-1; i>=0; i--) {
@@ -701,7 +700,7 @@ UNKNOWN_ADJ |1001|
 
 从mLruProcesses数组的尾部开始遍历得到ProcessRecord，通过computeOomAdjLocked方法，开始计算每个ProcessRecord的adj值
 
-#### applyOomAdjLocked
+## applyOomAdjLocked
 -----
 ```java
         for (int i=N-1; i>=0; i--) {
@@ -770,7 +769,7 @@ UNKNOWN_ADJ |1001|
 
 应用oom adj的值，当需要杀掉目标进程则返回false
 
-#### IApplicationThread#scheduleTrimMemory
+## IApplicationThread#scheduleTrimMemory
 -----
 ```java
         final int numCachedAndEmpty = numCached + numEmpty;

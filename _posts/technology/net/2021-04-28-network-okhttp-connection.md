@@ -445,5 +445,5 @@ private fun connectTls(connectionSpecSelector: ConnectionSpecSelector) {
 ```
 每次有个新连接被put到连接池中，都会触发clean任务。它会清理那些超过保活时间5min的连接或者超过6以上个处于空闲的连接，简单说就是那些到35岁的人或者团队超过6以上长时间不干活的人。你以为这样就clean up只会发生一次，太年轻了。如果clean完一个连接，紧接着马不停蹄没有delay的又开始下一次清理。如果发现这次清理的没有超过35岁或者不干活的人低于5以下，那么就会采取两种判断，如果0< 不干活人数 <=5，那么就会用保活时间减去取空闲时间最长人空闲的时间(keepAliveDurationNs - longestIdleDurationNs),其差作为下次clean任务的delay，等下次clean时，如果还不干活，就clean这个人。还有一种是既然35岁还没有到，比如34岁，就等一年在把他clean掉。那么有没有一种办法终止这种末位淘汰机制，还真有，公司倒闭了没有人了，clean循环停止。
 
-## *参考资料*
+# *参考资料*
 [Java使用SSLSocket通信](https://my.oschina.net/itblog/blog/651608)

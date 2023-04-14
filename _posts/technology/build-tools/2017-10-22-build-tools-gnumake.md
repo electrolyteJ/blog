@@ -9,7 +9,9 @@ tag:
 - build-tools
 - android
 ---
-## *1.Summary*
+- TOC
+{:toc}
+
 &emsp;&emsp;在阅读GNU make构建工具相关资料的时候，一直在思考几个问题，
 - “ build system ” 是翻译成构建系统还是编译系统 ？
 - make是什么 ？ make可能是构建系统，make也可能是是构建系统中的一部分构建工具。
@@ -22,12 +24,12 @@ tag:
 &emsp;&emsp;那么接下来回答第二个问题，make是什么 ？make是构建系统中的一部分，是一种构建工具。用于规划如何编译项目。就好比汽车制造厂的组装器，调配汽车的各个零部件资源，并且进行合理的组装形成一辆完整的汽车。由于平台不同编译器不同等原因，它分为好多种 ：GNU make，Visual C++的nmake ，cmake ，qmake 。想了解其差异，可以参考这个[make makefile cmake qmake都是什么，有什么区别？](https://www.zhihu.com/question/27455963) 
 
 &emsp;&emsp;最后回答第三个问题，make相对于其他构建工具的历史来的悠久，其稳定性自然不言而喻。它是c/c++项目的必备工具，由于c/c++的语言特性导致很多大型项目的底层都离不开它，致使像“ Android Open Source Project ”这样的大型项目使用make来完成这个系统的编译、打包等工作 。就连阮一峰也在博文中推荐使用make来构建Node.js这种大型项目，参考这个[使用 Make 构建网站](http://www.ruanyifeng.com/blog/2015/03/build-website-with-make.html)
-## *2.About*
+
 &emsp;&emsp;make是一个构建工具，我们要书写Makefile文件，才能让这个工具按照规则执行，所以讲解Makefile是这篇文章的核心。本文是GNU make，所以Makefile语言格式跟其他的make工具有点区别，不过我们主要是了解其精髓，掌握GNU make也就自然会达到触类旁通的效果。
-## *3.Introduction*
+
 &emsp;&emsp;想要快速学习make这个构建工具，就需要从“熟悉Makefile的语法”和“Makefile在大型项目的使用“这两个方面来入手。
 
-### **初步认识Makefile语言**
+# **初步认识Makefile语言**
 &emsp;&emsp;如果是有ROM工作经验的工程师一定用过``make snod``这条命令.它会重新打包生成system.img。执行`make snod`后经过一系列的流程到达下面的代码。
 
 build/core/Makefile
@@ -58,7 +60,7 @@ target … : prerequisites …
 
 &emsp;&emsp;当然Makefile语言也会有变量、函数。这个文章就不详细讲解Makefile语法了，因为已经有好多人都写过相关的文章，可以参考权威的”[GNU make](http://www.gnu.org/software/make/manual/html_node/index.html?cm_mc_uid=45784307156114982261855&cm_mc_sid_50200000=1506734444)“,如果看不懂英文或者看英文吃力，可以参考这个中文文章”[跟我一起写Makefile](http://wiki.ubuntu.org.cn/%E8%B7%9F%E6%88%91%E4%B8%80%E8%B5%B7%E5%86%99Makefile)“。还有我最喜欢的博主老罗对Makefile的理解“[Android编译系统简要介绍和学习计划](http://blog.csdn.net/luoshengyang/article/details/18466779)”
 
-### **make在Android平台的运用**
+# **make在Android平台的运用**
 &emsp;&emsp;为了加快AOSP项目的编译速度，Android团队在N版本添加了ninja构建工具，ninja构建工具相对于make构建工具更底层。通过开源项目kati(kati是项目名，但是最终编译生成的程序名却是叫做ckati，后续我们将使用ckati这个名字)将Makefile文件翻译成ninja文件。make和ninja的关系就像cmake和make。还有一点要注意的，由于7.1以后部分使用的是Soong+Buleprint这套构建工具，将bp文件转换成ninja文件，所以Makefile文件和Buleprint文件是混合使用的，分析Makefile文件要小心一点。不过Blueprint+Soong这套构建工具代替make、kati这套构建工具只是时间问题。想了解Buleprint+Soong这套构建工具可以参考这一篇[Android源码解析之AOSP新的构建系统]({{site.baseurl}}/blog/2017-09-23/2017-09-23-translate-blueprint-soong)。 那么我们就来大致了解一下这个转换的流程
 
 build/core/main.mk
@@ -1141,7 +1143,7 @@ endif # KATI
 - [Android编译系统参考手册](http://android.cloudchou.com/)
 
 
-## *4.Reference*
+# 参考资料
 [跟我一起写Makefile](http://wiki.ubuntu.org.cn/%E8%B7%9F%E6%88%91%E4%B8%80%E8%B5%B7%E5%86%99Makefile)
 
 [GNU make](http://www.gnu.org/software/make/manual/html_node/index.html?cm_mc_uid=45784307156114982261855&cm_mc_sid_50200000=1506734444)

@@ -26,7 +26,7 @@ OkHttp
 - cache池
 - retry次数
 
-## *Dispatcher*
+# *Dispatcher*
 ========================
 Volley
 =========================
@@ -59,7 +59,7 @@ executorService/executorServiceOrNull(corePoolSize = 0,maximumPoolSize = Int.MAX
 &emsp;&emsp;对比一下Volley和OkHttp的并发数量，显然太少，并发的数量更多需要根据cpu核数以及网络类型来计算。所以使用JDK提供的一系列Executor工具，就能高效使用简单控制线程。
 
 
-## *Cache*
+# *Cache*
 &emsp;&emsp;首先得了解HTTP是如何处理缓存的
 ```
 通用首部字段
@@ -74,7 +74,7 @@ Last-Modified
 Date
 Age
 ```
-### 1. 新鲜度检查（freshness）
+## 1. 新鲜度检查（freshness）
 response缓存的字段
 ```
 Age：服务告知的过期时间（相对时间）
@@ -100,7 +100,7 @@ cache control
 ```
 &emsp;&emsp;第一次请求服务器的时候，会响应客户端的response header会增加一些缓存字段，来告诉客户端下发的文件是有缓存有效期的，然后当下次客户端再次请求时，就会对文件的新鲜度进行检查，如果还可以用就使用之前保存下来的副本，反之，则重新进行网络请求。所以新鲜度的检查是在本地完成的。
 
-### 2. 再验证
+## 2. 再验证
 条件请求
 ```
 If-None-Match+ETag：若客户端的etag和服务的etag相同则再验证命中，返回304，未命中返回200 ok
@@ -287,7 +287,7 @@ Cache的Entry内容大致如下，会写入到DiskLruCache也会从DiskLruCache�
 
 &emsp;&emsp;这里对比一下Volley和OkHttp
 
-## *Retry*
+# *Retry*
 
 ========================
 Volley
@@ -318,7 +318,7 @@ OkHttp
 &emsp;&emsp;retry过程会不停的切route来尝试连接可以用的网络，只有遇到不可retry的情况ProtocolException SocketTimeoutException SSLHandshakeException/CertificateException SSLPeerUnverifiedException FileNotFoundException才会终止retry
 
 
-## *更多*
+# *更多*
 ========================
 OkHttp ConnectInterceptor/CallServerInterceptor
 =========================
@@ -328,7 +328,7 @@ OkHttp ConnectInterceptor/CallServerInterceptor
 - 地址路由Route 路由选择器RouteSelector 路由失败的名单RouteDatabase
 - 数据交换器Exchange  ExchangeCodec(Http1ExchangeCodec、Http2ExchangeCodec)
 
-## *参考资料*
+# *参考资料*
 [Volley 源码解析](http://a.codekk.com/detail/Android/grumoon/Volley%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90)
 [HTTP cache](https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching)
 

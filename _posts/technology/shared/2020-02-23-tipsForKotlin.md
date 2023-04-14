@@ -14,7 +14,7 @@ published: true
 > 代码质量从一丝一毫做起。
 
 
-## 变量
+# 变量
 
 - 可变变量var
 - 不可变变量 val
@@ -88,7 +88,7 @@ class BaseImpl(val x: Int) : Base {
 class Derived(b: Base) : Base by b//3.代理者模式
 ```
 
-## 兼容互操作
+# 兼容互操作
 
 当团队的成员既有使用java也有使用kotlin的时候，就要确保两者之间互调的合理性、可读性
 

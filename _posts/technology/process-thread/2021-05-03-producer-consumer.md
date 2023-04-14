@@ -10,7 +10,6 @@ tag:
 - process-thread
 published : true
 ---
-## *1.Summary*
 来谈谈OkHttp 和 Android平台提供的生产者-消费者模型
 
 
@@ -20,7 +19,7 @@ OkHttp | TaskRunner|TaskQueue|Task|其他线程
 Android| Looper| MessageQueue|Message(Handler,Runnable)|主线程、其他线程、跨进程
 
 生产者-消费者模型是一种实现线程通信的方式，其核心是利用queue先进先出的特点，生产者负责将消息(或者事件)写入到queue，而消费者负责从queue读取。
-## *2.Introduction*
+
 Android平台的生产者消费者模型使用范围更加广泛
 - 支持跨进程，支持跨线程
 - 使用epoll唤醒睡眠，linux提供的系统调用
@@ -31,7 +30,7 @@ OkHttp生产者消费者模型
 - 使用wait/notifyXXX唤醒睡眠，java虚拟机提供的调用
 - 使用数组保存Task，查询有优势
 
-### *OkHttp生产者消费者模型*
+# *OkHttp生产者消费者模型*
 
 生产者TaskQueue
 {:.filename}
@@ -142,7 +141,7 @@ class TaskQueue internal constructor(
 
 上面的代码我们可以看到Okhttp中的任务生成消费有线程的切换，线程池为缓存池，没有核心线程，不限制线程数，保活60s，及其短暂。
 
-### *Android生产者消费者模型*
+# *Android生产者消费者模型*
 Android的生产者MessageQueue保存产品的方式不同于OkHttp的生产者TaskQueue，MessageQueue的产品Message使用链表结构来保存，在插入删除方便比数组有优势，不过查询就是劣势。
 
 生产者MessageQueue

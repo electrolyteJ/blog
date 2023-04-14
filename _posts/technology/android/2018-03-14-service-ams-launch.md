@@ -2,16 +2,12 @@
 layout: post
 title: Framework层的服务 | AMS启动流程
 description: 来一起聊聊AMS的启动流程
-author: 电解质
-date: 2018-03-14
 tag:
 - android
 ---
 * TOC
 {:toc}
-## *1.Summary*
-&emsp;&emsp;ActivityManagerService类是framework层的核心，对下它调度着cpu、电量、内存、进程的管理者，对上它调度着四大组件，让app使用者能够轻松简单的切换界面。由于其职能的复杂，所以需要管理的事务也就多了。只有了解了ActivityManagerService的启动流程，我们才能够更加深入的体会其内部构造。所以启动流程是我们深入的第一步。接下来让我们来看看ActivityManagerService的启动流程。
-## *3.Introduction*
+ActivityManagerService类是framework层的核心，对下它调度着cpu、电量、内存、进程的管理者，对上它调度着四大组件，让app使用者能够轻松简单的切换界面。由于其职能的复杂，所以需要管理的事务也就多了。只有了解了ActivityManagerService的启动流程，我们才能够更加深入的体会其内部构造。所以启动流程是我们深入的第一步。接下来让我们来看看ActivityManagerService的启动流程。
 
 AMS启动流程中主要的方法也就是下面的三个：
 - ActivityManagerService构造方法
@@ -20,7 +16,7 @@ AMS启动流程中主要的方法也就是下面的三个：
 
 其实AMS启动流程中还会初始化一些其他东西，比如将WMS对象注入到AMS这，这样就可以实现UI交互。
 
-### *ActivityManagerService构造方法*
+# *ActivityManagerService构造方法*
 
 ```java
     public ActivityManagerService(Context systemContext) {
@@ -148,7 +144,7 @@ AMS启动流程中主要的方法也就是下面的三个：
     - service process 
     - cached process
 
-### *start方法*
+# *start方法*
 
 ```java
  private void start() {
@@ -235,7 +231,7 @@ mProcessCpuThread = new Thread("CpuTracker") {
 ```
 &emsp;&emsp;通过ProcessCPUThread#notify刷新场景有很多，比如上面代码展示的，启动一个进程，就会刷新。如果你用过Linux终端程序Htop的话，那么Htop就相当于ProcessCpuTracker。这里在说一下，AMS中除了监控CPU，还有监控内存的MemInfoReader和电量。
 
-### *systemReady方法*
+# *systemReady方法*
 
 ```java
 public void systemReady(final Runnable goingCallback, BootTimingsTraceLog traceLog) {
@@ -338,7 +334,7 @@ public void systemReady(final Runnable goingCallback, BootTimingsTraceLog traceL
     - broadcastIntentLocked
     - ActivityStackSupervisor#resumeFocusedStackTopActivityLocked
 
-#### startPersistentApps
+## startPersistentApps
 ---
 &emsp;&emsp;startPersistentApps方法启动的是一些系统级别的应用，比如TeleService应用。通过`directBootAware`标签来标识。这些应用属于应用层，在应用层用来和framework层交互的桥梁。
 
@@ -359,11 +355,11 @@ public void systemReady(final Runnable goingCallback, BootTimingsTraceLog traceL
 </application>  
 ```
 
-#### startHomeActivityLocked
+## startHomeActivityLocked
 
 &emsp;&emsp;这一步没有什么好说的，就是启动launcher应用
 
-#### broadcastIntentLocked
+## broadcastIntentLocked
 ---
 
 ```java
@@ -422,7 +418,7 @@ final int broadcastIntentLocked(ProcessRecord callerApp,
 
 
 
-#### ActivityStackSupervisor#resumeFocusedStackTopActivityLocked
+## ActivityStackSupervisor#resumeFocusedStackTopActivityLocked
 ----
 
 >frameworks/base/services/core/java/.../am/ActivityStackSupervisor.java
@@ -449,8 +445,3 @@ final int broadcastIntentLocked(ProcessRecord callerApp,
 ```
 
 resumeTopActivityUncheckedLocked会将存储Activity的栈推到最前面并且将栈中的想要启动的Activity置于顶部。ActivityStackSupervisor和ActivityStack两者的区别在于，ActivityStackSupervisor主要管理者栈、任务等，而ActivityStack就是管理Activity的具体调度。下面我们还会将四大组件的启动流程。
-
-
-
-<!-- ## *4.Reference* -->
-

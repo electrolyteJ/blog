@@ -3,22 +3,18 @@ layout: post
 title: LBS | 架构概述
 description: 讲解Location架构
 author: 电解质
-date: 2018-01-25 22:50:00
-share: true
-comments: true
 tag:
 - lbs
 - android
 ---
 * TOC
 {:toc}
-## *1.Summary*
+
+# Arch
 &emsp;&emsp;在上一篇我们讲了基本的使用，现在我们来看看Location架构是如何设计的。
 
-## *2.About*
 &emsp;&emsp;现如今原生的Location API已经很少人使用了，大都是集成第三方库，就连google也推荐使用他们家的Google Location Services API，所以对于原生的Location架构，我们可以当做学习资料来研究。如果你期望能参加LBS相关的开发工作，我相信通过研究源生的Location架构来提升自身技术是一个不错的选择。如何使用Google Location Services API可以看这一篇文章[Building Apps with Location & Maps](https://developer.android.com/training/building-location.html)，但是由于国内的特殊情况，所以催生了高德地图、腾讯地图等替代品。给了链接吧[高德定位sdk](http://lbs.amap.com/api/android-location-sdk/locationsummary)
 
-## *3.Introduction*
 
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-01-25-location-system-framework-architecture.png)
 
@@ -36,5 +32,5 @@ GnssLocationProvider类的这几个特质我们也可以在让网络定位的Pro
 &emsp;&emsp;对于Native层其实没有什么好讲的，因为我之前也学习过Telephony的HAL层，深知如果是一名ROM开发者，那么学习HAL层是很有必要的，但是如果是一名App开发者，就没有必要了。不过对于framework-native层倒是可以学习一下，jni的开发模式也是需要学习的。我已经看了React Native的jni开发模式，有时间在把笔记整理好上传到博客。
 
 
-## *4.Reference*
+# 参考资料
 [Android 系统中 Location Service 的实现与架构](https://www.ibm.com/developerworks/cn/opensource/os-cn-android-location/)

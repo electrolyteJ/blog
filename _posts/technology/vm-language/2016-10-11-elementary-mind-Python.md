@@ -21,7 +21,7 @@ tags:
 
 <!-- ![My helpful screenshot]({{ site.baseurl | prepend:site.url}}/images/Python.png){: .center-image }*iPhone 5 portrait* -->
 
-### 参考资料来源：
+# 参考资料来源：
 [The Python Tutorial](https://docs.python.org/3/tutorial/index.html)
 
 [A Byte of Python](https://python.swaroopch.com/)

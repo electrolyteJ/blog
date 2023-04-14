@@ -10,7 +10,7 @@ tag:
 * TOC
 {:toc}
 
-### *Groovy DSL*
+# *Groovy DSL*
 
 从Android团队开始宣布放弃Eclipse转投Android Studio时，构建工具Gradle进入了Android开发者的视野。而随着热修复、插件化、编译时注解的流行，深入了解Gradle就变得很有必要了。那么什么是Gradle ？
 
@@ -57,7 +57,7 @@ dependencies {
 
 如果你想要根据公司的业务添加一些代码的话，那么就需要我们写任务或者插件，而这需要我们熟悉Gradle框架和Groovy语言了。
 
-### *Gradle生命周期*
+# *Gradle生命周期*
 &emsp;&emsp;我们都知道Gradle的生命流程要经历三个部分：初始化、配置、执行。
 - 初始化阶段：settings.gradle
 在初始化阶段，Gradle会为每个项目创建Project对象（每个项目项目都会有一个build.gradle），那么系统是如何知道有哪些项目的，通过settings.gradle。
@@ -265,9 +265,9 @@ lib location end
 ```
 
 
-### *Gradle任务*
+# *Gradle任务*
 
-#### 配置阶段调用
+## 配置阶段调用
 ----
 
 &emsp;&emsp;在前面我们粗糙地讲了task，这里我们在细讲一下。在Android DSL中默认的任务有编译、打包、签名、安装，它们按照顺序被一一执行。而我们也可以写一些hook它们流程的任务.
@@ -301,7 +301,7 @@ tasks.create('hello') {
 &emsp;&emsp;精简版是开发者最为常用的。当我们定义了任务内容，通过`./gradle  hello`就可以执行task，但是我们都知道Gradle的流程中会先配置task在执行task，而上面的代码会在`配置阶段`就被调用。那么问题来了，如果我们想要代码在`执行阶段`被调用要怎么办呢 ？ 
 
 
-#### 执行阶段调用
+## 执行阶段调用
 ----
 
 看代码。
@@ -370,7 +370,7 @@ myCopy {
 ```
 &emsp;&emsp;Gradle并不仅仅给我们提供了这两个task type，还有很多具体查看[Project](https://docs.gradle.org/current/dsl/org.gradle.api.Project.html#N152D1) API，页面左侧栏。当然了我们还可以写一个类继承Copy，然后重写一些属性、方法。
 
-#### 任务相关性
+## 任务相关性
 ---
 
 &emsp;&emsp;有的时候我们需要增加任务的相关性，比如一个任务的执行需要另外一个任务执行完才能执行。
@@ -444,9 +444,9 @@ task notALib {
 
 除了dependsOn，你还可以使用mustRunAfter、shouldRunAfter来进行排序。
 
-### *Gradle插件*
+# *Gradle插件*
 
-#### 编写Gradle插件
+## 编写Gradle插件
 ---
 &emsp;&emsp;Gradle插件分为两种：script plugins 和 binary plugins。script plugins通过`apply from: 'other.gradle'`来引用;而binary plugins通过`apply plugin: 'com.android.application'`引用。这里我们将会讲解第二种，在讲解第二种的过程中可能会涉及到第二种。既然我们已经知道如何使用插件，那么接下来就要知道怎么定义插件。
 
@@ -488,7 +488,7 @@ apply plugin: GreetingPlugin
 
 最最后在说一句，由于Kotlin的特性，我们可以用它来替代Groovy写Gradle脚本，这样就可以减少学习Groovy的成本，而且Kotlin自从被google扶正之后，也受到了很多开发者的喜爱，很多项目也在开始用它来做开发。不过千外不要说Java的地位又不行了，身为Java程序员又在自我恐慌，戒骄戒躁，以其浪费时间在恐慌还不如多学几门不同类型语言提升自己。
 
-## *参考资料*
+# *参考资料*
 
 [Groovy官网](http://www.groovy-lang.org/learn.html)
 [使用 Groovy 构建 DSL](https://www.ibm.com/developerworks/cn/java/j-eaed15.html)

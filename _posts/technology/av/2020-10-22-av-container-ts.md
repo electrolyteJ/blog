@@ -10,7 +10,9 @@ tag:
 - av
 published : true
 ---
-## *1.Summary*
+- TOC
+{:toc}
+# *1.Summary*
 MPEG transport stream(short as TS)
 
 ```
@@ -19,7 +21,7 @@ MPEG transport stream(short as TS)
   |  Packet | =  | Packet header |      Packet data                        |
   +-+-+-+-+-+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
-### TS Header(size : 4bytes)
+## TS Header(size : 4bytes)
 
 name |size(bit)|desc
 ---|---|---
@@ -41,7 +43,7 @@ EIT,ST|0x0012
 RST,ST|0x0013
 TDT,TOT,ST|0x0014
 
-### TS Body(size : 184bytes)
+## TS Body(size : 184bytes)
 TS包固定文件为188字节,TS包主要有PSI和PES之分。PSI是什么？
 
 > Program-specific information (PSI) is metadata about a program (channel) and part of an MPEG transport stream.
@@ -73,9 +75,9 @@ program_map_PID=12  ---->  ...
 
 理解了这些那么接一下我们就可以来看看PAT 、 PMT 、 PES
 
-## *2.Introduction*
+# *2.Introduction*
 
-###  PAT((Program Associate Table) Packet
+##  PAT((Program Associate Table) Packet
 ts头字段pid固定为0x0000
 ```
                          4bytes                 184bytes         
@@ -117,7 +119,7 @@ name |size(bit)|desc
 CRC32|32|前面数据的CRC32校验码
 
 
-### PMT(Program Map Table) Packet
+## PMT(Program Map Table) Packet
 ```
                          4bytes                 184bytes         
   +-+-+-+-+-+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -162,7 +164,7 @@ name |size(bits)|desc
 ---|---|---
 CRC32|32|前面数据的CRC32校验码
 
-### PES(Packet Elemental Stream) Packet
+## PES(Packet Elemental Stream) Packet
 
 ```
                      4bytes               184bytes         
@@ -185,7 +187,7 @@ CRC32|32|前面数据的CRC32校验码
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
                              随意     其他   内容       P帧     内容
 ```
-#### adaptation field
+### adaptation field
 
 name |size(bytes)|desc
 ---|---|---
@@ -227,7 +229,7 @@ dts = 初始值 + (90000 * audio_samples_per_frame) / audio_sample_rate，audio_
 
 直播视频的dts和pts应该直接用直播数据流中的时间，不应该按公式计算。
 ```
-#### PES packet header
+### PES packet header
 
 name |size(bytes)|desc
 ---|---|---
@@ -273,7 +275,7 @@ Stuffing Bytes|variable|length	0xff
           | ts header |   adaptation field    |      payload(pes n)     |-->第n个Packet
           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
-### 打包
+## 打包
 代码来源项目[river](https://github.com/electrolyteJ/river/blob/master/server4py/app/container/ts.py),欢迎star
 ```python
     def muxe(self, frame, max_duration=3000) -> PacketList:
@@ -321,7 +323,7 @@ Stuffing Bytes|variable|length	0xff
 
 
 
-## *3.Reference*
+# *3.Reference*
 [MPEG-TS 格式解析](https://blog.csdn.net/Kayson12345/article/details/81266587)
 [MPEG2-TS基础](https://blog.csdn.net/rootusers/article/details/42772657)
 [MPEG-TS基础2](https://blog.csdn.net/rootusers/article/details/42970859)

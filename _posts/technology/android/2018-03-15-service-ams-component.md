@@ -9,14 +9,13 @@ tag:
 ---
 * TOC
 {:toc}
-## *1.Summary*
-&emsp;&emsp;在了解了AMS的启动流程之后，我们就需要开始了解运行中的AMS是如何管理四大组件的。所以这一篇会通过图形的方式带领大家了解怎么管理的。
+在了解了AMS的启动流程之后，我们就需要开始了解运行中的AMS是如何管理四大组件的。所以这一篇会通过图形的方式带领大家了解怎么管理的。
 
 在此之前我们需要知道一些背景知识
 
 1.Handler
 
-&emsp;&emsp;Handler在Android线程通讯中起着重要的作用，所以下面我罗列了一堆的Handler。
+Handler在Android线程通讯中起着重要的作用，所以下面我罗列了一堆的Handler。
 
 framework层Handler	|	运行线程
 --|--
@@ -42,9 +41,8 @@ AT.mH(H)|main (UI线程)
 
 2.ApplicationThread
 &emsp;&emsp;ApplicationThread(IApplicationThread.Stub)为ActivityThread接收来自于服务端的响应，四大组件就是通过ApplicationThread接收了服务端的消息，从而实现了其调度。
-## *3.Introduction*
 
-### *Activity*
+# *Activity*
 
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-15-launch-activity.png)
 
@@ -89,7 +87,7 @@ ActivityStackSupervisor：由于多屏功能的出现，就需要ActivityStackSu
 
 我们可以看到，在performResume方法也就是Activity的resume阶段之后才会将View通过addView呈现在屏幕上。所以唯有handleResumeActivity执行完，View才是可见的。也就是Activity#onResum的方法中，View并不是可见的，而应该是Resumed才可见。
 
-### *Service*
+# *Service*
 
 Service的启动流程
 
@@ -114,7 +112,7 @@ Service的绑定流程
 2.ActiveService会处理即将启动的Service的信息。如果被调用者进程存在，就会使用ApplicationThread这个Application端Binder通知已存在的被调用者进程启动Service。如果被调用者进程不存在，就会使用Socket通知Zygote进程fork出一个进程，用来承载即将启动的Service。
 3.在新的进程里面会创建ActivityThread对象，完成开启主线程loop、ApplicationThread依附在AMS、初始化Context、Application等工作，并且通过Classload加载Service，创建Service对象，紧接着通过AMS将正在绑定的Service对客户端提供的Binder接口传给Application端的InnerConnection这个Binder，InnerConnection会让ServiceDispatcher这个派发人去分发Binder，从而实现了绑定的工作。
 
-### *BroadcastReceiver*
+# *BroadcastReceiver*
 
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-15-launch-broadcastreceiver-1.png)
 
@@ -131,7 +129,7 @@ Service的绑定流程
 3.在新的进程里面会创建ActivityThread对象，完成开启主线程loop、ApplicationThread依附在AMS、初始化Context、Application等工作，并且通过Classload加载BroadcastReceiver，创建BroadcastReceiver对象，完成BroadcastReceiver生命周期的调用。
 
 
-### *ContentProvider*
+# *ContentProvider*
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-03-15-launch-contentprovider.png)
 
 

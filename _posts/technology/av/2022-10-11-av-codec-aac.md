@@ -5,10 +5,11 @@ description: Audio Codec
 tag: 
 - av
 ---
+- TOC
+{:toc}
+# 重要的文件格式
 
-## 重要的文件格式
-
-### 1.AAC文件格式
+## 1.AAC文件格式
 aac文件格式有两种：ADIF和ADTS
 
 ADIF(必须从头解码，用于磁盘):
@@ -29,7 +30,7 @@ previous |syncword |header（）|error_check() |raw_data_block() |next|
 当前AAC一帧的播放时间是= 1024*1000000/44100= 22.32ms(单位为ms)
 
 
-### 2.脉冲编码调制（Pulse Code Modulation，short for PCM）
+## 2.脉冲编码调制（Pulse Code Modulation，short for PCM）
 modulator-demodulator(modem)
 猫是一个双向的过程，即可以解调也可以调制，而pcm是其中的调制。
 
@@ -37,6 +38,7 @@ modulator-demodulator(modem)
 - 采样频率(sampling rate)：一般有11025HZ（11KHz），22050HZ（22KHz）、44100Hz（44KHz）三种。在16位声卡中有22KHz、44KHz等几级，44KHz已相当于CD音质了，目前的常用采样频率都不超过48KHz
 - 采样位数：8位和16位
 - 声道数：单声道、立体声道
+
 # Codec
 ## 音频codec争抢
 
@@ -79,5 +81,5 @@ MPEG-4 AAC HE 高效率规格（High Efficiency）
 既然公认机构都在搞，由于自身业务需求，apple也要插一脚，所以出了ALAC
 
 
-## 直播
+# 直播
 采集数据->提前处理->编码->网络传输->解码->渲染

@@ -2,24 +2,15 @@
 layout: post
 title: LBS | 启动流程
 description: 讲解启动流程
-author: 电解质
-date: 2018-01-25 22:50:00
-share: true
-comments: true
 tag:
 - lbs
 - android
 ---
 * TOC
 {:toc}
-## *1.Summary*
-&emsp;&emsp;不想写
-## *2.About*
-&emsp;&emsp;不想写
-## *3.Introduction*
 
 更新数据的开始都是源于requestLocationUpdates或者requestSingleUpdate接口，那么接下来让我们来看看下面的解析吧。
-### *Application层*
+# *Application层*
 &emsp;&emsp;
 
 ![]({{site.asseturl}}/{{ page.date | date: "%Y-%m-%d" }}/2018-01-25-location-system-launch-api.png)
@@ -122,7 +113,7 @@ ILocationListener的实现类ListenerTransport通过外部调用者提供的Loop
 3.PendingIntent类对象
 &emsp;&emsp;该类用于也是用于获取来自底层的定位数据，不过与ILocationListener不同的是，注册ILocationListener的界面会收到更新的定位数据，而PendingIntent则是将更新的定位数据传给其他的界面。还有一点需要注意的ILocationListener和PendingIntent不能同时存在，请求数据更新时，只能二选一。
 
-### *Framework-Java层* 
+# *Framework-Java层* 
 
 frameworks/base/services/core/java/com/android/server/LocationManagerService.java
 ```java
@@ -245,7 +236,7 @@ private void requestLocationUpdatesLocked(LocationRequest request, Receiver rece
 &emsp;&emsp;在applyRequirementsLocked方法中会先判断请求是在前台发出还是后台发出。
 在Android 8.0提出来后台限制的规定，只允许后台应用每小时接收几次位置更新，前台不受影响。上面的代码就是这个限制的实现。如果想了解更多这个限制可以参考这一篇文章[Background Location Limits](https://developer.android.com/about/versions/oreo/background-location-limits.html)。然后在判断请求的interval是否小临界值，用一个临界值来限制请求的interval，如果由于频繁就会被流失掉。最后调用LocationProviderInterface#setRequest方法，之前我们已经说过LocationProviderInterface接口的实现类有三个，这里我们挑选GnssLocationProvider和LocationProviderProxy来进行分析。
 
-#### 先来看看GnssLocationProvider
+## 先来看看GnssLocationProvider
 
 ----
 
@@ -513,7 +504,7 @@ static void android_location_GnssLocationProvider_class_init_native(JNIEnv* env,
 
 有21个回调接口，那么我们需要关注的是这21个回调接口的回调顺序也就是我们常说的生命周期。
 
-#### 再来看看LocationProviderProxy
+## 再来看看LocationProviderProxy
 
 ---
 
@@ -734,5 +725,5 @@ ProviderPropertiesUnbundled PROPERTIES = ProviderPropertiesUnbundled.create(
 这个就是优化的算法。
 
 &emsp;&emsp;接着回到ILocationProvider的setRequest方法调用，这下我们就可以轻松的知道LocationProviderProxy通过binder将请求发送给网络端的服务，而网络端的ILocationProvider接口就是接受者。
-## *4.Reference*
+# 参考资料
 Android Open Source Project

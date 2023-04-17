@@ -74,7 +74,5 @@ export interface Spec extends TurboModule {
 }
 ```
 
-
-
-[1](https://github.com/hapjs-platform/hapjs)
-[2](https://github.com/eclipsesource/J2V8)
+[1]:https://github.com/hapjs-platform/hapjs
+[2]:https://github.com/eclipsesource/J2V8

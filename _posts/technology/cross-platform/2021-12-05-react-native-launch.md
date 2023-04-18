@@ -25,7 +25,7 @@ published: true
 - 用来管理 React 应用的 ReactInstanceManager 对象
 - ReactPackage 集合(getPackages)：暴露给 js 使用的 native api(NativeModule) 或者 native view
 
-宿主应用的启动这里讲的主要是从点击应用启动图标到 Application#onCreate 这样一个流程，不包括 splash 启动页，因为对于有些 react native 应用 ReactActivit 就是启动页，这一块应该是属于 React 应用的启动。对于宿主应用的启动我们都比较熟悉就不展开，主要来讲讲 React 应用的启动。
+宿主应用的启动这里讲的主要是从点击应用启动图标到 Application#onCreate 这样一个流程，不包括 splash 启动页，因为对于有些 react native 应用 ReactActivity 就是启动页，这一块应该是属于 React 应用的启动。对于宿主应用的启动我们都比较熟悉就不展开，主要来讲讲 React 应用的启动。
 
 # _React 应用的启动_
 React 应用的入口类为 ReactActivity 类,由于 ReactActivity 的生命周期都委托给 ReactActivityDelegate 对象，所以主要分析 ReactActivityDelegate

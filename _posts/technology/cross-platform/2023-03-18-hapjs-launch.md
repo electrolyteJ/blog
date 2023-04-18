@@ -3,7 +3,6 @@ layout: post
 title:  快应用 | 快应用启动
 description: 快应用启动
 tag:
-- build-tools
 - cross-platform
 ---
 * TOC

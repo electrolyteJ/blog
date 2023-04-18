@@ -3,7 +3,6 @@ layout: post
 title:  快应用 | Java和JavaScript互操作
 description: Java <--> JavaScript
 tag:
-- build-tools
 - cross-platform
 ---
 * TOC

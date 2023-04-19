@@ -77,4 +77,4 @@ DispatcherActivity解析完Intent信息之后，调用LauncherManager#launch启�
 
 在异步加载rpk包且创建JsThread线程的时候，会往JsThread的MessageQueue插入几条消息(调用快应用生命周期、启动页面)，在执行js侧的启动页面代码过程中会发送第一条绘制指令，那么谁来接收解析 ?
 
-在创建JSThread并且加载基础包的时候，java侧会注册三个方法:readResource、getFrameworkJscPath、callNative，callNative接收js发送过来的dom节点信息，dom节点信息在RenderWorker线程解析并且保存到mRenderActionPackagesBuffer队列，当vsync刷新屏幕处理message时，在主线程从mRenderActionPackagesBuffer读取dom节点信息，并且让平台渲染。
+在创建JSThread并且加载基础包的时候，java侧会注册三个方法:readResource、getFrameworkJscPath、callNative，callNative接收js发送过来的dom节点信息，dom节点信息在RenderWorker线程解析并且保存到mRenderActionPackagesBuffer队列，当vsync刷新屏幕处理message时(这里是真正开始进行绘制的流程)，在主线程从mRenderActionPackagesBuffer读取dom节点信息，并且让平台渲染。

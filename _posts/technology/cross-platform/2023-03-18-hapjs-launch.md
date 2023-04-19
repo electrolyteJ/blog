@@ -62,65 +62,6 @@ DispatcherActivity解析完Intent信息之后，调用LauncherManager#launch启�
         launcherClient.launch(context, intent);
     }
 ```
-在启动的过程中，我们可以看到Launcher#select方法调用，Launcher用来查找包名对应的进程信息LauncherInfo，它的内部有一张LauncherTable数据表存储着启动过进程的信息，比如Launcher$0 中0，进程pid，进程创建时间，进程是否还活跃activeAt等。知道了进程信息和将要启动的的LauncherClient为LauncherActivity$Client，那么接下来就行直接执行启动Activity。
-```java
-public class LauncherActivity extends RuntimeActivity {
-    ...
-        protected static class Client implements LauncherManager.LauncherClient {
-        ...
-        @Override
-        public void launch(Context context, Intent intent) {
-            Bundle options;
-            if (context instanceof Activity) {
-                String launchPackage = ActivityUtils.getCallingPackage((Activity) context);
-                // use calling package name as default source
-                if (TextUtils.isEmpty(intent.getStringExtra(EXTRA_SOURCE))) {
-                    Source source = new Source();
-                    source.setPackageName(launchPackage);
-                    intent.putExtra(EXTRA_SOURCE, source.toJson().toString());
-                }
-                options = null;
-                if (intent.getBooleanExtra(RuntimeActivity.EXTRA_ENABLE_DEBUG, false)
-                        && !TextUtils.equals(launchPackage, context.getPackageName())) {
-                    Log.e(TAG, launchPackage + " has no permission to access debug mode!");
-                    return;
-                }
-            } else {
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                options =
-                        ActivityOptionsCompat.makeCustomAnimation(
-                                context, R.anim.activity_open_enter, R.anim.activity_open_exit)
-                                .toBundle();
-            }
+在启动的过程中，我们可以看到Launcher#select方法调用，Launcher用来查找包名对应的进程信息LauncherInfo，它的内部有一张LauncherTable数据表存储着启动过进程的信息，比如Launcher$0 中0，进程pid，进程创建时间，进程是否还活跃activeAt等。知道了进程信息和将要启动的的LauncherClient为LauncherActivity$Client，那么接下来就行直接执行启动Activity。在Activity#onCreate中会开始load快应用基础包和快应用业务包,load过程存在这样两种场景，rpk包已经下载且安装，rpk包没有安装。如果安装要么重新刷新页面，要么重启rpk包。load启动方式有这么几种LOAD_MODE_STANDARD、LOAD_MODE_CLEAR、LOAD_MODE_HISTORY，我们来看看LOAD_MODE_STANDARD这一种，在LOAD_MODE_STANDARD中会调用RootView#load方法。
 
-            String pkg = intent.getStringExtra(RuntimeActivity.EXTRA_APP);
-            String path = intent.getStringExtra(RuntimeActivity.EXTRA_PATH);
-            Source source = Source.fromJson(intent.getStringExtra(RuntimeActivity.EXTRA_SOURCE));
-            SystemController.getInstance().config(context, intent);
-
-            Cache cache = CacheStorage.getInstance(context).getCache(pkg);
-            if (cache.ready()) {
-                AppInfo appInfo = cache.getAppInfo(); // load manifest.json
-                if (appInfo != null && appInfo.getDisplayInfo() != null) {
-                    intent.putExtra(EXTRA_THEME_MODE, appInfo.getDisplayInfo().getThemeMode());
-                }
-            }
-
-            DistributionManager distributionManager = DistributionManager.getInstance();
-            int status = distributionManager.getAppStatus(pkg);
-            if (status != DistributionManager.APP_STATUS_READY) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                distributionManager.scheduleInstall(pkg, path, source);
-            }
-            intent.putExtra(EXTRA_SESSION, LogHelper.getSession(pkg));
-            intent.putExtra(EXTRA_SESSION_EXPIRE_TIME,
-                    System.currentTimeMillis() + SESSION_EXPIRE_SPAN);
-            PlatformLogManager.getDefault().logAppPreLaunch(pkg, path, status, source);
-            context.startActivity(intent, options);
-        }
-    ...
-    }
-    ...
-}
-```
+接下来会创建JsThread并且读取rpk包的js脚本，先加载基础包，然后执行infras.js脚本，然后加载业务包，执行app.js脚本。在创建JSThread并且加载基础包的时候，java侧会注册三个方法:readResource、getFrameworkJscPath、callNative，callNative接收js发送过来的dom节点信息，dom节点信息在RenderWorker线程解析并且保存到mRenderActionPackagesBuffer队列，当vsync刷新屏幕处理message时，在主线程从mRenderActionPackagesBuffer读取dom节点信息，并且让平台渲染。

@@ -4,8 +4,9 @@ title: Java并发
 description:  锁、队列、信号量、线程、线程池
 tag:
 - vm-language
-- android
 ---
+* TOC
+{:toc}
 
 在java并发中我们常常遇到这样一些关键词：锁、队列、信号、线程、线程池，它们都是围绕线程衍生出来的周边，涉及到线程同步、线程通信、线程复用。
 

@@ -11,7 +11,7 @@ tag:
 
 - 线程同步：锁是为了解决并发竞争资源问题，是一种线程同步方式，除了锁还有CAS、volatile
 - 线程通信：队列、列表、信号是线程通信的方式，比如ArrayBlockingQueue、wait/notify、CountDownLatch、Semaphore
-- 线程复用：线程复用依赖于线程池，java提供的线程池有四种FixedThreadPool、SingleThreadExecutor、ScheduledThreadPool、CachedThreadPool
+- 线程复用：线程复用依赖于线程池，jdk提供的线程池有四种FixedThreadPool、SingleThreadExecutor、ScheduledThreadPool、CachedThreadPool
 
 # 线程同步
 

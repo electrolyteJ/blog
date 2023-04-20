@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  Android平台的线程切换 
-description: AsyncTask、 IntentService
+description: AsyncTask、 IntentService、Activity.runOnUiThread、View.postXxx
 tag:
 - android
 - process-thread
@@ -194,10 +194,7 @@ AsyncTask#execute调用之后，会将Params类型转化成WorkerRunnable任务�
 
 在调用WorkerRunnable#call过程中，我们看到了doInBackground方法，通过重写这个方法，可以让我们在工作线程做一些跟io一样的耗时操作。在doInBackground方法里可以调用publishProgress方法，而该方法会通过Handler类从工作线程切换到主线程调用onProgressUpdate方法，实现进度条的效果。当我们执行完任务之后就会就会通过Handler切换到主线程调用onPostExecute方法实现UI刷新
 
-
-# 其他
-
-## Activity.runOnUiThread(Runnable)
+# Activity.runOnUiThread(Runnable)
 ```java
     @Override
     public final void runOnUiThread(Runnable action) {
@@ -210,7 +207,7 @@ AsyncTask#execute调用之后，会将Params类型转化成WorkerRunnable任务�
 ```
 工作线程调用该方法是，会通过Handler的post方法切换到主线程，并且刷新ui。如果是主线程直接就执行刷新ui的工作
 
-## View.post(Runnable)/View.postDelayed(Runnable, long)
+# View.post(Runnable)/View.postDelayed(Runnable, long)
 post和postDelayed类似，所以只分析postDelayed足以
 
 ```java

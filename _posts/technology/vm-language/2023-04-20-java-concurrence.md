@@ -10,7 +10,7 @@ tag:
 
 在java并发中我们常常遇到这样一些关键词：锁、队列、信号、线程、线程池，它们都是围绕线程衍生出来的周边，涉及到线程同步、线程通信、线程复用。
 
-- 线程同步：锁是为了解决并发竞争资源问题，是一种线程同步方式，除了锁还有CAS、volatile
+- 线程同步：锁是为了解决并发竞争资源问题，是一种线程同步方式，比如synchronized、Lock(基于AQS)、AtomicXxx(基于CAS实现)、volatile
 - 线程通信：队列、列表、信号是线程通信的方式，比如ArrayBlockingQueue、wait/notify、CountDownLatch、Semaphore
 - 线程复用：线程复用依赖于线程池，jdk提供的线程池有四种FixedThreadPool、SingleThreadExecutor、ScheduledThreadPool、CachedThreadPool
 
@@ -22,9 +22,17 @@ tag:
 - 可见性: 一个变量被改变，立马同步到主内存，其他线程能同时知道
 - 有序性：程序的执行顺序就是代码的先后顺序
 
-synchronized(自动锁)和Lock(手动锁:AQS)、CAS同时具备上面三个特点，volatile只具备2,3不能保证原子性，但是volatile不用上锁且能保证线程安全，主要使用场景有：运算结果并不依赖变量的当前值、能够确保只有单一的线程修改变量的值(一写多读)
+synchronized(自动锁)和Lock(手动锁:AQS)、AtomicXxx(基于CAS实现)同时具备上面三个特点，volatile只具备2,3不能保证原子性，但是volatile不用上锁且能保证线程安全，主要使用场景有：运算结果并不依赖变量的当前值、能够确保只有单一的线程修改变量的值(一写多读)
 
 锁的种类也很多：乐观锁(不加锁，通过自旋实现)、悲观锁(每次都会加锁)、可重入锁、公平锁、非公平锁、轻量级锁、重量级锁
+
+## ReentrantLock
+
+ReentrantLock是一种可重入、支持公平与非公平的锁，其内部类NonfairSync、FairSync继承Sync/AbstractQueuedSynchronizer重写lock 与 tryAcquire接口。
+
+
+## AtomicXxx
+ABA问题，解决ABA问题的方案，添加版本号
 
 # 线程通信
 
@@ -145,4 +153,6 @@ public class ScheduledThreadPoolExecutor
 [Java线程池分析](http://gityuan.com/2016/01/16/thread-pool/)
 
 [Java™ 7 util.concurrent API](https://www.uml-diagrams.org/java-7-concurrent-uml-class-diagram-example.html)
+
+[Java全栈知识体系](https://pdai.tech/md/java/thread/java-thread-x-juc-AtomicInteger.html#juc%e5%8e%9f%e5%ad%90%e7%b1%bb-cas-unsafe%e5%92%8c%e5%8e%9f%e5%ad%90%e7%b1%bb%e8%af%a6%e8%a7%a3)
 

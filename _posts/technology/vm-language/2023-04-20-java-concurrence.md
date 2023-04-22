@@ -80,7 +80,7 @@ FairSync获取锁时会优先判断当前线程在tail的最右侧(tail链表：
         }
 ```
 
-在实现读写分离锁ReentrantReadWriteLock的内部AQS采用了Shared Node,ReentrantLock使用exclusive Node
+ReentrantLock使用exclusive Node，而在实现读写分离锁ReentrantReadWriteLock 和 CountDownLatch的内部AQS采用了Shared Node
 
 
 ## AtomicXxx

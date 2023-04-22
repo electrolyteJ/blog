@@ -28,7 +28,59 @@ synchronized(自动锁)和Lock(手动锁:AQS)、AtomicXxx(基于CAS实现)同时
 
 ## ReentrantLock
 
-ReentrantLock是一种可重入、支持公平与非公平的锁，其内部类NonfairSync、FairSync继承Sync/AbstractQueuedSynchronizer重写lock 与 tryAcquire接口。
+ReentrantLock是一种可重入、支持公平与非公平的锁，其内部类NonfairSync、FairSync继承Sync/AbstractQueuedSynchronizer(AQS)重写lock 与 tryAcquire接口。当外部调用lock进行上锁之后，会调用AQS#acquire尝试获取锁，如果初次获取失败那么接下来会在链表中等待直到获取到锁。
+
+NonfairSync重写尝试获取的逻辑tryAcquire
+
+```java
+   protected final boolean tryAcquire(int acquires) {
+            return nonfairTryAcquire(acquires);
+    }
+    final boolean nonfairTryAcquire(int acquires) {
+            final Thread current = Thread.currentThread();
+            int c = getState();
+            if (c == 0) {
+                if (compareAndSetState(0, acquires)) {
+                    setExclusiveOwnerThread(current);
+                    return true;
+                }
+            }
+            else if (current == getExclusiveOwnerThread()) {
+                int nextc = c + acquires;
+                if (nextc < 0) // overflow
+                    throw new Error("Maximum lock count exceeded");
+                setState(nextc);
+                return true;
+            }
+            return false;
+    }
+```
+一把锁支持可重入需要有个state记录获取了几次，后面才能释放对应的次数，state为可重入的计数器，初始值为0，当某个线程优先获取到锁时，也就是compareAndSetState(0, acquires) 为ture,那么其他线程将等待锁的释放，非公平的方式效率高但是会导致线程饥饿
+
+FairSync获取锁时会优先判断当前线程在tail的最右侧(tail链表：越右边越新)
+```java
+        protected final boolean tryAcquire(int acquires) {
+            final Thread current = Thread.currentThread();
+            int c = getState();
+            if (c == 0) {
+                if (!hasQueuedPredecessors() &&
+                    compareAndSetState(0, acquires)) {
+                    setExclusiveOwnerThread(current);
+                    return true;
+                }
+            }
+            else if (current == getExclusiveOwnerThread()) {
+                int nextc = c + acquires;
+                if (nextc < 0)
+                    throw new Error("Maximum lock count exceeded");
+                setState(nextc);
+                return true;
+            }
+            return false;
+        }
+```
+
+在实现读写分离锁ReentrantReadWriteLock的内部AQS采用了Shared Node,ReentrantLock使用exclusive Node
 
 
 ## AtomicXxx

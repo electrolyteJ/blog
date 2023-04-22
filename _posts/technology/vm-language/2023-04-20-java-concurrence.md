@@ -80,11 +80,14 @@ FairSync获取锁时会优先判断当前线程在tail的最右侧(tail链表：
         }
 ```
 
-ReentrantLock使用exclusive Node，而在实现读写分离锁ReentrantReadWriteLock 和 CountDownLatch的内部AQS采用了Shared Node
+ReentrantLock使用独占方式(Exclusive Node)，只有一个线程能执行；而CountDownLatch、Semaphore的内部AQS采用了共享方式(Shared Node)，多个线程可同时执行；在实现读写分离锁ReentrantReadWriteLock读取时采用共享方式，写是采用独占方式
 
 
-## AtomicXxx
-ABA问题，解决ABA问题的方案，添加版本号
+## AtomicXxx/AtomicReferenceXxx
+
+AtomicXxx基于CAS实现的非阻塞、乐观的自旋锁，CAS是JVM基于汇编指令cmpxchgl实现，但是AtomicXxx也存在ABA问题、自旋时间过长等问题，而AtomicReferenceXxx可以解决ABA问题，除了改变变量也要添加版本号。
+
+> ABA问题：线程1和线程2都从内存获取了A, 线程2将A改为B,然后再改为A,这个时候线程1发现内存依然是A，就进行修改且成功，从这里来说线程1并没有感知到数据有变化，可能发生数据不一致问题
 
 # 线程通信
 
@@ -207,4 +210,6 @@ public class ScheduledThreadPoolExecutor
 [Java™ 7 util.concurrent API](https://www.uml-diagrams.org/java-7-concurrent-uml-class-diagram-example.html)
 
 [Java全栈知识体系](https://pdai.tech/md/java/thread/java-thread-x-juc-AtomicInteger.html#juc%e5%8e%9f%e5%ad%90%e7%b1%bb-cas-unsafe%e5%92%8c%e5%8e%9f%e5%ad%90%e7%b1%bb%e8%af%a6%e8%a7%a3)
+
+[CAS、ABA问题以及AQS精讲](https://www.modb.pro/db/100023)
 

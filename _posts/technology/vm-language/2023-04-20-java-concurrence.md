@@ -222,3 +222,7 @@ public class ScheduledThreadPoolExecutor
 
 [CAS、ABA问题以及AQS精讲](https://www.modb.pro/db/100023)
 
+[线程池](https://github.com/Blankj/AndroidOfferKiller/blob/master/java/%E7%BA%BF%E7%A8%8B%E6%B1%A0.md)
+
+[Java并发面试题](https://github.com/JsonChao/Awesome-Android-Interview/blob/master/Java%E7%9B%B8%E5%85%B3/Java%E5%B9%B6%E5%8F%91%E9%9D%A2%E8%AF%95%E9%A2%98.md)
+

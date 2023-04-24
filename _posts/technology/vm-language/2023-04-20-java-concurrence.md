@@ -106,8 +106,7 @@ AtomicXxx基于CAS实现的非阻塞、乐观的自旋锁，CAS是JVM基于汇�
 
 线程的创建对于应用来说是一种昂贵的资源，因为涉及虚拟机到kernel整条链路，所以复用线程的方案是线程池。
 
-为我们提供了四种线程池：单线城池、固定数量线程池、缓存线程池、工作
-这四种线程池最后都会调用ThreadPoolExecutor方法，从而创建特定的线程池。
+为我们提供了四种线程池：单线程池、固定数量线程池、缓存线程池、周期性线程池。这四种线程池最后都会调用ThreadPoolExecutor方法，从而创建特定的线程池
 
 ```java
 public class ThreadPoolExecutor extends AbstractExecutorService {

@@ -2,12 +2,9 @@
 layout: post
 title: Framework层的进程 | 通信
 description: 都是Binder惹的祸
-author: 电解质
-date: 2020-05-04
-share: true
-comments: false
 tag:
 - android
+- process-thread
 ---
 * TOC
 {:toc}

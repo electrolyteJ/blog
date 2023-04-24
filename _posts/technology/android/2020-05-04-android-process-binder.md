@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Android | Binder系列
+title: Android | Binder家族
 description: 都是Binder惹的祸
 tag:
 - android

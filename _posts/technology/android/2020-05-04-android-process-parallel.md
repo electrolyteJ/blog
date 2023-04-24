@@ -14,8 +14,8 @@ tag:
 # 进程通信(IPC)
 
 Android的ipc有这么几种
-- socket系列(Socket、LocalSocket等)
-- binder系列(AIDL、Messenger、Binder、ContentProvider)
+- socket家族(Socket、LocalSocket等)
+- binder家族(AIDL、Messenger、Binder、ContentProvider)
 - 共享内存
 - 管道
 - 消息队列

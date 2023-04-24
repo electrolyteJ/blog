@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Framework层的服务 | AMS管理四大组件
+title: Android | AMS管理四大组件
 description: 图解四大组件
 author: 电解质
 date: 2018-03-15

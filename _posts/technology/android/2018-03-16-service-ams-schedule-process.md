@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Framework层的服务 | AMS管理进程
+title: Android | AMS管理进程
 description: 与sprint框架采用多线程管理多任务不同，android framework采用了多进程管理多任务(多个App)，java多线程天然有着jdk的支持，而多进程就得自己写，让我们来看看android framework的如何设计多进程
 tag:
 - android

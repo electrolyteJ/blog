@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Framework层的服务 | AMS启动流程
+title: Android | AMS启动流程
 description: 来一起聊聊AMS的启动流程
 tag:
 - android

@@ -91,7 +91,16 @@ AtomicXxx基于CAS实现的非阻塞、乐观的自旋锁，CAS是JVM基于汇�
 
 # 线程通信
 
-CopyOnWriteArrayList
+- ConcurrentHashMap
+- CopyOnWriteArrayList
+- ConcurrentLinkedQueue
+- BlockingQueue
+    - ArrayBlockingQueue
+    - LinkedBlockingQueue
+    - SynchronousQueue
+    - DelayQueue
+- BlockingDeque 
+    - LinkedBlockingDeque
 
 # 线程复用
 

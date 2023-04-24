@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  Android平台的线程切换 
+title:  Android | Android线程切换
 description: AsyncTask、 IntentService、Activity.runOnUiThread、View.postXxx
 tag:
 - android

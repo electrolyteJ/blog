@@ -11,8 +11,8 @@ tag:
 
 在java并发中我们常常遇到这样一些关键词：锁、队列、信号、线程、线程池，它们都是围绕线程衍生出来的周边，涉及到线程同步、线程通信、线程复用。
 
-- 线程同步：锁是为了解决并发竞争资源问题，是一种线程同步方式，比如synchronized、Lock(基于AQS)、AtomicXxx(基于CAS实现)、volatile
-- 线程通信：队列、列表、信号是线程通信的方式，比如ArrayBlockingQueue、wait/notify、CountDownLatch、Semaphore
+- 线程同步：锁是为了解决并发竞争资源问题，是一种线程同步方式，比如synchronized、Lock(基于AQS，ReentrantLock、CountDownLatch、Semaphor等)、AtomicXxx(基于CAS实现)、volatile、await/notify
+- 线程通信：队列、列表等数据结构是线程通信的方式，比如ArrayBlockingQueue、ConcurrentHashMap、CopyOnWriteArrayList
 - 线程复用：线程复用依赖于线程池，jdk提供的线程池有四种FixedThreadPool、SingleThreadExecutor、ScheduledThreadPool、CachedThreadPool
 
 # 线程同步

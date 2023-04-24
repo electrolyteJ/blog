@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Framework层的进程 | 通信
+title: Android | Binder系列
 description: 都是Binder惹的祸
 tag:
 - android
@@ -8,18 +8,9 @@ tag:
 ---
 * TOC
 {:toc}
-去年欠下的债要用今年来还，今天带来一篇之前笔记整理的文章Binder通信。
 
-Android系统的ipc有这么几种
-- socket系列(Socket、LocalSocket等)
-- binder系列(AIDL、Messenger、Binder、ContentProvider)
-- 共享内存
-- 管道
-- 消息队列
-- 信号量
-- 信号
-
-至于为什么Android提供给应用层的API大量使用Binder实现，知乎有讨论[看这里](https://www.zhihu.com/question/39440766)，这一篇我们来讲讲Binder。首先我们来了解一下AIDL，它是一种DSL，用接口化的形式为我们省去了很多模板代码，举个例子。
+# AIDL
+这一篇我们来讲讲Binder，为什么Android提供给应用层的API大量使用Binder实现，知乎有讨论[看这里](https://www.zhihu.com/question/39440766)，基于binder实现的有AIDL、Messenger、ContentProvider，首先我们来了解一下AIDL，它是一种DSL，用接口化的形式为我们省去了很多模板代码，举个例子。
 
 IMyAidlInterface.aidl
 {:.filename}
@@ -133,7 +124,9 @@ public class BinderShadow implements IMyAidlInterface {
 
 这里要说一下IBinder(实现类Binder)的queryLocalInterface方法，该方法可以查询到该Binder服务对应的IInterface，像AMS对应的IActivityManager,PMS的IPackageManager，可以通过hook该方法拿到IInterface对象，然后使用java动态代理接口，拦截客户端发往framework的数据，篡改framework返回的数据，做一些不能做的事情。
 
-看完上面的代码我们就知道了，其实AIDL是用来声明rpc接口的代码，和Retrofit通过注解声明接口一样，不同的是Retrofit是通过接口的动态代理实现具体的远程调用，AIDL则是通过编译时生成静态代理。了解AIDL，那么我们不禁会问有没有一种远程通信是基于事件的，可以被动调用。还真有。这就让我们引出了下面的主角Messenger信使。没用过的可以看这里的代码[StartActivity](https://github.com/electrolyteJ/Spacecraft/blob/master/components/template/src/main/java/com/hawksjamesf/template/StartActivity.java)、[MessengerService](https://github.com/electrolyteJ/Spacecraft/blob/master/components/template/src/main/java/com/hawksjamesf/template/MessengerService.java)，接下来我们讲讲其本质是什么。
+# Messenger
+
+看完上面的代码我们就知道了，其实AIDL是用来声明rpc接口的代码，和Retrofit通过注解声明接口一样，不同的是Retrofit是通过接口的动态代理实现具体的远程调用，AIDL则是通过编译时生成静态代理。了解AIDL，那么我们不禁会问有没有一种远程通信是基于事件的，可以被动调用，还真有这就让我们引出了下面的主角Messenger信使。没用过的可以看这里的代码[StartActivity](https://github.com/electrolyteJ/Spacecraft/blob/master/components/template/src/main/java/com/hawksjamesf/template/StartActivity.java)、[MessengerService](https://github.com/electrolyteJ/Spacecraft/blob/master/components/template/src/main/java/com/hawksjamesf/template/MessengerService.java)，接下来我们讲讲其本质是什么。
 
 
 ```java
@@ -167,7 +160,7 @@ public class Handler {
     ...
 }
 ```
-首先我们需要在服务端初始化一个Messenger，在注入的Handler对象target中，间接初始化了一个服务Binder(IMessenger)，该服务接收来自客户端发送的message然后进入生产者消费者模型中。也就是说每个Messenger对象都会有一个属于自己的服务Binder(IMessenger),客户端会持有一个Messenger，服务端也会持有一个，当他们彼此拥有对方这样就能组成双通道通信。但是这里有个前提是使用`Messenger(Handler target)`该构造器，而不是`Messenger(IBinder target)`构造器，`Messenger(IBinder target)`是为了让我们获取服务Binder而不是构造属于自己的Binder。
+首先我们需要在服务端初始化一个Messenger，在注入的Handler对象target中，间接初始化了一个服务Binder(IMessenger)，该服务接收来自客户端发送的message然后进入生产者消费者模型中。也就是说每个Messenger对象都会有一个属于自己的服务Binder(IMessenger),客户端会持有一个Messenger，服务端也会持有一个，当他们彼此拥有对方这样就能组成双通道通信,但是这里有个前提是使用`Messenger(Handler target)`构造器，而不是`Messenger(IBinder target)`构造器，`Messenger(IBinder target)`是为了让我们获取服务Binder而不是构造属于自己的Binder。
 ```java
 public final class Messenger implements Parcelable {
     private final IMessenger mTarget;

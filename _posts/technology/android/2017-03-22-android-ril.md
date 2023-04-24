@@ -1,12 +1,13 @@
 ---
 layout: post
-title: Android RIL
+title: Android | RIL
 description: Radio Layer
 tag:
 - android
 - network
 ---
-
+* TOC
+{:toc}
 # Framework
 
 手机开机会调用一系列的服务，然后启动PhoneApp应用进程，这个关键入口。如果不清楚PhoneApp类怎么启动的话，可以观看这一篇博客([Android7.0 PhoneApp的启动](http://blog.csdn.net/gaugamela/article/details/52311508))
@@ -394,7 +395,7 @@ public class PhoneGlobals extends ContextWrapper {
 ```
 PhoneGlobals这个类有下面几点可以讨论的：
 - 设计模式：PhoneGlobals使用的设计模式为懒汉式单例。当其他地方调用getInstance方法时，对象就已经被创建了。这样可以节省启动时间。
-- PhoneGlobals类的意义：我们再来看看PhoneGlobals类的父类ContextWrapper。。。。。占坑。。。。。。关于ContextWrapper类的意义查看这一篇==博客==。
+- PhoneGlobals类的意义：我们再来看看PhoneGlobals类的父类ContextWrapper。。。。。占坑。。。。。。关于ContextWrapper类的意义查看这一篇博客。
 - 在onCreate方法的初始化：通过工厂模式生产出Phone对象；将生产出来的Phone对象注册到CallManager饿汉式单例对象中；初始化NotificationMgr懒汉式单例对象，用于的status bar；获得到PowerManager、KeyguardManager两个类的对象用于管理电源和锁屏；CallController。。。。。。 ；动态注册一个广播，比如接受飞行模式的变化消息。
 
 
@@ -721,8 +722,6 @@ public final class RIL extends BaseCommands implements CommandsInterface {
 
 # HAL
 
-http://blog.csdn.net/mathcompfrac/article/details/53872191
-
 背景知识：
 
 RILJ：RIL.Java（framework-java层中的Radio相关代码）
@@ -974,7 +973,7 @@ done:
 - 3.存在qemud服务，就会在/dev/socket目录下创建一个文件名为qemud的客户端socket，用于与gsm modem交互
 - 4.如果qemud服务创建失败，那么就会在/dev/目录下创建ttyxx 文件（linux下的终端控制台）
  
-3、4在生产版本，要把 #if 1 修改为 #if 0, 或者在编译kernel里把生成的 /proc/cmdline 配置去掉android.qemud。使用模拟器时会有效果。[关于 android RIL 调试](http://blog.lytsing.org/archives/476.html)
+3、4在生产版本，要把 #if 1 修改为 #if 0, 或者在编译kernel里把生成的 /proc/cmdline 配置去掉android.qemud,使用模拟器时会有效果,[关于 android RIL 调试](http://blog.lytsing.org/archives/476.html)
 
 所以接下来，我们主要关注点在于1、2
 
@@ -1002,7 +1001,7 @@ void RIL_setRilSocketName(const char * s) {
 }
  ```
  
-# 2.加载动态库、调用库中的函数、开启event轮询器等
+## 2.加载动态库、调用库中的函数、开启event轮询器等
  
  
 接下来， 打开并且读取/proc/cmdline文件内容。得到其中的内容查询是否存在“android.qemud=”的字符串。
@@ -1083,7 +1082,6 @@ OpenLib:
     RLOGD("RIL_register_socket completed");
 ```
 =========================================================================================================
-
 RILC层
 =========================================================================================================
 通过dlopen加载共享库、dlsym操作库中的函数。在使用dlsym函数之前，会调用RIL_startEventLoop函数创建一个轮询线程
@@ -1175,7 +1173,7 @@ eventLoop(void *param) {
 - 添加ril_event类型的结构体s_wakeupfd_event到监听事件数组watch_table中，并且会往文件描述符s_fdWakeupWrite写值，来触发监听文件描述符s_fdWakeupRead的监听器
 - 开始event loop，这是个死循环，如果循环终止，这说明出现问题了，该线程会被kill掉，并且重新启动
 
-==初始化event loop==
+`初始化event loop`
 
 /hardware/ril/libril/ril_event.cpp
 ```cpp
@@ -1220,14 +1218,11 @@ struct ril_event {
 ```
 
 
-==设置event loop==
+`设置event loop`
 
 ril_event_set函数较为简单就是对ril_event结构体变量s_wakeupfd_event进行赋值，其中的processWakeupCallback函数是回到函数
-```cpp
-```
 
-
-==添加event到监听事件数组watch_table中==
+`添加event到监听事件数组watch_table中`
 
 /hardware/ril/libril/ril.cpp
 ```cpp
@@ -1280,7 +1275,7 @@ static void triggerEvLoop() {
 }
 ```
 
-==开始event loop==
+`开始event loop`
 
 /hardware/ril/libril/ril_event.cpp
 
@@ -1328,7 +1323,6 @@ void ril_event_loop()
 
 
 =========================================================================================================
-
 RIL层
 =========================================================================================================
 接下来调用dlsym函数将RIL_Init函数指针传给rilInit；RIL_SAP_Init函数指针传给rilUimInit，返回值都为RIL_RadioFunctions类型的结构体。见名知意，RIL_Init函数就是用来初始化RIL层的。我们来看看返回值RIL_RadioFunctions的代码
@@ -1568,7 +1562,7 @@ mainloop函数主要做了以下几件事
 
 - 调用waitForClose函数阻塞mainloop线程，当at通道发生异常时，通过改变全局变量s_closed为1，就会进入下一次的for循环，重新调用at_open函数去打开at通道
 
-==第一件事情：在AT层注册onATReaderClosed、onATTimeout两个回调函数==
+`第一件事情：在AT层注册onATReaderClosed、onATTimeout两个回调函数`
 
 将处理at异常、超时的函数传到AT层去注册，这样上层可以对AT层的异常及时的处理
 ```c
@@ -1578,7 +1572,7 @@ mainloop函数主要做了以下几件事
 
 
 
-==第二件事情：创建给at和modem通信的文件描述符。==
+`第二件事情：创建给at和modem通信的文件描述符。`
 
 一个有三次判断，无非是s_port、s_device_path、s_device_socket这三种。其实在进入mainloop线程之前，主线程就有对这些字段的赋值处理。
 
@@ -1631,7 +1625,7 @@ const RIL_RadioFunctions *RIL_Init(const struct RIL_Env *env, int argc, char **a
 一个是面向回环端口（“p”）的socket文件描述符,一个是面向文件(“s”）的socket文件描述符,还有一个是面向设备串口("d")的设备文件描述符。而是面向文件(“s”）的socket文件描述符，当手机为模拟机（qemu）时才会创建的。因为模拟机本身不具备modem设备，是可以外接modem设备的。如果外接了modem设备才会创建socket。而面向设备串口("d")的设备文件描述符，是手机为真机时创建的。而AT指令其实是通过文集描述符和modem设备进行通信的
 
 
-==第三件事情：在RIL层的工作线程中再创建出一个AT工作线程。==
+`第三件事情：在RIL层的工作线程中再创建出一个AT工作线程。`
 
 RIL层在AT层注册了一个ATUnsolHandler类型的回调函数onUnsolicited，会向之前的onATTimeout、 onATReaderClosed两个回调函数，这已经是第三个。不过不同的是这个回调函数处理的是modem设备传过俩的信号。想要了解这些回调函数的具体实现。==观看这一篇《RIL层的回调函数》==。
 
@@ -1782,9 +1776,7 @@ static void processLine(const char *line)
 ```
 交给at指令上传给了RIL层去处理了
 
-==第四件事情：通过RIL层的函数RIL_requestTimedCallback回到RILC层的函数RIL_requestTimedCallback==
-
-
+`第四件事情：通过RIL层的函数RIL_requestTimedCallback回到RILC层的函数RIL_requestTimedCallback`
 
 RILC层RIL_requestTimedCallback函数实现就是调用了internalRequestTimedCallback函数。我们来看看RILC层的回调函数internalRequestTimedCallback的代码
 
@@ -2780,7 +2772,7 @@ static void removeFromList(struct ril_event * ev)
 2.将被删除的前一个节点中next指针重新指向根节点
 3.要删除的节点next、prev指针置空
 
-## 参考资料
+# 参考资料
 
 - [Modem简单流程及案例分析V1.0]({{site.baseurl}}/asset/android-framework/Modem简单流程及案例分析V1.0.pdf)
 - [RIL_command_flow.chm]({{site.baseurl}}/asset/android-framework/RIL_command_flow.chm)
@@ -2789,5 +2781,6 @@ static void removeFromList(struct ril_event * ev)
 - [AT命令集详解](http://blog.csdn.net/gujing001/article/details/7936812)
 - [pstn网络与modem的关系](https://books.google.co.jp/books?id=IidbMC2LgvIC&pg=PA174&lpg=PA174&dq=modem%E5%8D%8F%E8%AE%AE&source=bl&ots=6GH0cKerRU&sig=jHzwvv6Lgf3oiHuiHBAnDJTkEgM&hl=en&sa=X&ved=0ahUKEwiO5KX7mObVAhUCUbwKHZJuB3gQ6AEIRzAF#v=onepage&q=modem%E5%8D%8F%E8%AE%AE&f=false)
 - [modem中的协议族](http://blog.csdn.net/sjz4860402/article/details/40744113)
+- [深入理解Android Telephony之RILD的启动](http://blog.csdn.net/mathcompfrac/article/details/53872191)
 
 

@@ -192,6 +192,6 @@ IPCThreadState#transact -> IPCThreadState#waitForResponse -> IPCThreadState#talk
 BBinder#transact -> BBinder#onTransact ->
 Binder#onTransact
 ```
-在应用进程初始化时，会初始化binder线程池(最多15个)并且创建名为binder_1的binder线程，该线程永不停止，如果是mediaserver、servicemanager那么主线程就是binder线程。除此之外还会mmap 驱动文件/dev/binder，相比较于普通的io，mmap只需一次读写。
+在进程初始化时，会初始化binder线程池(binder最多只能调用15个)并且创建名为binder_1的binder线程，该线程永不停止，如果是mediaserver、servicemanager那么主线程就是binder线程。除此之外还会mmap 驱动文件/dev/binder，相比较于普通的io，mmap只需一次读写。
 
 在talkWithDriver时，IPCThreadState通过ioctl系统调用将bwr.write_buffer数据写入kernel space，并且从bwr.read_buffer能读取到远程的数据，从而完成跨进程通讯。

@@ -15,7 +15,7 @@ tag:
 &emsp;&emsp;repo就是通过Python封装git命令的应用。什么是[repo](https://source.android.com/source/developing.html)？简单来说就是对AOSP含有git仓库的各个项目的批处理。repo应用包括repo仓库（仓库也可以叫做项目）、manifest仓库、projectsc仓库集这三个核心。repo仓库都是一些Python文件，manifest仓库只有一个存放AOSP各个子项目元数据的xml文件。projects仓库集是AOSP各个子项目对应的git仓库。
 *下面用一张图片表示一下。*
 
-![architecture]({{site.baseurl}}/asset/tools/2017-04-12/repo_architecture.png)
+![architecture]({{site.baseurl}}/asset/tools/repo_architecture.png)
 
 补充一点，git是允许repository和working directory分布在不同的目录下的。所以就会看到AOSP的working directory在项目根目录而.git目录在.repo/projects目录
 
@@ -42,7 +42,7 @@ repo仓库初始化--->manifest仓库初始化--->project仓库集初始化--->�
 
 &emsp;&emsp;在Python中使用的是optparse模块（后续将被argparse模块取代）解析命令行，所以optparse模块相当于数据转换中心将repo命名行转成git命令行
 
-![repo init]({{site.baseurl}}/asset/tools/2017-04-12/repo_init_help.png)
+![repo init]({{site.baseurl}}/asset/tools/repo_init_help.png)
 
 ### _Repo仓库_
 
@@ -274,7 +274,7 @@ def _Init(args, gitc_init=False):
 
 在这之前我们来看看git对远程仓库的操作图
 
-![git operation flowchart]({{site.baseurl}}/asset/tools/2017-04-12/git_operation_flowchart.png)
+![git operation flowchart]({{site.baseurl}}/asset/tools/git_operation_flowchart.png)
 
 
 _Clone函数的代码如下：
@@ -762,7 +762,7 @@ Command的衍生类重写了基类的_Options，定义了属于自己的options,
 
 &emsp;&emsp;Command类是所有命令（init、sync、start）的基类，其成员函数Execute被其衍生类重写，故调用成员函数Execute就可以执行某个命令对应的成员函数Execute。所以，执行到这一行  ``result = cmd.Execute(copts, cargs)``  的时候,就是整个架构的分水岭了。下面的图片是对前面的总结。
 
-![repo _Repo#_Run flowchart]({{site.baseurl}}/asset/tools/2017-04-12/repo__Repo_Run_flowchart.png){:.white-bg-image}
+![repo _Repo#_Run flowchart]({{site.baseurl}}/asset/tools/repo__Repo_Run_flowchart.png){:.white-bg-image}
 
 
 接下来就是执行init模块中Init类的成员函数Execute：

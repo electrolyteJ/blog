@@ -96,6 +96,8 @@ HttpServiceMethod
 ```
 上面就是HttpServiceMethod构建CallAdapted的parseAnnotations,解析完注解提供的信息并构建ServiceMethod对象，然后会调用HttpServiceMethod的invoke方法发送请求。Call对象能被适配成各种对象，比如RxJava中的观察者对象,Rxjava的观察者对象通过链式调用各种操作符从而完成任务处理。
 
+retrofit api调用链路:
+`ServiceMethod#parseAnnotations(生成RequestFactory) -> HttpServiceMethod#parseAnnotations(解析注解生成call 的adapter) -> HttpServiceMethod#invoke -> CallAdapter(RetrofitCall → Rxjava/Guava)`
 
 # *Retrofit 改造*
 

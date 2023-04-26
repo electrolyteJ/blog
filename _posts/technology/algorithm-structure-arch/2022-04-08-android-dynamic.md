@@ -37,43 +37,6 @@ ClassLinker#DefineClass
 ```
 BaseDexClassLoader通过类名查找类在不在elements数组里，如果不存在，则会让其父类加载器继续查找，如果顶部的类加载器也不存在，则会让顶部类加载器加载，加载不了会依次向下让子类加载器加载。BaseDexClassLoader在加载类时通过DexFile类的native方法defineClassNative，在分析defineClassNative之前我们先来看看elements的初始化。
 
-```java
- private static Element[] makeDexElements(List<File> files, File optimizedDirectory,
-            List<IOException> suppressedExceptions, ClassLoader loader, boolean isTrusted) {
-      ...
-      for (File file : files) {
-          if (file.isDirectory()) {
-              ...
-          } else if (file.isFile()) {
-              String name = file.getName();
-
-              DexFile dex = null;
-              if (name.endsWith(DEX_SUFFIX)) {
-                  // Raw dex file (not inside a zip/jar).
-                  try {
-                      dex = loadDexFile(file, optimizedDirectory, loader, elements);
-                      if (dex != null) {
-                          elements[elementsPos++] = new Element(dex, null);
-                      }
-                  } catch (IOException suppressed) {
-                      ...
-                  }
-              } else {
-                  ...
-              }
-              if (dex != null && isTrusted) {
-                dex.setTrusted();
-              }
-          } else {
-              System.logW("ClassLoader referenced unknown path: " + file);
-          }
-      }
-      if (elementsPos != elements.length) {
-          elements = Arrays.copyOf(elements, elementsPos);
-      }
-      return elements;
-    }
-```
 在BaseDexClassLoader构造的时候会调用makeDexElements初始化elements数组，每个Element元素表示DexFile，而DexFile是loadDex来自于dexPath文件内的dex，所以当程序要查找一个类是否已经被加载，只要遍历一下elements数组的DexFile是否存在该类。tinker热修复正是基于这个逻辑来完成类修复的，在elements数组中，被修复的类需要在有问题的类左侧。
 
  java类 | jni| cpp类 | 
@@ -89,10 +52,10 @@ so文件加载调用链
 ```java
 System#loadLibrary -> Runtime#loadLibrary0 -> 
 ClassLoader#loadLibrary -> PathClassLoader/BaseDexClassLoader#findLibrary ->
-DexPathList#findLibrary -> NativeLibraryElement#findNativeLibrary(获取到libfilename) ->
-ClassLoader#loadLibrary0 -> NativeLibrary#load
+DexPathList#findLibrary -> NativeLibraryElement#findNativeLibrary(获取到filename) ->
+Runtime#nativeLoad -> JavaVMExt#LoadNativeLibrary -> native_loader.cpp OpenNativeLibrary
 ```
-NativeLibrary#load最后调用dlopen加载so文件，通过System#loadLibrary我们可以实现动态加载so，不过由于安全问题，无法从sdcard的路径加载，只能从/data/data/包名 加载so。
+OpenNativeLibrary最后调用dlopen加载so文件，通过System#loadLibrary我们可以实现动态加载so，不过由于安全问题，无法从sdcard的路径加载，只能从/data/data/包名 加载so。
 
 
 ## LoadedApk加载机制

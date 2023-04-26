@@ -71,5 +71,8 @@ LoadedApk类内部的mClassLoader用来加载Application等类，根据双亲委
 有时候为了保留a函数，会将a函数copy到backup函数，然后将跳板地址copy到a函数的入口地址，通过跳板(汇编指令：br调用xx函数)调用hook函数。
 
 # 资源加载
+
+AssetManager#addAssetPath可加载res、asset目录里面的文件
+
 <!-- # 兼容性 -->
 

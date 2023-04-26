@@ -2,19 +2,8 @@
 layout: post
 title: 初入Python
 description: python语法知识图
-published: true
-date: 2016-10-10 22:50:00
-share: true
-comments: true
-
 tags: 
 - vm-language
-# categories: 
-# - Script
-# - Backend2
-# toc: true
-# permalink: 
-
 ---
 
 ![Python]({{ site.baseurl}}/asset/vm/2016-10-11-mind-Python.png)

@@ -2,14 +2,8 @@
 layout: post
 title: 智能指针
 description: 及时释放指针
-published: true
-date: 2022-03-24 22:50:00
-
 tags: 
 - vm-language
-# toc: true
-# permalink: 
-
 ---
 * TOC
 {:toc}

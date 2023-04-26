@@ -14,7 +14,7 @@ Android 5之后全面切换到了新的虚拟机ART，这是一款既支持JIT�
 - [x] [AppRuntime与Runtime 启动]({{site.baseurl}}/2023-02-05/art-runtime-startup)
 - [x] [java家族与c家族的编译器]({{site.baseurl}}/2023-02-01/art-compiler1)
 - [ ] [Dex to Oat 编译]({{site.baseurl}}/2023-02-01/art-compiler2)
-- [ ] [ART GC]({{site.baseurl}}/2023-02-05/art)
+- [ ] [ART GC]({{site.baseurl}}/2023-02-05/art-gc)
 
 # *ART工程结构*
 

@@ -2,8 +2,6 @@
 layout: post
 title: Android ART | java家族与c家族的编译器
 description:  编译器前端与后端
-share: true
-comments: true
 tag:
 - inverse-engineering
 - vm-language

@@ -16,7 +16,9 @@ tag:
 # 代码动态加载
 
 
-## 类加载机制
+## ClassLoader加载机制
+
+### 类加载
 
 类加载，采用双亲委托机制，顶层加载器先判断能不能加载，加载不了就会让下一层加载器加载。加载的过程主要有五个阶段:加载(二进制流读取) 、验证(类文件的检验) 、准备(静态成员变量分配内存) 、 解析(常量池的符号引用变为直接引用) 、初始化
 
@@ -29,10 +31,9 @@ Android的ClassLoader有DexClassLoader、PathClassLoader，他们都继承BaseDe
 
 Android dex文件的类查找与加载流程
 ```java
-PathClassLoader/BaseDexClassLoader#findClass ->
-DexPathList#findClass ->
-Element#findClass ->
-DexFile#loadClassBinaryName
+ClassLoader#loadClass -> PathClassLoader/BaseDexClassLoader#findClass ->
+DexPathList#findClass -> Element#findClass -> DexFile#loadClassBinaryName ->
+ClassLinker#DefineClass
 ```
 BaseDexClassLoader通过类名查找类在不在elements数组里，如果不存在，则会让其父类加载器继续查找，如果顶部的类加载器也不存在，则会让顶部类加载器加载，加载不了会依次向下让子类加载器加载。BaseDexClassLoader在加载类时通过DexFile类的native方法defineClassNative，在分析defineClassNative之前我们先来看看elements的初始化。
 
@@ -82,19 +83,17 @@ BaseDexClassLoader通过类名查找类在不在elements数组里，如果不存
  
 ClassLinker调用DefineClass函数加载类，关于ClassLinker加载类的逻辑我们就不继续跟踪了。
 
-除此之外Android resource、so查找流程如下
-```java
-//资源路径查找
-PathClassLoader/BaseDexClassLoader#findResource ->
-DexPathList#findResource ->
-Element#findResource ->
-File#toURL
+### so加载
 
-//so文件路径查找
-PathClassLoader/BaseDexClassLoader#findLibrary ->
-DexPathList#findLibrary ->
-NativeLibraryElement#findNativeLibrary ->
+so文件加载调用链
+```java
+System#loadLibrary -> Runtime#loadLibrary0 -> 
+ClassLoader#loadLibrary -> PathClassLoader/BaseDexClassLoader#findLibrary ->
+DexPathList#findLibrary -> NativeLibraryElement#findNativeLibrary(获取到libfilename) ->
+ClassLoader#loadLibrary0 -> NativeLibrary#load
 ```
+NativeLibrary#load最后调用dlopen加载so文件，通过System#loadLibrary我们可以实现动态加载so，不过由于安全问题，无法从sdcard的路径加载，只能从/data/data/包名 加载so。
+
 
 ## LoadedApk加载机制
 

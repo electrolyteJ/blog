@@ -59,11 +59,11 @@ dependencies {
 
 # *Gradle生命周期*
 &emsp;&emsp;我们都知道Gradle的生命流程要经历三个部分：初始化、配置、执行。
-- 初始化阶段：settings.gradle
+- 初始化阶段(Gradle#settingsEvaluated 、Gradle#projectLoaded )：settings.gradle 
 在初始化阶段，Gradle会为每个项目创建Project对象（每个项目项目都会有一个build.gradle），那么系统是如何知道有哪些项目的，通过settings.gradle。
-- 配置阶段：build.gradle
+- 配置阶段(Gradle#beforeEvaluated(Project#beforeEvaluated) 、 Gradle#afterEvaluated(Project#afterEvaluated) 、 Gradle#projectEvaluated  、 Gradle&TaskGragh#whenReady)：build.gradle
 在配置阶段，Gradle会解析已经创建Project对象的项目的build.gradle文件，Project包含多个task，这些task被串在一起，存在相互依赖的关系。
-- 执行阶段：task
+- 执行阶段(Gradle&TaskGragh#beforeTask、 Gradle&TaskGragh#afterTask)：task
 最后就是执行这些task了。
 
 &emsp;&emsp;基于这个流程Android团队提供了自己的插件给Android开发者写Android项目，并且有丰富的DSL文档[Android Plugin DSL Reference](https://google.github.io/android-gradle-dsl/current/)。如果想要看看Gradle官方提供的插件可以看看这个文档[Gradle Build Language Reference](https://docs.gradle.org/current/dsl/index.html)。

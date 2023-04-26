@@ -5,6 +5,9 @@ description: Qigsaw、RePlugin、React Native、微信小程序
 tag: 
 - algorithm-structure-arch
 ---
+* TOC
+{:toc}
+
 随着移动端的高速发展，一个项目的人力越来越多业务越来越臃肿，业务解耦势在必行，紧随而来逐渐出现了插件化、React Native、Flutter、小程序等动态化的解决方案，这一次我们来聊聊插件化。
 
 插件化实现需要考虑三个方面

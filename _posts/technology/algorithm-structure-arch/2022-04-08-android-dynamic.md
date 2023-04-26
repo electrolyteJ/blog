@@ -60,10 +60,15 @@ Runtime#nativeLoad -> JavaVMExt#LoadNativeLibrary -> native_loader.cpp OpenNativ
 ```
 OpenNativeLibrary最后调用dlopen加载so文件，通过System#loadLibrary我们可以实现动态加载so，不过由于安全问题，无法从sdcard的路径加载，只能从/data/data/包名 加载so。
 
-
 ## LoadedApk加载机制
 
+LoadedApk类内部的mClassLoader用来加载Application等类，根据双亲委托机制，我们可以自定义ClassLoader(DexClassLoader)然后将mClassLoader作为父类，自定义的ClassLoader用来加载插件包，mClassLoader依旧用来加载宿主包。
+
 ## ArtMethod Hook
+
+在ART中ArtMethod结构体表示java类成员函数，当A调用a方法之前，我们可以修改a方法的地址，将hook函数地址copy到a方法的地址，由于ArtMethod结构体的size在每个ART都不同，那么如何兼容 ？ 计算ArtMethod结构体的大小，replace两个函数的地址。
+
+有时候为了保留a函数，会将a函数copy到backup函数，然后将跳板地址copy到a函数的入口地址，通过跳板(汇编指令：br调用xx函数)调用hook函数。
 
 # 资源加载
 <!-- # 兼容性 -->

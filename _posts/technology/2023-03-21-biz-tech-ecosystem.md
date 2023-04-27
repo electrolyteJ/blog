@@ -10,6 +10,10 @@ tag:
 - android
 ---
 
+<!-- 微信2022年日活：12.63亿 -->
+<!-- 微信小程序2021年日活：4.5亿 -->
+<!-- ColorOS 2022月活:5亿 -->
+
 # 技术生态(Technology Ecosystem)
 
 指标|微信小程序|react native/expo|flutter|对比结果
@@ -24,15 +28,6 @@ tag:
 代码推送|支持|支持|不支持|react native在做得更好，即能支持热更新也可以实现热修复
 ui一致性|很好|一般| 很好|由于react native是依赖平台渲染所以ui存在差异，也是其特色，保持平台风格
 跨平台|移动/PC|移动/PC/Web|移动/PC/Web|大家都在跨端
-
-微信小程序日活：4.5亿
-ColorOS日活:5亿
-
-[我不认为Flutter比React Native好](https://mp.weixin.qq.com/s/YzGHdBBKh4UZPvKvy6IQ6w)
-
-[如何理解 Flutter 路由源码设计？\| 开发者说·DTalk](https://mp.weixin.qq.com/s/DZB3OPYiYvhJMZssWK67Sw)
-
-[基于Web内核的微信小程序框架实践](https://mp.weixin.qq.com/s/vEu2Ft4c6LHPeUBHChjfFA)
 
 # 商业生态(Business Ecosystem)
 
@@ -63,5 +58,13 @@ ColorOS日活:5亿
 - [有赞](https://www.youzan.com/intro/landing/weapp/?from_source=google_sem_xcx_11009&gclid=CjwKCAiA_6yfBhBNEiwAkmXy5yIADVPDjRwMf0ribfi6KXLaUOsv35ywX4ipIXNo2-gu2_223hwJWBoCIeAQAvD_BwE)
 
 
+
+# 参考资料
+
+[我不认为Flutter比React Native好](https://mp.weixin.qq.com/s/YzGHdBBKh4UZPvKvy6IQ6w)
+
+[如何理解 Flutter 路由源码设计？\| 开发者说·DTalk](https://mp.weixin.qq.com/s/DZB3OPYiYvhJMZssWK67Sw)
+
+[基于Web内核的微信小程序框架实践](https://mp.weixin.qq.com/s/vEu2Ft4c6LHPeUBHChjfFA)
 
 

@@ -80,7 +80,7 @@ ThreadedRenderer#nSyncAndDrawFrame
 --> DrawFrameTask#run
 ```
 
-DrawFrameTask是运行在RenderThread线程的任务,而RenderThread又是基于Looper实现，等同于java的HandlerThread，所以当调用postAndWait函数时，会异步执行DrawFrameTask#run，且会阻塞主线程，当syncFrameState同步成功且返回true时，调用unblockUiThread函数继续进行主线程。反之同步失败返回false则会等到draw结束才释放对主线程的阻塞。
+DrawFrameTask是运行在RenderThread线程的任务,而RenderThread又是基于Looper实现，等同于java的HandlerThread，所以当调用postAndWait函数时，会异步执行DrawFrameTask#run，且会阻塞主线程，当syncFrameState同步成功且返回true时，调用unblockUiThread函数继续进行主线程, 反之同步失败返回false则会等到draw结束才释放对主线程的阻塞。
 
 ```cpp
 void DrawFrameTask::run() {

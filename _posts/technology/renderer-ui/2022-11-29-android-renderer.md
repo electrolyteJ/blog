@@ -44,6 +44,10 @@ DisplayListCanvas的hybrid类对象持有root RenderNode对象、SkiaDisplayList
 
 二级缓存中，Display 使用 Front Buffer ，CPU/GPU使用 Back Buffer, 这样存在的问题是CPU与gpu串行处理buffer，为了解决一个使用buffer另一个就得等待的问题，就让CPU 与 GPU 各自有一个buffer，也就是三级缓存。为了进一步减少主线程的压力，引入了RenderThead，将GPU栅格化数据的操作放在RenderThead，主线程只处理CPU测量数据与生成RenderNode、DisplayList
 
+SurfaceFlinger:
+- Hardware Composer:硬件合成
+- Gralloc：图形内存分配器
+
 # 硬件绘制
 
 开启了硬件加速的Android系统在绘制时会调用`mAttachInfo.mThreadedRenderer.draw(mView, mAttachInfo, this);`
@@ -155,8 +159,7 @@ CanvasContext* CanvasContext::create(RenderThread& thread, bool translucent,
 - flush commands --> shader_compile --> ShaderCache::load
 - eglSwapBuffersWithDamageKHR --> queueBuffer --> queueBuffer --> onFrameAvailable --> processNextBufferLocked
 
-当GPU栅格化完成且swap buffer到SurfaceFlinger进程，那么app进程的事情就告一段落，接下来控制权就到了SurfaceFlinger进程
-
+当GPU栅格化完成且swap buffer到SurfaceFlinger进程完成合成，那么app进程的事情就告一段落，接下来控制权就到了SurfaceFlinger进程
 
 <!-- # 软件绘制 -->
 

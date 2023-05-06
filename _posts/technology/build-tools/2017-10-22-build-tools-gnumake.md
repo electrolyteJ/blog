@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  Android | AOSP项目的构建工具GNU make(kati)
+title:  Android | AOSP的构建工具GNU make(kati)
 description: 使用Makefile语言描述构建过程
 tag:
 - build-tools

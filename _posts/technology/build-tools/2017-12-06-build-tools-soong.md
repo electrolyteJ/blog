@@ -18,7 +18,7 @@ Buleprint是一个元构建系统，用于读取Buleprint文件（描述需要�
 
 # 参考资料
 
-[翻译 | 使用 Soong 来进行 Android 模块的构建](http://www.10tiao.com/html/685/201704/2649516116/1.html)
+[翻译 \| 使用 Soong 来进行 Android 模块的构建](http://www.10tiao.com/html/685/201704/2649516116/1.html)
 
 [Android7.0 Ninja编译原理](http://blog.csdn.net/chaoy1116/article/details/53063082)
 

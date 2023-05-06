@@ -155,6 +155,8 @@ CanvasContext* CanvasContext::create(RenderThread& thread, bool translucent,
 - flush commands --> shader_compile --> ShaderCache::load
 - eglSwapBuffersWithDamageKHR --> queueBuffer --> queueBuffer --> onFrameAvailable --> processNextBufferLocked
 
+当GPU栅格化完成且swap buffer到SurfaceFlinger进程，那么app进程的事情就告一段落，接下来控制权就到了SurfaceFlinger进程
+
 
 <!-- # 软件绘制 -->
 

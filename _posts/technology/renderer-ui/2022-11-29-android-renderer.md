@@ -70,6 +70,8 @@ View.updateDisplayListIfDirty();
 ```
 ## 异步渲染
 
+react native 实现了异步布局，而android实现了异步渲染，他们的目的都是为了减轻主线程(UI线程)的负担，降低掉帧率。
+
 nSyncAndDrawFrame函数调用链
 ```java
 ThreadedRenderer#nSyncAndDrawFrame
@@ -79,8 +81,6 @@ ThreadedRenderer#nSyncAndDrawFrame
 --> DrawFrameTask#postAndWait
 --> DrawFrameTask#run
 ```
-
-DrawFrameTask是运行在RenderThread线程的任务,而RenderThread又是基于Looper实现，等同于java的HandlerThread，所以当调用postAndWait函数时，会异步执行DrawFrameTask#run，且会阻塞主线程，当syncFrameState同步成功且返回true时，调用unblockUiThread函数继续进行主线程, 反之同步失败返回false则会等到draw结束才释放对主线程的阻塞。
 
 ```cpp
 void DrawFrameTask::run() {
@@ -116,39 +116,35 @@ void DrawFrameTask::run() {
 }
 ```
 
+DrawFrameTask是运行在RenderThread线程的任务,而RenderThread又是基于Looper实现，等同于java的HandlerThread，所以当调用postAndWait函数时，会异步执行DrawFrameTask#run，且会阻塞主线程，当syncFrameState同步成功且返回true时，调用unblockUiThread函数继续进行主线程, 反之同步失败返回false则会等到draw结束才释放对主线程的阻塞。
+
+```cpp
+CanvasContext* CanvasContext::create(RenderThread& thread, bool translucent,
+                                     RenderNode* rootRenderNode, IContextFactory* contextFactory) {
+    auto renderType = Properties::getRenderPipelineType();
+
+    switch (renderType) {
+        case RenderPipelineType::SkiaGL:
+            return new CanvasContext(thread, translucent, rootRenderNode, contextFactory,
+                                     std::make_unique<skiapipeline::SkiaOpenGLPipeline>(thread));
+        case RenderPipelineType::SkiaVulkan:
+            return new CanvasContext(thread, translucent, rootRenderNode, contextFactory,
+                                     std::make_unique<skiapipeline::SkiaVulkanPipeline>(thread));
+        default:
+            LOG_ALWAYS_FATAL("canvas context type %d not supported", (int32_t)renderType);
+            break;
+    }
+    return nullptr;
+}
+```
+在CanvasContext#draw流程中，IRenderPipeline的实现类有SkiaOpenGLPipeline、SkiaVulkanPipeline、这里主要看SkiaOpenGLPipeline
+
 异步绘制的核心步骤：
 
 - syncFrameState -->  prepareTree --> Texture upload(16) 88x111
 - dequeueBuffer --> dequeueBuffer --> addAndGetFrameTimestamps
 - flush commands --> shader_compile --> ShaderCache::load
 - eglSwapBuffersWithDamageKHR --> queueBuffer --> queueBuffer --> onFrameAvailable --> processNextBufferLocked
-
-渲染流水线类型
-```cpp
-CanvasContext* CanvasContext::create(RenderThread& thread,
-        bool translucent, RenderNode* rootRenderNode, IContextFactory* contextFactory) {
-
-    auto renderType = Properties::getRenderPipelineType();
-
-    switch (renderType) {
-        case RenderPipelineType::OpenGL:
-            return new CanvasContext(thread, translucent, rootRenderNode, contextFactory,
-                    std::make_unique<OpenGLPipeline>(thread));
-        case RenderPipelineType::SkiaGL:
-            return new CanvasContext(thread, translucent, rootRenderNode, contextFactory,
-                    std::make_unique<skiapipeline::SkiaOpenGLPipeline>(thread));
-        case RenderPipelineType::SkiaVulkan:
-            return new CanvasContext(thread, translucent, rootRenderNode, contextFactory,
-                                std::make_unique<skiapipeline::SkiaVulkanPipeline>(thread));
-        default:
-            LOG_ALWAYS_FATAL("canvas context type %d not supported", (int32_t) renderType);
-            break;
-    }
-    return nullptr;
-}
-```
-
-react native 实现了异步布局，而android实现了异步渲染，他们的目的都是为了减轻主线程(UI线程)的负担，降低掉帧率。
 
 <!-- # 软件绘制 -->
 

@@ -7,12 +7,14 @@ tag:
 - android
 - renderer-ui
 ---
+* TOC
+{:toc}
 
 # 名词解释
 
 基础概念：
 
-- 图形库(Graphic): OpenGl ES(2d、3d，GLES) 、Skia(2d)、Vulkan(3d)
+- 图形库(Graphic): OpenGl ES(2d、3d，GLES) 、Skia(2d)、Vulkan(3d)、Metal
 - 图像(Image) ： PNG、Webp
 - 绘制：图形库支持硬件加速绘制(GPU)与软件绘制(CPU)
 
@@ -29,39 +31,56 @@ RenderNode|android_view_RenderNode | RenderNode | RenderNode
 DisplayListCanvas|android_view_DisplayListCanvas|Canvas(、SkiaRecordingCanvas、RecordingCanvas)|DisplayListCanvas
 FrameInfo| 没有jni类|FrameInfo|FrameInfo
 
-
 > ps: hybrid类 除了类名不同，角色职能差不多，分两部分内存,一部分在java heap ， 一部分在cpp heap。
 
 ThreadedRenderer的hybrid类对象持有RenderThread单例对象 、 CanvasContext对象、DrawFrameTask对象、root RenderNode对象
 
-DisplayListCanvas的的hybrid类对象持有root RenderNode对象、SkiaDisplayList对象(或者DisplayList，取决于cpp 侧的Canvas子类是哪一个)
+DisplayListCanvas的hybrid类对象持有root RenderNode对象、SkiaDisplayList对象(或者DisplayList，取决于cpp 侧的Canvas子类是哪一个)
 
+# 硬件绘制
 
 开启了硬件加速的Android系统在绘制时会调用`mAttachInfo.mThreadedRenderer.draw(mView, mAttachInfo, this);`
 
 ```java
     void draw(View view, AttachInfo attachInfo, DrawCallbacks callbacks) {
         ...
-        //1.调用每个view的draw获得全部canvas指令且转换成DisplayList对象
-        // View.updateDisplayListIfDirty();
-        //--> canvas.drawRenderNode
-        //--> jni call --> SkiaRecordingCanvas#drawRenderNode
-        //---> SkiaCanvas#drawDrawable
-        // ---> skia库的绘制
         updateRootDisplayList(view, callbacks);
-
         ...
         
         final long[] frameInfo = choreographer.mFrameInfo.mFrameInfo;
-        //2. ThreadedRenderer#nSyncAndDrawFrame
-        //-->android_view_ThreadedRenderer#syncAndDrawFrame 
-        //--> RenderProxy#syncAndDrawFrame 
-        //--> DrawFrameTask#drawFrame
+        ...
         int syncResult = nSyncAndDrawFrame(mNativeProxy, frameInfo, frameInfo.length);
         ...
     }
 ```
-draw主要做两件事调用每个view的draw获得全部canvas指令且转换成RenderNode(包含DisplayList和影响DisplayList的属性)对象和调用DrawFrameTask#drawFrame。DrawFrameTask是运行在RenderThread线程的任务,而RenderThread又是基于Looper实现，本质上有点等同于java的HandlerThread。执行drawFrame函数会异步执行DrawFrameTask任务，且会阻塞主线程，等待任务完成，所以这里还不是异步渲染。锁只有等待unblockUiThread调用才会释放并且开始异步draw。
+draw主要做两件事：
+
+1. 更新DisplayList:调用每个view的draw获得全部canvas指令且转换成RenderNode对象(包含DisplayList和影响DisplayList的属性) 
+2. 异步渲染：调用DrawFrameTask#drawFrame
+
+## 更新DisplayList
+
+updateRootDisplayList函数调用链
+```java
+View.updateDisplayListIfDirty();
+--> canvas.drawRenderNode
+--> jni call --> SkiaRecordingCanvas#drawRenderNode
+--> SkiaCanvas#drawDrawable
+--> skia库的绘制
+```
+## 异步渲染
+
+nSyncAndDrawFrame函数调用链
+```java
+ThreadedRenderer#nSyncAndDrawFrame
+--> android_view_ThreadedRenderer#syncAndDrawFrame 
+--> RenderProxy#syncAndDrawFrame 
+--> DrawFrameTask#drawFrame
+--> DrawFrameTask#postAndWait
+--> DrawFrameTask#run
+```
+
+DrawFrameTask是运行在RenderThread线程的任务,而RenderThread又是基于Looper实现，等同于java的HandlerThread，所以当调用postAndWait函数时，会异步执行DrawFrameTask#run，且会阻塞主线程，当syncFrameState同步成功且返回true时，调用unblockUiThread函数继续进行主线程。反之同步失败返回false则会等到draw结束才释放对主线程的阻塞。
 
 ```cpp
 void DrawFrameTask::run() {
@@ -71,7 +90,7 @@ void DrawFrameTask::run() {
     bool canDrawThisFrame;
     {
         TreeInfo info(TreeInfo::MODE_FULL, *mContext);
-        //1.同步从Choreographer 的FrameInfo，将一帧的开始时间传给渲染线程做备案
+        //1.同步Choreographer 的FrameInfo，将一帧的开始时间传给渲染线程做备案
         canUnblockUiThread = syncFrameState(info);
         canDrawThisFrame = info.out.canDrawThisFrame;
     }
@@ -96,17 +115,16 @@ void DrawFrameTask::run() {
     }
 }
 ```
+
+异步绘制的核心步骤：
+
 - syncFrameState -->  prepareTree --> Texture upload(16) 88x111
 - dequeueBuffer --> dequeueBuffer --> addAndGetFrameTimestamps
 - flush commands --> shader_compile --> ShaderCache::load
 - eglSwapBuffersWithDamageKHR --> queueBuffer --> queueBuffer --> onFrameAvailable --> processNextBufferLocked
 
-
-
-
-
+渲染流水线类型
 ```cpp
-//渲染流水线
 CanvasContext* CanvasContext::create(RenderThread& thread,
         bool translucent, RenderNode* rootRenderNode, IContextFactory* contextFactory) {
 
@@ -130,16 +148,13 @@ CanvasContext* CanvasContext::create(RenderThread& thread,
 }
 ```
 
-
-
-
-
-
 react native 实现了异步布局，而android实现了异步渲染，他们的目的都是为了减轻主线程(UI线程)的负担，降低掉帧率。
 
+<!-- # 软件绘制 -->
 
 # *参考资料*
 [硬件加速](https://developer.android.com/guide/topics/graphics/hardware-accel?hl=zh-cn) 
 [图形](https://source.android.com/docs/core/graphics)
 [EGL](https://www.khronos.org/egl)
 [Android硬件加速原理与实现简介](https://tech.meituan.com/2017/01/19/hardware-accelerate.html)
+[Android 系统架构 —— View 的硬件渲染](https://sharrychoo.github.io/blog/android-source/graphic-draw-hardware)

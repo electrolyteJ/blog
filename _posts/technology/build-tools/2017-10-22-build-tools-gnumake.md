@@ -1,10 +1,7 @@
 ---
 layout: post
-title:  构建工具GNU make
+title:  Android | AOSP项目的构建工具GNU make(kati)
 description: 使用Makefile语言描述构建过程
-date: 2017-10-11 22:50:00
-share: true
-comments: true
 tag:
 - build-tools
 - android
@@ -12,27 +9,27 @@ tag:
 - TOC
 {:toc}
 
-&emsp;&emsp;在阅读GNU make构建工具相关资料的时候，一直在思考几个问题，
+在阅读GNU make构建工具相关资料的时候，一直在思考几个问题，
 - “ build system ” 是翻译成构建系统还是编译系统 ？
 - make是什么 ？ make可能是构建系统，make也可能是是构建系统中的一部分构建工具。
--  make的使用场景 ？
+-  make的使用场景 ？
 
-&emsp;&emsp;其实如果不回答上面三个问题，并不会对我们学习Makefile语言有什么障碍。但是笔者个性使然，就是想要把这些关系梳理清楚再去学习其中的语法。
+其实如果不回答上面三个问题，并不会对我们学习Makefile语言有什么障碍。但是笔者个性使然，就是想要把这些关系梳理清楚再去学习其中的语法。
 
-&emsp;&emsp;先来回答第一个问题，阮一峰在他的博文中认为build叫做构建，compile叫做编译，参考这个[Make 命令教程](http://www.ruanyifeng.com/blog/2015/02/make.html)。所以我认为“ build system ” 叫做构建系统，而构建工具是构建系统中的一部分。构建工具有很多种 ：成熟大型项目常用的make ，Android平台开发应用的gradle ，人工智能TensorFlow的bazel。
+先来回答第一个问题，阮一峰在他的博文中认为build叫做构建，compile叫做编译，参考这个[Make 命令教程](http://www.ruanyifeng.com/blog/2015/02/make.html)。所以我认为“ build system ” 叫做构建系统，而构建工具是构建系统中的一部分。构建工具有很多种 ：成熟大型项目常用的make ，Android平台开发应用的gradle ，人工智能TensorFlow的bazel。
 
-&emsp;&emsp;那么接下来回答第二个问题，make是什么 ？make是构建系统中的一部分，是一种构建工具。用于规划如何编译项目。就好比汽车制造厂的组装器，调配汽车的各个零部件资源，并且进行合理的组装形成一辆完整的汽车。由于平台不同编译器不同等原因，它分为好多种 ：GNU make，Visual C++的nmake ，cmake ，qmake 。想了解其差异，可以参考这个[make makefile cmake qmake都是什么，有什么区别？](https://www.zhihu.com/question/27455963) 
+那么接下来回答第二个问题，make是什么 ？make是构建系统中的一部分，是一种构建工具。用于规划如何编译项目。就好比汽车制造厂的组装器，调配汽车的各个零部件资源，并且进行合理的组装形成一辆完整的汽车。由于平台不同编译器不同等原因，它分为好多种 ：GNU make，Visual C++的nmake ，cmake ，qmake 。想了解其差异，可以参考这个[make makefile cmake qmake都是什么，有什么区别？](https://www.zhihu.com/question/27455963) 
 
-&emsp;&emsp;最后回答第三个问题，make相对于其他构建工具的历史来的悠久，其稳定性自然不言而喻。它是c/c++项目的必备工具，由于c/c++的语言特性导致很多大型项目的底层都离不开它，致使像“ Android Open Source Project ”这样的大型项目使用make来完成这个系统的编译、打包等工作 。就连阮一峰也在博文中推荐使用make来构建Node.js这种大型项目，参考这个[使用 Make 构建网站](http://www.ruanyifeng.com/blog/2015/03/build-website-with-make.html)
+最后回答第三个问题，make相对于其他构建工具的历史来的悠久，其稳定性自然不言而喻。它是c/c++项目的必备工具，由于c/c++的语言特性导致很多大型项目的底层都离不开它，致使像“ Android Open Source Project ”这样的大型项目使用make来完成这个系统的编译、打包等工作 。就连阮一峰也在博文中推荐使用make来构建Node.js这种大型项目，参考这个[使用 Make 构建网站](http://www.ruanyifeng.com/blog/2015/03/build-website-with-make.html)
 
-&emsp;&emsp;make是一个构建工具，我们要书写Makefile文件，才能让这个工具按照规则执行，所以讲解Makefile是这篇文章的核心。本文是GNU make，所以Makefile语言格式跟其他的make工具有点区别，不过我们主要是了解其精髓，掌握GNU make也就自然会达到触类旁通的效果。
+make是一个构建工具，我们要书写Makefile文件，才能让这个工具按照规则执行，所以讲解Makefile是这篇文章的核心。本文是GNU make，所以Makefile语言格式跟其他的make工具有点区别，不过我们主要是了解其精髓，掌握GNU make也就自然会达到触类旁通的效果。
 
-&emsp;&emsp;想要快速学习make这个构建工具，就需要从“熟悉Makefile的语法”和“Makefile在大型项目的使用“这两个方面来入手。
+想要快速学习make这个构建工具，就需要从“熟悉Makefile的语法”和“Makefile在大型项目的使用“这两个方面来入手。
 
 # **初步认识Makefile语言**
-&emsp;&emsp;如果是有ROM工作经验的工程师一定用过``make snod``这条命令.它会重新打包生成system.img。执行`make snod`后经过一系列的流程到达下面的代码。
+如果是有ROM工作经验的工程师一定用过``make snod``这条命令，它会重新打包生成system.img。执行`make snod`后经过一系列的流程到达下面的代码。
 
-build/core/Makefile
+build/core/Makefile
 {%highlight makefile%}
  .PHONY: systemimage-nodeps snod
  systemimage-nodeps snod: $(filter-out systemimage-nodeps snod,$(MAKECMDGOALS)) \
@@ -42,14 +39,14 @@ build/core/Makefile
          $(hide) $(call assert-max-image-size,$(INSTALLED_SYSTEMIMAGE),$(BOARD_SYSTEMIMAGE_PARTITION_SIZE))
 {%endhighlight%}
 
-&emsp;&emsp;上面的代码基本说明了Makefile语言的使用。snod是一个标识，也是一个伪目标（phony target），与之相对的就是目标，是一个文件（目标文件、可执行文件）。而冒号右边，是左边的预备条件。他们的下一行就是编译指令或者是控制指令。比如这样
+上面的代码基本说明了Makefile语言的使用。snod是一个标识，也是一个伪目标（phony target），与之相对的就是目标，是一个文件（目标文件、可执行文件）。而冒号右边，是左边的预备条件。他们的下一行就是编译指令或者是控制指令。比如这样
 {%highlight makefile%}
 main: main.o
     gcc ... #编译生成main文件
 main.o:main.c main.h
     gcc ... #编译生成main.o
 {%endhighlight%}
-&emsp;&emsp;这个就是一个规则（rule），定义了如何编译的规则。可以用一个通用公式来表达，就是下面这个
+这个就是一个规则（rule），定义了如何编译的规则。可以用一个通用公式来表达，就是下面这个
 
 ```
 target … : prerequisites …
@@ -58,10 +55,10 @@ target … : prerequisites …
 [ TAB ]…
 ```
 
-&emsp;&emsp;当然Makefile语言也会有变量、函数。这个文章就不详细讲解Makefile语法了，因为已经有好多人都写过相关的文章，可以参考权威的”[GNU make](http://www.gnu.org/software/make/manual/html_node/index.html?cm_mc_uid=45784307156114982261855&cm_mc_sid_50200000=1506734444)“,如果看不懂英文或者看英文吃力，可以参考这个中文文章”[跟我一起写Makefile](http://wiki.ubuntu.org.cn/%E8%B7%9F%E6%88%91%E4%B8%80%E8%B5%B7%E5%86%99Makefile)“。还有我最喜欢的博主老罗对Makefile的理解“[Android编译系统简要介绍和学习计划](http://blog.csdn.net/luoshengyang/article/details/18466779)”
+当然Makefile语言也会有变量、函数。这个文章就不详细讲解Makefile语法了，因为已经有好多人都写过相关的文章，可以参考权威的”[GNU make](http://www.gnu.org/software/make/manual/html_node/index.html?cm_mc_uid=45784307156114982261855&cm_mc_sid_50200000=1506734444)“,如果看不懂英文或者看英文吃力，可以参考这个中文文章”[跟我一起写Makefile](http://wiki.ubuntu.org.cn/%E8%B7%9F%E6%88%91%E4%B8%80%E8%B5%B7%E5%86%99Makefile)“。还有我最喜欢的博主老罗对Makefile的理解“[Android编译系统简要介绍和学习计划](http://blog.csdn.net/luoshengyang/article/details/18466779)”
 
-# **make在Android平台的运用**
-&emsp;&emsp;为了加快AOSP项目的编译速度，Android团队在N版本添加了ninja构建工具，ninja构建工具相对于make构建工具更底层。通过开源项目kati(kati是项目名，但是最终编译生成的程序名却是叫做ckati，后续我们将使用ckati这个名字)将Makefile文件翻译成ninja文件。make和ninja的关系就像cmake和make。还有一点要注意的，由于7.1以后部分使用的是Soong+Buleprint这套构建工具，将bp文件转换成ninja文件，所以Makefile文件和Buleprint文件是混合使用的，分析Makefile文件要小心一点。不过Blueprint+Soong这套构建工具代替make、kati这套构建工具只是时间问题。想了解Buleprint+Soong这套构建工具可以参考这一篇[Android源码解析之AOSP新的构建系统]({{site.baseurl}}/blog/2017-09-23/2017-09-23-translate-blueprint-soong)。 那么我们就来大致了解一下这个转换的流程
+# **make在Android平台的运用**
+为了加快AOSP项目的编译速度，Android团队在N版本添加了ninja构建工具，ninja构建工具相对于make构建工具更底层。通过开源项目[kati](https://github.com/google/kati)(kati是项目名，但是最终编译生成的程序名却是叫做ckati，后续我们将使用ckati这个名字)将Makefile文件翻译成ninja文件。make和ninja的关系就像cmake和make。还有一点要注意的，由于7.1以后部分使用的是Soong+Buleprint这套构建工具，将bp文件转换成ninja文件，所以Makefile文件和Buleprint文件是混合使用的，分析Makefile文件要小心一点。不过Blueprint+Soong这套构建工具代替MakeFile+kati这套构建工具只是时间问题。想了解Buleprint+Soong这套构建工具可以参考这一篇[Android源码解析之AOSP新的构建系统]({{site.baseurl}}/2017-12-06/build-tools-soong)。 那么我们就来大致了解一下这个转换的流程
 
 build/core/main.mk
 {%highlight makefile %}
@@ -86,7 +83,7 @@ else #KATI
 endif #KATI 
 {%endhighlight%}
 
-&emsp;&emsp;当我们在项目顶级目录执行make命令时，在顶级目录有个Makefile文件include build/core/main.mk。所以主要的内容都在main.mk这个文件里面。由于KATI一开始并没有定义，所以会执行`+@prebuilts/build-tools/$(host_prebuilts)/bin/makeparallel --ninja build/soong/soong_ui.bash --make-mode $(MAKECMDGOALS)`语句。makeparallel程序会fork出一个子进程执行soong_ui.bash，参数为`--make-mode $(MAKECMDGOALS)`。soong_ui.bash也很简单，就是执行soong_ui程序，该程序使用go语言写的。
+当我们在项目顶级目录执行make命令时，在顶级目录有个Makefile文件include build/core/main.mk。所以主要的内容都在main.mk这个文件里面。由于KATI一开始并没有定义，所以会执行`+@prebuilts/build-tools/$(host_prebuilts)/bin/makeparallel --ninja build/soong/soong_ui.bash --make-mode $(MAKECMDGOALS)`语句。makeparallel程序会fork出一个子进程执行soong_ui.bash，参数为`--make-mode $(MAKECMDGOALS)`。soong_ui.bash也很简单，就是执行soong_ui程序，该程序使用go语言写的。
 
 我们来看看入库文件main.go
 build/core/soong/cmd/soong_ui/main.go
@@ -155,7 +152,8 @@ func Build(ctx Context, config Config, what int) {
 	}
 }
 {%endhighlight%}
-&emsp;&emsp;从main.go传过来的what参数为build.BuildAll，而BuildAll在build.go的定义就可以知道Build函数会一次执行run make、run Soong、run ckati、run ninja。每个工具的使用对应着一个go文件，比如run make，有make.go;run soong ，有soong.go。但是只有在run ckati时，ckati工具会再次执行build/core/main.mk文件。为什么要在这里执行main.mk，我们后面会讲到。先来看看看ckati的调用逻辑
+
+从main.go传过来的what参数为build.BuildAll，而BuildAll在build.go的定义就可以知道Build函数会一次执行run make、run Soong、run ckati、run ninja。每个工具的使用对应着一个go文件，比如run make，有make.go;run soong ，有soong.go。但是只有在run ckati时，ckati工具会再次执行build/core/main.mk文件。为什么要在这里执行main.mk，我们后面会讲到。先来看看看ckati的调用逻辑
 
 build/soong/ui/build
 {%highlight go linenos%}
@@ -204,7 +202,7 @@ func runKati(ctx Context, config Config) {
 
 {%endhighlight%}
 
-&emsp;&emsp;很简单的几句话，就是执行ckati命令。
+很简单的几句话，就是执行ckati命令。
 
 
 build/kati/main.cc
@@ -238,7 +236,7 @@ int main(int argc, char* argv[]) {
 
 {%endhighlight%}
 
-&emsp;&emsp;对于ckati命令的解析，我们只要看`g_flags.Parse(argc, argv);`,g_flags是一个拥有Parse方法的结构体变量
+对于ckati命令的解析，我们只要看`g_flags.Parse(argc, argv);`,g_flags是一个拥有Parse方法的结构体变量
 
 
 build/kati/flags.cc
@@ -346,7 +344,7 @@ void Flags::Parse(int argc, char** argv) {
 }
 {%endhighlight%}
 
-&emsp;&emsp;这里我们可以看到对于命令的解析，解析完之后，开始了main.cc中的Run函数。
+这里我们可以看到对于命令的解析，解析完之后，开始了main.cc中的Run函数。
 
 build/kati/main.cc
 {%highlight cpp linenos%}
@@ -457,9 +455,9 @@ static int Run(const vector<Symbol>& targets,
 ...
 {%endhighlight%}
 
-&emsp;&emsp;Run函数会将Makefile文件翻译成ninja文件。由于这一篇文章的重心不是ckati源码的分析，所以有兴趣的话可以参考这一篇[Android7.0 Ninja编译原理](http://blog.csdn.net/chaoy1116/article/details/53063082)。ninja文件已经有啦，接下来就是执行ninja工具了。
+Run函数会将Makefile文件翻译成ninja文件。由于这一篇文章的重心不是ckati源码的分析，所以有兴趣的话可以参考这一篇[Android7.0 Ninja编译原理](http://blog.csdn.net/chaoy1116/article/details/53063082)。ninja文件已经有啦，接下来就是执行ninja工具了。
 
-&emsp;&emsp;之前讲到kati.go文件中调用ckati有一个重要的参数`-f build/core/main.mk` ，也就是生成ninja文件之后会执行main.mk。之前说过为什么build/core/main.mk会在run ckati流程执行？现在我们就来回答这个问题。先来看看main.mk文件的内容
+之前讲到kati.go文件中调用ckati有一个重要的参数`-f build/core/main.mk` ，也就是生成ninja文件之后会执行main.mk。之前说过为什么build/core/main.mk会在run ckati流程执行？现在我们就来回答这个问题。先来看看main.mk文件的内容
 
 build/core/main.mk
 {%highlight makefile %}
@@ -471,11 +469,11 @@ else #KATI
 endif #KATI 
 {%endhighlight%}
 
-&emsp;&emsp;最初使用make命令，由于KATI没有定义，走的是1流程。由于执行ckati时，会导入环境变量KATI，所以当第二次执行main.mk文件，就会执行2流程。由于前期工作都准备好了，所以接下来就要开始使用ninja工具进行编译。
+最初使用make命令，由于KATI没有定义，走的是1流程。由于执行ckati时，会导入环境变量KATI，所以当第二次执行main.mk文件，就会执行2流程。由于前期工作都准备好了，所以接下来就要开始使用ninja工具进行编译。
 
 ------
 
-&emsp;&emsp;接下来我们就来看看后面的流程 
+接下来我们就来看看后面的流程 
 
 build/core/main.mk
 {%highlight makefile linenos%}
@@ -1130,11 +1128,11 @@ all_link_types:
 endif # KATI
 {%endhighlight%}
 
-&emsp;&emsp;在main.mk中出现最早的一条规则是`.PHONY: droid`,表明了最终目标是droid这个伪目标。不过按照Makefile语言的特性，最后执行的才是规则语句，也就是droid这个依赖的推导要等到条件语句、变量赋值语句、函数语句等执行完才会开始执行。我们可以这样理解开始推导规则之前的语句大部分都是在为之后的推导做铺垫，比如设置环境变量、判断编译环境等。
+在main.mk中出现最早的一条规则是`.PHONY: droid`,表明了最终目标是droid这个伪目标。不过按照Makefile语言的特性，最后执行的才是规则语句，也就是droid这个依赖的推导要等到条件语句、变量赋值语句、函数语句等执行完才会开始执行。我们可以这样理解开始推导规则之前的语句大部分都是在为之后的推导做铺垫，比如设置环境变量、判断编译环境等。
 
-&emsp;&emsp;推理到这里，真相就渐渐的浮出水面了，后面的我就不再继续了。整个编译流程我们已经有了一个大概的认识，对于更多细节还是需要读者自己去看源代码才能了解的更加透彻，这一篇文章的目的只是，让我们知道Makefile文件的使用。由于同时存在make、kati和Blueprint、Soong两套构建工具导致，在阅读Makefile文件没有那么纯粹。不过Android团队在后续应该会渐渐去掉make、kati这套构建工具，希望不要向jack，搞到一般说不搞了。
+推理到这里，真相就渐渐的浮出水面了，后面的我就不再继续了。整个编译流程我们已经有了一个大概的认识，对于更多细节还是需要读者自己去看源代码才能了解的更加透彻，这一篇文章的目的只是，让我们知道Makefile文件的使用。由于同时存在make、kati和Blueprint、Soong两套构建工具导致，在阅读Makefile文件没有那么纯粹。不过Android团队在后续应该会渐渐去掉make、kati这套构建工具，希望不要向jack，搞到一般说不搞了。
 
-&emsp;&emsp;如果想在多了解一些Android的构建系统的话，我这里推荐几篇文章供读者阅读
+如果想在多了解一些Android的构建系统的话，我这里推荐几篇文章供读者阅读
 
 - [Android编译系统简要介绍和学习计划](http://blog.csdn.net/luoshengyang/article/details/18466779)
 

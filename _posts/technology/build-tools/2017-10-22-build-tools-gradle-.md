@@ -1,8 +1,7 @@
 ---
 layout: post
-title:  Android构建工具Gradle
-description: 使用groovy定义的dsl语言描述构建过程
-date: 2017-10-22 22:50:00
+title:  Android | Android App构建工具Gradle
+description: 使用groovy的dsl描述构建过程
 tag:
 - build-tools
 - android

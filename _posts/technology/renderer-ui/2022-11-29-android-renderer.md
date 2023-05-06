@@ -139,12 +139,15 @@ CanvasContext* CanvasContext::create(RenderThread& thread, bool translucent,
 ```
 在CanvasContext#draw流程中，IRenderPipeline的实现类有SkiaOpenGLPipeline、SkiaVulkanPipeline、这里主要看SkiaOpenGLPipeline
 
-异步绘制的核心步骤：
+<!-- - mRenderPipeline->swapBuffers -->
+
+异步绘制的systrace埋点显示
 
 - syncFrameState -->  prepareTree --> Texture upload(16) 88x111
 - dequeueBuffer --> dequeueBuffer --> addAndGetFrameTimestamps
 - flush commands --> shader_compile --> ShaderCache::load
 - eglSwapBuffersWithDamageKHR --> queueBuffer --> queueBuffer --> onFrameAvailable --> processNextBufferLocked
+
 
 <!-- # 软件绘制 -->
 

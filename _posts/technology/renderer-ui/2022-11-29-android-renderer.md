@@ -1,8 +1,7 @@
 ---
 layout: post
 title: Android | Android渲染器
-description: SurfaceFlinger 、 Hardware Composer 、Gralloc 、 BufferQueue 、IGraphicBufferProducer
-author: 电解质
+description: SurfaceFlinger 、 GraphicBuffer 、 ThreadedRenderer
 tag:
 - android
 - renderer-ui
@@ -26,17 +25,24 @@ tag:
 
 java类|jni | cpp类 | hybrid类
 |---|---|---|---|
-ThreadedRenderer| android_view_ThreadedRenderer|RenderProxy | ThreadedRenderer
-RenderNode|android_view_RenderNode | RenderNode | RenderNode
-DisplayListCanvas|android_view_DisplayListCanvas|Canvas(、SkiaRecordingCanvas、RecordingCanvas)|DisplayListCanvas
-FrameInfo| 没有jni类|FrameInfo|FrameInfo
+FrameInfo| NA |FrameInfo|FrameInfo
+ThreadedRenderer| android_graphics_HardwareRenderer |RenderProxy | HardwareRenderer
+RenderNode|android_graphics_RenderNode | RenderNode | RenderNode
+CompatibleCanvas   /软件Canvas|android_graphics_Canvas|SkiaCanvas|CompatibleCanvas
+RecordingCanvas   /硬件Canvas|android_graphics_DisplayListCanvas|SkiaRecordingCanvas、RecordingCanvas|RecordingCanvas
+NA| NA |BufferQueueConsumer   /IGraphicBufferConsumer| NA
+NA| NA |BufferQueueProducer   /IGraphicBufferProducer| NA
+NA| NA |BufferQueue | NA 
+NA| NA |GraphicBuffer| NA 
+NA| NA |SurfaceFlinger| NA 
+NA| NA |Hardware Composer| NA 
+NA| NA |Gralloc| NA 
 
 > ps: hybrid类 除了类名不同，角色职能差不多，分两部分内存,一部分在java heap ， 一部分在cpp heap。
 
-ThreadedRenderer的hybrid类对象持有RenderThread单例对象 、 CanvasContext对象、DrawFrameTask对象、root RenderNode对象
+HardwareRenderer的hybrid类对象持有RenderThread单例对象 、 CanvasContext对象、DrawFrameTask对象、root RenderNode对象
 
-DisplayListCanvas的hybrid类对象持有root RenderNode对象、SkiaDisplayList对象(或者DisplayList，取决于cpp 侧的Canvas子类是哪一个)
-
+RecordingCanvas的hybrid类对象持有root RenderNode对象、SkiaDisplayList对象(或者DisplayList，取决于cpp 侧的Canvas子类是哪一个)
 
 三级缓存：
 - GraphicBuffer:由SurfaceFlinger从BUfferQueue分配，app进程的Producter生产数据，SurfaceFlinger进程的Comsumor消费数据，CPU测量数据，GPU栅格化数据。
@@ -67,7 +73,7 @@ SurfaceFlinger:
 draw主要做两件事：
 
 1. 更新DisplayList:调用每个view的draw获得全部canvas指令且转换成RenderNode对象(包含DisplayList和影响DisplayList的属性) 
-2. 异步渲染：调用DrawFrameTask#drawFrame
+2. 异步绘制：调用DrawFrameTask#drawFrame
 
 ## 更新DisplayList
 
@@ -79,9 +85,11 @@ View.updateDisplayListIfDirty();
 --> SkiaCanvas#drawDrawable
 --> skia库的绘制
 ```
-## 异步渲染
 
-react native 实现了异步布局，而android实现了异步渲染，他们的目的都是为了减轻主线程(UI线程)的负担，降低掉帧率。
+
+## 异步绘制
+
+react native 实现了异步布局，而android实现了异步绘制，他们的目的都是为了减轻主线程(UI线程)的负担，降低掉帧率。
 
 nSyncAndDrawFrame函数调用链
 ```java
@@ -161,7 +169,50 @@ CanvasContext* CanvasContext::create(RenderThread& thread, bool translucent,
 
 当GPU栅格化完成且swap buffer到SurfaceFlinger进程完成合成，那么app进程的事情就告一段落，接下来控制权就到了SurfaceFlinger进程
 
-<!-- # 软件绘制 -->
+# 软件绘制
+
+使用了软件绘制的Android系统会调用ViewRootImpl#drawSoftware方法
+
+```java
+private boolean drawSoftware(Surface surface, AttachInfo attachInfo, int xoff, int yoff,
+            boolean scalingRequired, Rect dirty, Rect surfaceInsets) {
+        ...
+        // Draw with software renderer.
+        final Canvas canvas;
+        ...
+        try {
+            ...
+            canvas = mSurface.lockCanvas(dirty);
+
+            // TODO: Do this in native
+            canvas.setDensity(mDensity);
+        } catch (Surface.OutOfResourcesException e) {
+            ...
+        } catch (IllegalArgumentException e) {
+            ...
+        } finally {
+            dirty.offset(dirtyXOffset, dirtyYOffset);  // Reset to the original value.
+        }
+
+        try {
+            ...
+            mView.draw(canvas);
+        } finally {
+              try {
+                
+                surface.unlockCanvasAndPost(canvas);
+            } catch (IllegalArgumentException e) {
+                ...
+            }
+            ...
+        }
+        ...
+}
+
+```
+1. mSurface.lockCanvas: 获取Canvas对象,软件绘制的Canvas实现类为CompatibleCanvas(java部分:CompatibleCanvas，cpp部分：SkiaCanvas)
+2. mView.draw(canvas): 收集Canvas绘制指令
+3. surface.unlockCanvasAndPost: canvas指令写到GraphicBuffer，并且发送到SurfaceFlinger
 
 # *参考资料*
 [硬件加速](https://developer.android.com/guide/topics/graphics/hardware-accel?hl=zh-cn) 
@@ -169,3 +220,5 @@ CanvasContext* CanvasContext::create(RenderThread& thread, bool translucent,
 [EGL](https://www.khronos.org/egl)
 [Android硬件加速原理与实现简介](https://tech.meituan.com/2017/01/19/hardware-accelerate.html)
 [Android 系统架构 —— View 的硬件渲染](https://sharrychoo.github.io/blog/android-source/graphic-draw-hardware)
+[Skia Api Docs](https://api.skia.org/classSkCanvasVirtualEnforcer.html)
+[Skia Docs](https://skia.org/docs/)

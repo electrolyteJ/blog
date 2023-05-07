@@ -222,3 +222,5 @@ private boolean drawSoftware(Surface surface, AttachInfo attachInfo, int xoff, i
 [Android 系统架构 —— View 的硬件渲染](https://sharrychoo.github.io/blog/android-source/graphic-draw-hardware)
 [Skia Api Docs](https://api.skia.org/classSkCanvasVirtualEnforcer.html)
 [Skia Docs](https://skia.org/docs/)
+[Android中的GraphicBuffer同步机制-Fence](https://www.cnblogs.com/brucemengbm/p/6881925.html)
+[Android应用程序UI硬件加速渲染技术简要介绍和学习计划](https://blog.csdn.net/luoshengyang/article/details/45601143)

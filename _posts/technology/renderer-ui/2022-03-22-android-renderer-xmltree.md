@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  LayoutInflater
-description: 
+title:  Android | Xml Tree to View Tree
+description: 第一棵树到第二棵树
 tag:
 - android
 - renderer-ui

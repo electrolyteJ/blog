@@ -1,14 +1,13 @@
 ---
 layout: post
-title: Android | 垂直信号vsync
+title: Android | 渲染优化：垂直信号 、三级缓存
 description: ui测绘的利器
-author: 电解质
-date: 2021-05-08
-share: true
 tag:
 - android
 - renderer-ui
 ---
+
+# 垂直信号vsync
 
 为了描述方便这里默认系统的刷新率为60hz。
 
@@ -29,3 +28,11 @@ CallbackQueue[] mCallbackQueues
 CallbackQueue将CallbackRecord对象遵循时间递增顺序入队，队头总是被先消费，而其方法extractDueCallbacksLocked就是获取现在时间之前的CallbackRecord链表，及时处理回调链。
 
 每个线程拿到的Choreographer对象都是互不影响(ThreadLocal),那么也就意味着，事件线程、动画线程(InvalidateOnAnimationRunnable)，ui测绘线程都有一个Choreographer，最后都会在主线程doFrame处理这一帧
+
+
+# 三级缓存
+
+- GraphicBuffer:由SurfaceFlinger从BUfferQueue分配，app进程的Producter生产数据，SurfaceFlinger进程的Comsumor消费数据，CPU测量数据，GPU栅格化数据。
+- FrameBuffer：Display显示到屏幕的缓存
+
+二级缓存中，Display 使用 Front Buffer ，CPU/GPU使用 Back Buffer, 这样存在的问题是CPU与gpu串行处理buffer，为了解决一个使用buffer另一个就得等待的问题，就让CPU 与 GPU 各自有一个buffer，也就是三级缓存。为了进一步减少主线程的压力，引入了RenderThead，将GPU栅格化数据的操作放在RenderThead，主线程只处理CPU测量数据与生成RenderNode、DisplayList

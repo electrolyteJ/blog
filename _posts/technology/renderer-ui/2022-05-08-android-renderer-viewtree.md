@@ -2,9 +2,6 @@
 layout: post
 title: Android | 再谈Android View树
 description: 整理了2017年的View笔记
-author: 电解质
-date: 2021-05-08
-share: true
 tag:
 - android
 - renderer-ui
@@ -290,7 +287,6 @@ View
 ```
 与叶子节点不同的是，其父节点具备拦截功能，在事件分发的过程如果子节点不希望父节点拦截事件,可以通过`requestDisallowInterceptTouchEvent`
 
-# *参考资料*
-[从架构到源码：一文了解Flutter渲染机制](https://developer.aliyun.com/article/770384)
+
 
 

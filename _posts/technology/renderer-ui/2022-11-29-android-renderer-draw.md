@@ -1,7 +1,7 @@
 ---
 layout: post
-title: Android | Android渲染器
-description: SurfaceFlinger 、 GraphicBuffer 、 ThreadedRenderer
+title: Android | Android绘制
+description:  View GraphicBuffer 、 ThreadedRenderer
 tag:
 - android
 - renderer-ui
@@ -44,17 +44,12 @@ HardwareRenderer的hybrid类对象持有RenderThread单例对象 、 CanvasConte
 
 RecordingCanvas的hybrid类对象持有root RenderNode对象、SkiaDisplayList对象(或者DisplayList，取决于cpp 侧的Canvas子类是哪一个)
 
-三级缓存：
-- GraphicBuffer:由SurfaceFlinger从BUfferQueue分配，app进程的Producter生产数据，SurfaceFlinger进程的Comsumor消费数据，CPU测量数据，GPU栅格化数据。
-- FrameBuffer：Display显示到屏幕的缓存
-
-二级缓存中，Display 使用 Front Buffer ，CPU/GPU使用 Back Buffer, 这样存在的问题是CPU与gpu串行处理buffer，为了解决一个使用buffer另一个就得等待的问题，就让CPU 与 GPU 各自有一个buffer，也就是三级缓存。为了进一步减少主线程的压力，引入了RenderThead，将GPU栅格化数据的操作放在RenderThead，主线程只处理CPU测量数据与生成RenderNode、DisplayList
 
 SurfaceFlinger:
 - Hardware Composer:硬件合成
 - Gralloc：图形内存分配器
 
-# 硬件绘制
+# 硬件绘制(hwui)
 
 开启了硬件加速的Android系统在绘制时会调用`mAttachInfo.mThreadedRenderer.draw(mView, mAttachInfo, this);`
 

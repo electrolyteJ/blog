@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Android | Android绘制
-description:  View、DisplayList 、GraphicBuffer 、 ThreadedRenderer
+description:  View、RenderNode 、GraphicBuffer 、 ThreadedRenderer
 tag:
 - android
 - renderer-ui
@@ -26,10 +26,10 @@ tag:
 java类|jni | cpp类 | hybrid类
 |---|---|---|---|
 FrameInfo| NA |FrameInfo|FrameInfo
-ThreadedRenderer| android_graphics_HardwareRenderer |RenderProxy | HardwareRenderer
+ThreadedRenderer    /HardwareRenderer| android_graphics_HardwareRenderer |RenderProxy | HardwareRenderer
 RenderNode|android_graphics_RenderNode | RenderNode | RenderNode
 CompatibleCanvas   /软件Canvas|android_graphics_Canvas|SkiaCanvas|CompatibleCanvas
-RecordingCanvas   /硬件Canvas|android_graphics_DisplayListCanvas|SkiaRecordingCanvas、RecordingCanvas|RecordingCanvas
+RecordingCanvas   /硬件Canvas|android_graphics_DisplayListCanvas|SkiaRecordingCanvas(Canvas)、RecordingCanvas(SkCanvasVirtualEnforcer)|RecordingCanvas
 NA| NA |BufferQueueConsumer   /IGraphicBufferConsumer| NA
 NA| NA |BufferQueueProducer   /IGraphicBufferProducer| NA
 NA| NA |BufferQueue | NA 
@@ -43,7 +43,11 @@ NA| NA |Gralloc| NA
 
 HardwareRenderer的hybrid类对象持有RenderThread单例对象 、 CanvasContext对象、DrawFrameTask对象、root RenderNode对象
 
+RenderNode的hybrid类对象持有DisplayList对象、RecordingCanvas对象
+
 RecordingCanvas的hybrid类对象持有root RenderNode对象、SkiaDisplayList对象(或者DisplayList，取决于cpp 侧的Canvas子类是哪一个)
+
+CanvasContext的native类对象持有RenderNode对象数组
 
 SurfaceFlinger:
 - Hardware Composer:硬件合成
@@ -51,7 +55,7 @@ SurfaceFlinger:
 
 # 硬件绘制(hwui)
 
-开启了硬件加速的Android系统在绘制时会调用`mAttachInfo.mThreadedRenderer.draw(mView, mAttachInfo, this);`
+在硬件绘制中引入了RenderNode、DisplayList、RecordingCanva，每个View相当于RenderNode，其持有DisplayList对象和RecordingCanva对象，而软件绘制整棵树只有一个Canvas，这样对于做不到局部更新，对于无变化的View也会被迫更新，那么就从调用`mAttachInfo.mThreadedRenderer.draw(mView, mAttachInfo, this);`开始分析。
 
 ```java
     void draw(View view, AttachInfo attachInfo, DrawCallbacks callbacks) {
@@ -67,20 +71,19 @@ SurfaceFlinger:
 ```
 draw主要做两件事：
 
-1. 更新DisplayList:调用每个view的draw获得全部canvas指令且转换成RenderNode对象(包含DisplayList和影响DisplayList的属性) 
+1. 更新Root RenderNode:调用每个view的draw获得全部canvas指令且转换成RenderNode对象(包含DisplayList和影响DisplayList的属性) 
 2. 异步绘制：调用DrawFrameTask#drawFrame
 
-## 更新DisplayList
+## 更新Root RenderNode
 
 updateRootDisplayList函数调用链
 ```java
 View.updateDisplayListIfDirty();
 --> canvas.drawRenderNode
---> jni call --> SkiaRecordingCanvas#drawRenderNode
+--> SkiaRecordingCanvas#drawRenderNode
 --> SkiaCanvas#drawDrawable
 --> skia库的绘制
 ```
-
 
 ## 异步绘制
 

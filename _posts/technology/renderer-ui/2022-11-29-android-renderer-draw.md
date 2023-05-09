@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Android | Android绘制
-description:  View GraphicBuffer 、 ThreadedRenderer
+description:  View、DisplayList 、GraphicBuffer 、 ThreadedRenderer
 tag:
 - android
 - renderer-ui
@@ -35,6 +35,7 @@ NA| NA |BufferQueueProducer   /IGraphicBufferProducer| NA
 NA| NA |BufferQueue | NA 
 NA| NA |GraphicBuffer| NA 
 NA| NA |SurfaceFlinger| NA 
+Surface| android_view_Surface |Surface| Surface 
 NA| NA |Hardware Composer| NA 
 NA| NA |Gralloc| NA 
 
@@ -43,7 +44,6 @@ NA| NA |Gralloc| NA
 HardwareRenderer的hybrid类对象持有RenderThread单例对象 、 CanvasContext对象、DrawFrameTask对象、root RenderNode对象
 
 RecordingCanvas的hybrid类对象持有root RenderNode对象、SkiaDisplayList对象(或者DisplayList，取决于cpp 侧的Canvas子类是哪一个)
-
 
 SurfaceFlinger:
 - Hardware Composer:硬件合成
@@ -130,28 +130,7 @@ void DrawFrameTask::run() {
 }
 ```
 
-DrawFrameTask是运行在RenderThread线程的任务,而RenderThread又是基于Looper实现，等同于java的HandlerThread，所以当调用postAndWait函数时，会异步执行DrawFrameTask#run，且会阻塞主线程，当syncFrameState同步成功且返回true时，调用unblockUiThread函数继续进行主线程, 反之同步失败返回false则会等到draw结束才释放对主线程的阻塞。
-
-```cpp
-CanvasContext* CanvasContext::create(RenderThread& thread, bool translucent,
-                                     RenderNode* rootRenderNode, IContextFactory* contextFactory) {
-    auto renderType = Properties::getRenderPipelineType();
-
-    switch (renderType) {
-        case RenderPipelineType::SkiaGL:
-            return new CanvasContext(thread, translucent, rootRenderNode, contextFactory,
-                                     std::make_unique<skiapipeline::SkiaOpenGLPipeline>(thread));
-        case RenderPipelineType::SkiaVulkan:
-            return new CanvasContext(thread, translucent, rootRenderNode, contextFactory,
-                                     std::make_unique<skiapipeline::SkiaVulkanPipeline>(thread));
-        default:
-            LOG_ALWAYS_FATAL("canvas context type %d not supported", (int32_t)renderType);
-            break;
-    }
-    return nullptr;
-}
-```
-在CanvasContext#draw流程中，IRenderPipeline的实现类有SkiaOpenGLPipeline、SkiaVulkanPipeline、这里主要看SkiaOpenGLPipeline
+DrawFrameTask是运行在RenderThread线程的任务,而RenderThread又是基于Looper实现，等同于java的HandlerThread，所以当调用postAndWait函数时，会异步执行DrawFrameTask#run，且会阻塞主线程。当syncFrameState同步成功且返回true时，调用unblockUiThread函数继续进行主线程, 反之同步失败返回false则会等到draw结束才释放对主线程的阻塞。在CanvasContext#draw流程中，渲染类型有两种SkiaGL和SkiaVulkan，IRenderPipeline的实现类有SkiaOpenGLPipeline、SkiaVulkanPipeline，接下来主要看SkiaOpenGLPipeline#draw的绘制流程
 
 <!-- - mRenderPipeline->swapBuffers -->
 
@@ -162,7 +141,7 @@ CanvasContext* CanvasContext::create(RenderThread& thread, bool translucent,
 - flush commands --> shader_compile --> ShaderCache::load
 - eglSwapBuffersWithDamageKHR --> queueBuffer --> queueBuffer --> onFrameAvailable --> processNextBufferLocked
 
-当GPU栅格化完成且swap buffer到SurfaceFlinger进程完成合成，那么app进程的事情就告一段落，接下来控制权就到了SurfaceFlinger进程
+当GPU栅格化完成且swap buffer到SurfaceFlinger进程等待被合成，那么app进程的事情就告一段落，后面的控制权就到了SurfaceFlinger进程。
 
 # 软件绘制
 
@@ -194,7 +173,6 @@ private boolean drawSoftware(Surface surface, AttachInfo attachInfo, int xoff, i
             mView.draw(canvas);
         } finally {
               try {
-                
                 surface.unlockCanvasAndPost(canvas);
             } catch (IllegalArgumentException e) {
                 ...
@@ -208,6 +186,12 @@ private boolean drawSoftware(Surface surface, AttachInfo attachInfo, int xoff, i
 1. mSurface.lockCanvas: 获取Canvas对象,软件绘制的Canvas实现类为CompatibleCanvas(java部分:CompatibleCanvas，cpp部分：SkiaCanvas)
 2. mView.draw(canvas): 收集Canvas绘制指令
 3. surface.unlockCanvasAndPost: canvas指令写到GraphicBuffer，并且发送到SurfaceFlinger
+
+混合类Surface的lock与unlock分别会从SurfaceFlinger获取GraphicBuffer和返回GraphicBuffer给SurfaceFlinger，由于Binder传输限制在8k-1m，对于GraphicBuffer这种存储大数据来说并不适用所以采用匿名共享内存实现数据传输。
+
+在lock阶段调用IGraphicBufferProducer(BufferQueueProducer实现类)#dequeueBuffer函数获取空闲的GraphicBuffer，获取到的GraphicBuffer被当做backBuffer。
+
+在unlock阶段调用IGraphicBufferProducer(BufferQueueProducer实现类)#queueBuffer将被栅格化的GraphicBuffer传给SurfaceFlinger合成。
 
 # *参考资料*
 [硬件加速](https://developer.android.com/guide/topics/graphics/hardware-accel?hl=zh-cn) 

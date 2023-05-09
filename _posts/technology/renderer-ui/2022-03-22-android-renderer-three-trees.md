@@ -1,13 +1,16 @@
 ---
 layout: post
-title:  Android | Xml Tree to View Tree
-description: 第一棵树到第二棵树
+title:  Android | Xml、View、RenderNode三棵树
+description: 第一棵树到第二棵树, 第二棵树到第三棵树
 tag:
 - android
 - renderer-ui
 ---
 * TOC
 {:toc}
+
+
+# Xml Tree to View Tree
 
 在android中开发者通过xml树描述ui，而android系统通过LayoutInflater类读取xml资源文件，并且将其转换为View树，View树最后会被测量布局绘制到屏幕。读取xml资源文件使用的是XmlResourceParser类，采用流式读取节点。
 

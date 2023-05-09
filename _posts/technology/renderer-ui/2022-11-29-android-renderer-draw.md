@@ -69,7 +69,7 @@ SurfaceFlinger:
         ...
     }
 ```
-draw主要做两件事：
+ThreadedRenderer#draw主要做两件事：
 
 1. 更新Root RenderNode:调用每个view的draw获得全部canvas指令且转换成RenderNode对象(包含DisplayList和影响DisplayList的属性) 
 2. 异步绘制：调用DrawFrameTask#drawFrame

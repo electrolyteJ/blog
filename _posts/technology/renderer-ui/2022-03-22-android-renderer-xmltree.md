@@ -6,29 +6,10 @@ tag:
 - android
 - renderer-ui
 ---
+* TOC
+{:toc}
 
-通过getSystemService获得LayoutInflater对象，其为单例。
-```java
-public View inflate(XmlPullParser parser, @Nullable ViewGroup root) {
-        return inflate(parser, root, root != null);
-    }
-    
- public View inflate(@LayoutRes int resource, @Nullable ViewGroup root) {
-        return inflate(resource, root, root != null);
-    }
-    
- public View inflate(@LayoutRes int resource, @Nullable ViewGroup root, boolean attachToRoot) {
-        final Resources res = getContext().getResources();
-      
-        final XmlResourceParser parser = res.getLayout(resource);
-        try {
-            return inflate(parser, root, attachToRoot);
-        } finally {
-            parser.close();
-        }
-    }
-```
-上面的三个方法到最后都会调用`inflate(XmlPullParser parser, @Nullable ViewGroup root, boolean attachToRoot)`。虽然有时候传入的是resource id，但是其正好对应着一个view数的解析器。
+在android中开发者通过xml树描述ui，而android系统通过LayoutInflater类读取xml资源文件，并且将其转换为View树，View树最后会被测量布局绘制到屏幕。读取xml资源文件使用的是XmlResourceParser类，采用流式读取节点。
 
 ```java
    public View inflate(XmlPullParser parser, @Nullable ViewGroup root, boolean attachToRoot) {
@@ -114,20 +95,16 @@ public View inflate(XmlPullParser parser, @Nullable ViewGroup root) {
         }
     }
 ```
-先从根部解析，如果是merge标签，就执行rInflate方法；如果不是就createViewFromTag（该方法里面核心操作就是通过工厂模式创建了View，Factory兼容版本实现、Factory2新版本实现、FactoryMerger 有与Activity只是实现了Factory2所以自动适配），紧接着解析child，rInflateChildren。最后都将控件从xml解析出来之后，就add进container。
+先从根部解析，如果是merge标签，就执行rInflate方法；如果不是就createViewFromTag（该方法里面核心操作就是通过工厂模式创建了View，Factory兼容版本实现、Factory2新版本实现、FactoryMerger 有与Activity只是实现了Factory2所以自动适配），紧接着调用rInflateChildren解析child，最后都将控件从xml解析出来之后，就add进container。
 
-在这里我们进一步分析一下，rInflate和rInflateChildren两个方法.
+在这里分析一下，rInflate和rInflateChildren两个方法。
 
 ```java
 final void rInflateChildren(XmlPullParser parser, View parent, AttributeSet attrs,
             boolean finishInflate) throws XmlPullParserException, IOException {
         rInflate(parser, parent, parent.getContext(), attrs, finishInflate);
     }
-```
-rInfalteChildren方法，也是调用了rInflate。从根部解析时，finishInflate=false，不会调用View#onFinishInflate方法
-
-
-```java
+...
 void rInflate(XmlPullParser parser, View parent, Context context,
             AttributeSet attrs, boolean finishInflate) throws XmlPullParserException, IOException {
 
@@ -174,9 +151,7 @@ void rInflate(XmlPullParser parser, View parent, Context context,
         }
     }
 ```
-- include
-- merge 
-- 其他
+rInflate方法会遍历整个xml树，其中解析到include、merge等标签，当解析到view标签时要么递归继续遍历子view，要么创建当前view，创建View主要依赖于多种Factory类。
 
 创建View的策略
 ```java
@@ -215,170 +190,8 @@ void rInflate(XmlPullParser parser, View parent, Context context,
 1. 尝试使用Factory2生产的View
 2. 方案一不行，尝试使用Factory生产的View
 3. 方案二不行，尝试使用系统提供android.view包下的View
-4. 方案三不行，断定为自定义的View
+4. 方案三不行，classloader加载view然后再反射构造View(createView)
 
-createView
-```java
- public final View createView(String name, String prefix, AttributeSet attrs)
-            throws ClassNotFoundException, InflateException {
-        Constructor<? extends View> constructor = sConstructorMap.get(name);
-        if (constructor != null && !verifyClassLoader(constructor)) {
-            constructor = null;
-            sConstructorMap.remove(name);
-        }
-        Class<? extends View> clazz = null;
+从上面的逻辑我们能定义一个自己的Factory，来决定View的构造，基于此逻辑我们可以实现资源动态换肤。
 
-        try {
-            Trace.traceBegin(Trace.TRACE_TAG_VIEW, name);
-
-            if (constructor == null) {
-                // Class not found in the cache, see if it's real, and try to add it
-                clazz = mContext.getClassLoader().loadClass(
-                        prefix != null ? (prefix + name) : name).asSubclass(View.class);
-
-                if (mFilter != null && clazz != null) {
-                    boolean allowed = mFilter.onLoadClass(clazz);
-                    if (!allowed) {
-                        failNotAllowed(name, prefix, attrs);
-                    }
-                }
-                constructor = clazz.getConstructor(mConstructorSignature);
-                constructor.setAccessible(true);
-                sConstructorMap.put(name, constructor);
-            } else {
-                // If we have a filter, apply it to cached constructor
-                if (mFilter != null) {
-                    // Have we seen this name before?
-                    Boolean allowedState = mFilterMap.get(name);
-                    if (allowedState == null) {
-                        // New class -- remember whether it is allowed
-                        clazz = mContext.getClassLoader().loadClass(
-                                prefix != null ? (prefix + name) : name).asSubclass(View.class);
-
-                        boolean allowed = clazz != null && mFilter.onLoadClass(clazz);
-                        mFilterMap.put(name, allowed);
-                        if (!allowed) {
-                            failNotAllowed(name, prefix, attrs);
-                        }
-                    } else if (allowedState.equals(Boolean.FALSE)) {
-                        failNotAllowed(name, prefix, attrs);
-                    }
-                }
-            }
-
-            Object lastContext = mConstructorArgs[0];
-            if (mConstructorArgs[0] == null) {
-                // Fill in the context if not already within inflation.
-                mConstructorArgs[0] = mContext;
-            }
-            Object[] args = mConstructorArgs;
-            args[1] = attrs;
-
-            final View view = constructor.newInstance(args);
-            if (view instanceof ViewStub) {
-                // Use the same context when inflating ViewStub later.
-                final ViewStub viewStub = (ViewStub) view;
-                viewStub.setLayoutInflater(cloneInContext((Context) args[0]));
-            }
-            mConstructorArgs[0] = lastContext;
-            return view;
-
-        } catch (NoSuchMethodException e) {
-            ...
-
-        } catch (ClassCastException e) {
-            ...
-        } catch (ClassNotFoundException e) {
-            ...
-        } catch (Exception e) {
-            ...
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_VIEW);
-        }
-    }
-```
-通过class load加载View的子类，然后通过反射后的构造器创建其对象。
-
-三个创建View的工厂方法
-```java
-     public interface Factory {
-         public View onCreateView(String name, Context context, AttributeSet attrs);
-     }
- 
-      public interface Factory2 extends Factory {
-            
-            public View onCreateView(View parent, String name, Context context, AttributeSet attrs);
-        }
-    
-    private static class FactoryMerger implements Factory2 {
-        private final Factory mF1, mF2;
-        private final Factory2 mF12, mF22;
-
-        FactoryMerger(Factory f1, Factory2 f12, Factory f2, Factory2 f22) {
-            mF1 = f1;
-            mF2 = f2;
-            mF12 = f12;
-            mF22 = f22;
-        }
-
-        public View onCreateView(String name, Context context, AttributeSet attrs) {
-            View v = mF1.onCreateView(name, context, attrs);
-            if (v != null) return v;
-            return mF2.onCreateView(name, context, attrs);
-        }
-
-        public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
-            View v = mF12 != null ? mF12.onCreateView(parent, name, context, attrs)
-                    : mF1.onCreateView(name, context, attrs);
-            if (v != null) return v;
-            return mF22 != null ? mF22.onCreateView(parent, name, context, attrs)
-                    : mF2.onCreateView(name, context, attrs);
-        }
-    }
-     public void setFactory(Factory factory) {
-        if (mFactorySet) {
-            throw new IllegalStateException("A factory has already been set on this LayoutInflater");
-        }
-        if (factory == null) {
-            throw new NullPointerException("Given factory can not be null");
-        }
-        mFactorySet = true;
-        if (mFactory == null) {
-            mFactory = factory;
-        } else {
-            mFactory = new FactoryMerger(factory, null, mFactory, mFactory2);
-        }
-    }
-```
-
-```java
-    /**
-     * Like {@link #setFactory}, but allows you to set a {@link Factory2}
-     * interface.
-     */
-    public void setFactory2(Factory2 factory) {
-        if (mFactorySet) {
-            throw new IllegalStateException("A factory has already been set on this LayoutInflater");
-        }
-        if (factory == null) {
-            throw new NullPointerException("Given factory can not be null");
-        }
-        mFactorySet = true;
-        if (mFactory == null) {
-            mFactory = mFactory2 = factory;
-        } else {
-            mFactory = mFactory2 = new FactoryMerger(factory, factory, mFactory, mFactory2);
-        }
-    }
-
-    /**
-     * @hide for use by framework
-     */
-    public void setPrivateFactory(Factory2 factory) {
-        if (mPrivateFactory == null) {
-            mPrivateFactory = factory;
-        } else {
-            mPrivateFactory = new FactoryMerger(factory, factory, mPrivateFactory, mPrivateFactory);
-        }
-    }
-```
+解析完xml树我们就得到了整棵View树，接下来就是基于View树进行测量布局绘制，在软件绘制直接使用skia进行光栅化，而硬件绘制却需要将View树转为DisplayList树给opengl进行光栅化。

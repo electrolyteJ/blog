@@ -29,7 +29,7 @@ FrameInfo| NA |FrameInfo|FrameInfo
 ThreadedRenderer    /HardwareRenderer| android_graphics_HardwareRenderer |RenderProxy | HardwareRenderer
 RenderNode|android_graphics_RenderNode | RenderNode | RenderNode
 CompatibleCanvas   /软件Canvas|android_graphics_Canvas|SkiaCanvas|CompatibleCanvas
-RecordingCanvas   /硬件Canvas|android_graphics_DisplayListCanvas|SkiaRecordingCanvas(Canvas)、RecordingCanvas(SkCanvasVirtualEnforcer)|RecordingCanvas
+RecordingCanvas   /硬件Canvas|android_graphics_DisplayListCanvas|SkiaRecordingCanvas(Canvas)、RecordingCanvas(             SkCanvasVirtualEnforcer)|RecordingCanvas
 NA| NA |BufferQueueConsumer   /IGraphicBufferConsumer| NA
 NA| NA |BufferQueueProducer   /IGraphicBufferProducer| NA
 NA| NA |BufferQueue | NA 

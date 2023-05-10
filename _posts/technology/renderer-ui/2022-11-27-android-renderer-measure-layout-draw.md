@@ -38,7 +38,7 @@ ViewRootImpl#performTraversals
 1. View#dispatchAttachedToWindow
 2. ViewTreeObserver#dispatchOnWindowAttachedChange(true);
 3. View#dispatchApplyWindowInsets
-4. View#dispatchWindowVisibilityChanged
+4. View#dispatchWindowVisibilityChanged(窗口可见)
 5. performMeasure(View#measure)
 6. relayoutWindow
 7. performLayout(View#layout)
@@ -96,8 +96,6 @@ ViewRootImpl#performTraversals
          */
 ```
 绘制的流程Android团队已经在源码中告诉了我们，从根开始自顶向下绘制，那么从用户的观察角度来说的话，远离用户观察角度的先绘制，然后逐渐到达用户，对于FrameLayout、LinearLayout、RelativeLayout ViewGroup这样的容器其实不怎么需要draw，都是交给叶子绘制，它们更多用于布局子节点们
-
-在执行完测绘之后，我们就需要将测绘之后完成的窗口通过WindowSession发送给wms，之后如果成功wms会返回并且真个窗口就可见了。
 
 
 

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Android | 渲染优化：垂直信号 、三级缓存
+title: Android | 渲染优化：垂直信号 、三级缓存、硬件加速、渲染线程
 description: ui测绘的利器
 tag:
 - android
@@ -36,3 +36,8 @@ CallbackQueue将CallbackRecord对象遵循时间递增顺序入队，队头总�
 - FrameBuffer：Display显示到屏幕的缓存
 
 二级缓存中，Display 使用 Front Buffer ，CPU/GPU使用 Back Buffer, 这样存在的问题是CPU与gpu串行处理buffer，为了解决一个使用buffer另一个就得等待的问题，就让CPU 与 GPU 各自有一个buffer，也就是三级缓存。为了进一步减少主线程的压力，引入了RenderThead，将GPU栅格化数据的操作放在RenderThead，主线程只处理CPU测量数据与生成RenderNode、DisplayList
+
+
+# 硬件加速
+
+android4.0+默认开启了硬件加速，在android5.0+引入了渲染线程进行光栅化减少主线程负担，不同于软件绘制使用的skia，硬件绘制使用了opengl库

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Android | Android绘制
-description:  View、RenderNode 、GraphicBuffer 、 ThreadedRenderer
+description:  View、RenderNode 、GraphicBuffer 、 HardwareRenderer
 tag:
 - android
 - renderer-ui
@@ -19,7 +19,7 @@ tag:
 
 > ps:EGL™ is an interface between Khronos rendering APIs such as OpenGL ES or OpenVG and the underlying native platform window system.EGL是接口，整合了 图形库 与 平台窗口系统。可以这么理解EGL向外部定义了一套接口规范，保证OpenGL ES这样的图形库与各个平台暴露出来的接口一致。
 
->Graphic与Image的关系，一言以蔽之：Graphic draw image
+> Graphic与Image的关系，一言以蔽之：Graphic draw image
 
 渲染器中的角色：
 
@@ -42,6 +42,8 @@ NA| NA |Gralloc| NA
 > ps: hybrid类 除了类名不同，角色职能差不多，分两部分内存,一部分在java heap ， 一部分在cpp heap。
 
 HardwareRenderer的hybrid类对象持有RenderThread单例对象 、 CanvasContext对象、DrawFrameTask对象、root RenderNode对象
+
+DrawFrameTask是运行在RenderThread线程的任务,而RenderThread又是基于Looper实现，等同于java的HandlerThread。
 
 RenderNode的hybrid类对象持有DisplayList对象、RecordingCanvas对象
 
@@ -133,7 +135,7 @@ void DrawFrameTask::run() {
 }
 ```
 
-DrawFrameTask是运行在RenderThread线程的任务,而RenderThread又是基于Looper实现，等同于java的HandlerThread，所以当调用postAndWait函数时，会异步执行DrawFrameTask#run，且会阻塞主线程。当syncFrameState同步成功且返回true时，调用unblockUiThread函数继续进行主线程, 反之同步失败返回false则会等到draw结束才释放对主线程的阻塞。在CanvasContext#draw流程中，渲染类型有两种SkiaGL和SkiaVulkan，IRenderPipeline的实现类有SkiaOpenGLPipeline、SkiaVulkanPipeline，接下来主要看SkiaOpenGLPipeline#draw的绘制流程
+当调用postAndWait函数时，会异步执行DrawFrameTask#run，且会阻塞主线程。当syncFrameState同步成功且返回true时，调用unblockUiThread函数继续进行主线程, 反之同步失败返回false则会等到draw结束才释放对主线程的阻塞。在CanvasContext#draw流程中，渲染类型有两种SkiaGL和SkiaVulkan，IRenderPipeline的实现类有SkiaOpenGLPipeline、SkiaVulkanPipeline，接下来主要看SkiaOpenGLPipeline#draw的绘制流程
 
 <!-- - mRenderPipeline->swapBuffers -->
 

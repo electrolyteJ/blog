@@ -9,7 +9,6 @@ tag:
 * TOC
 {:toc}
 
-
 在Android中存在两棵树一个View树，一个Layer树，前者用来存储xml树信息，后者用来作为硬件加速的树。Android使用图形库OpenGL ES、Vulkan、Skia绘制树所描述的ui信息，在软件绘制的时候使用Skia库，在硬件绘制的时候使用Skia、OpenGL ES、Vulkan混合使用(OpenGL ES、Vulkan作为后端)，为了优化Android平台的绘制流程度，引进了垂直信号和三级缓存。
 
 接下来我们将要学习的内容有如下：

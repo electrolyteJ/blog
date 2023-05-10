@@ -29,8 +29,12 @@ WindowManager管理者数组Root View和数组ViewRootImpl，也就是当前的a
 
 View添加到窗口的函数调用链`WindowManager#addView --> ViewRootImpl#setView --> ViewRootImpl#requestLayout --> ViewRootImpl#scheduleTraversals`，当调用scheduleTraversals方法时通过barrier将主线程的同步消息屏蔽(异步消息依然会被处理)只会专注处理Choreographer发来的异步消息,紧接着Choreographer等待屏幕发来的vsync信号，信号一到就通过异步消息切换到主线程依次完成事件、动画、View树测绘(先去掉barrier再开始测绘)。
 
+# *View Tree*
+好了接下来我们来讲View的测绘吧，借张图让大家了解一下测绘流程
+![]({{site.asseturl}}/android-framework/readering-pipline.png){: .center-image }_`图片来自“从架构到源码：一文了解Flutter渲染机制”该文章`_
+
 ```
-performTraversals
+ViewRootImpl#performTraversals
 1. View#dispatchAttachedToWindow
 2. ViewTreeObserver#dispatchOnWindowAttachedChange(true);
 3. View#dispatchApplyWindowInsets
@@ -46,23 +50,6 @@ performTraversals
 12. ViewTreeObserver#dispatchOnDraw
 13. 优先使用硬件加速mThreadedRenderer#draw，不行只能用软件绘制View#draw
 12. pendingDrawFinished
-```
-
-只有第一次进行遍历View树，会执行setup 1 2;如果不是第一次并且DecorView的可见性发生了变化，则会执行setup 3
-
-# *View Tree*
-好了接下来我们来讲View的测绘吧，借张图让大家了解一下测绘流程
-![]({{site.asseturl}}/android-framework/readering-pipline.png){: .center-image }_`图片来自“从架构到源码：一文了解Flutter渲染机制”该文章`_
-
-```
-ViewRootImpl#performTraversals
-#分发一系列的Window变化的事件
-- dispatchXxx
-#测量，计算窗口可能的size
-- ViewRootImpl#measureHierarchy ---> ViewRootImpl#performMeasure ---> View#measure
-WindowSession#relayout
-- ViewRootImpl#performLayout ---> View#layout
-- ViewRootImp#performDraw ---> ViewRootImp#draw ---> View#draw(如果使用了硬件加速就是这样 `mAttachInfo.mThreadedRenderer.draw(mView, mAttachInfo, this);`)
 
 View的生命周期
 - onAttachedToWindow
@@ -75,6 +62,13 @@ View的生命周期
 - onDraw
 - onDetachedFromWindow
 ```
+
+ViewRootImpl#performTraversals
+- dispatchXxx：分发一系列的Window变化的事件
+- ViewRootImpl#measureHierarchy ---> ViewRootImpl#performMeasure ---> View#measure：测量，计算窗口可能的size
+- ViewRootImpl#performLayout ---> View#layout
+- ViewRootImp#performDraw ---> ViewRootImp#draw ---> View#draw(如果使用了硬件加速就是这样 `mAttachInfo.mThreadedRenderer.draw(mView, mAttachInfo, this);`)
+
 在Android中View树上面主要有两种类型，一种是叶子(View),一种是子树(ViewGroup，根节点也是ViewGroup)，他们都需要执行measure、layout、draw。
 
 ## measure

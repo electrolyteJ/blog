@@ -1,7 +1,7 @@
 ---
 layout: post
-title: Android | Android UI测量与布局
-description: 测量与布局
+title: Android | Android UI测量、布局、绘制
+description: 测量、布局、绘制
 tag:
 - android
 - renderer-ui

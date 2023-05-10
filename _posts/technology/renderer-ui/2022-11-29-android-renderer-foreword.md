@@ -17,7 +17,7 @@ tag:
 - [x] [Xml、View、RenderNode三棵树]({{site.baseurl}}/2022-03-22/android-renderer-three-trees)
 - [x] [再谈Android View树]({{site.baseurl}}/2022-05-08/android-renderer-viewtree)
 - [x] [Android绘制]({{site.baseurl}}/2022-11-29/android-renderer-draw)
-- [x] [渲染优化：垂直信号 、三级缓存]({{site.baseurl}}/2022-05-08/android-renderer-vsync-triplebuffer)
+- [x] [渲染优化：垂直信号 、三级缓存、硬件加速、渲染线程]({{site.baseurl}}/2022-05-08/android-renderer-vsync-triplebuffer)
 
 # *工程结构*
 

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Android | Android绘制
+title: Android | Android UI绘制
 description:  View、RenderNode 、GraphicBuffer 、 HardwareRenderer
 tag:
 - android

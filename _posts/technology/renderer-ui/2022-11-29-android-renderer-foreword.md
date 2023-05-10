@@ -15,7 +15,7 @@ tag:
 接下来我们将要学习的内容有如下：
 
 - [x] [Xml、View、RenderNode三棵树]({{site.baseurl}}/2022-03-22/android-renderer-three-trees)
-- [x] [Android UI测量与布局]({{site.baseurl}}/2022-11-27/android-renderer-measure-layout)
+- [x] [Android UI测量、布局、绘制]({{site.baseurl}}/2022-11-27/android-renderer-measure-layout-draw)
 - [x] [Android UI绘制]({{site.baseurl}}/2022-11-29/android-renderer-draw)
 - [x] [Android UI事件分发]({{site.baseurl}}/2022-11-28/android-renderer-dispatchevent)
 - [x] [渲染优化：垂直信号 、三级缓存、硬件加速、渲染线程]({{site.baseurl}}/2022-05-08/android-renderer-vsync-triplebuffer)

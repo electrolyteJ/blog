@@ -26,3 +26,5 @@ tag:
 - [方糖全栈路线图](http://road.ftqq.com/30-%E5%95%86%E4%B8%9A%E6%A8%A1%E5%BC%8F%E7%94%BB%E5%B8%83.html)
 
 - [对话独角兽得物（毒）App CTO 陈思淼：组建技术团队的十件事](https://www.365seal.com/y/QgV0KWNEvw.html)
+
+- [Trends.vc趋势报告翻译，27 号报告：百万美元的一人企业](https://weibo.com/ttarticle/p/show?id=2309404561766045581440&sudaref=github.com)

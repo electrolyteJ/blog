@@ -11,4 +11,4 @@ tag:
 ---
 下载地址如下:
 
-- [宝体积优化]({{site.baseurl}}/asset/shared/包体积优化.pptx)
+- [包体积优化]({{site.baseurl}}/asset/shared/包体积优化.pptx)

@@ -42,7 +42,7 @@ class EngineKey implements Key {
 }
 ```
 
-ActiveResources采用HashMap存储资源的软引用，当gc触发回收时，这块缓存会最先被回收，LruResourceCache采用LRU算法管理内存，资源占用内存size是其回收的策略，而不是根据数量。LruResourceCache的回收资源的阈值是根据app内存情况动态计算获取的。
+ActiveResources采用HashMap存储资源的弱引用，当gc触发回收时，这块缓存会最先被回收，LruResourceCache采用LRU算法管理内存，资源占用内存size是其回收的策略，而不是根据数量。LruResourceCache的回收资源的阈值是根据app内存情况动态计算获取的。
 ```java
     if (targetMemoryCacheSize + targetBitmapPoolSize <= availableSize) {
       memoryCacheSize = targetMemoryCacheSize;

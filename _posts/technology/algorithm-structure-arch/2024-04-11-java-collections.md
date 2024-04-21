@@ -12,6 +12,8 @@ tag:
 复杂度|HashMap | ArrayMap | SpareArray
 ---|---|---|---
 get时间复杂度| O(logn),红黑树|O(logn)，二分查找|O(logn)，二分查找
+
+
 > ps: 大量数据（1000以上）, 红黑树优于二分查找
 
 构建一个Map需要解决这些问题

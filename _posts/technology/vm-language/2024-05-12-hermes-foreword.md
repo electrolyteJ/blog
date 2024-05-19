@@ -5,7 +5,6 @@ description:  javascript引擎：Quickjs 、 Hermes 、V8
 tag:
 - vm-language
 - cross-platform
-published : false 
 ---
 
 # *Hermes工程结构*
@@ -40,3 +39,5 @@ published : false
 [干货 | 加载速度提升15%，携程对RN新一代JS引擎Hermes的调研](https://mp.weixin.qq.com/s/BOeuLoZjCdi61P_MhaJT0g)
 
 [美团 React Native 在 JS 引擎上的选型及演进](https://time.geekbang.org/qconplus/detail/100091371)
+
+[Hermes: An open source JavaScript engine optimized for mobile apps, starting with React Native](https://engineering.fb.com/2019/07/12/android/hermes/)

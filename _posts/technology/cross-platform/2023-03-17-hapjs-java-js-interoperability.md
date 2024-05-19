@@ -13,7 +13,7 @@ tag:
 
 # javascript 调用 java
 
-当JsThread线程初始化时会调用ExtensionManager#onRuntimeInit注册所有的feature模块到js引擎且还会绑定js的invoke函数，invoke函数代表了js 调用java函数的通道，所有调用多会走invoke函数。其中parameters参数是java方法元数据包括方法的类名，方法名，方法参数 ， parameters[0] 为feature名字，parameters[1]为action，parameters[2]为rawParams，parameters[3]为回调或者说返回值，parameters[4]为instanceId。
+当JsThread线程初始化时会调用ExtensionManager#onRuntimeInit注册所有的feature模块到js引擎且还会绑定js的invoke函数，invoke函数代表了js 调用java函数的通道，所有调用多会走invoke函数, js 到java 的数据都是通过 json 序列化存在性能问题。其中parameters参数是java方法元数据包括方法的类名，方法名，方法参数 ， parameters[0] 为feature名字，parameters[1]为action，parameters[2]为rawParams，parameters[3]为回调或者说返回值，parameters[4]为instanceId。
 
 js调用invoke函数就会触发`JavaCallback#invoke --> JsInterface#invoke --> ExtensionManager#invoke --> ExtensionManager#onInvoke`调用链路，onInvoke方法实现了查询具体的feature并且执行其方法，那么如何查询到想要的feature ？ 
 

@@ -2,7 +2,6 @@
 layout: post
 title:  React Native | Metro打包利器
 description: 专为react native定制的打包器
-date: 2022-11-26 22:50:00
 tag:
 - build-tools
 - cross-platform
@@ -11,7 +10,13 @@ published : true
 * TOC
 {:toc}
 
-对于前端的打包工具有webpack(大而全，图片代码打包)，rollup(专攻代码打包,框架场景常见)等，既然有这些打包工具为什么还要在移动端搞一个metro，其中一个原因为ram bundle，iOS采用indexed ram bundle读取一个文件效率更高,Android采用file ram bundle。
+|打包器类型| | | |
+|--|--|--|---
+代码、资源打包| webpack | vite(rollup/rolldown) | parcel |
+代码打包    |rollup/rolldown| terser            |esbuild
+编译器    |babel(js)|swc(wasm)|
+
+对于前端打包工具有webpack、rollup等，既然有这些打包工具为什么还要在移动端搞一个metro，其中一个原因为ram bundle(按需加载的启动过程用到的模块)，iOS采用indexed ram bundle读取一个文件效率更高,Android采用file ram bundle。除了支持 ram bundle 还能打出 hbc bundle(字节码 bundle)
 
 那么接下来了解一下metro。
 

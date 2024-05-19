@@ -38,9 +38,14 @@ kotlin源代码 --> 词法分析器 --> Token流 --> 语法分析器 --> 语法�
 ```kotlin
 /**
  *                      frontend
- * source code --> [ parser  -- syntax tree ---> semantic analyzer ] -- syntax tree + semantic info -->
+ * source code --> [ parser  -- syntax tree ---> semantic analyzer ] 
+ *
+ * -- syntax tree + semantic info -->
+ *
  *       backend
- * -->  [intermediate code:generator & optimizer -- intermediate representation --> machine code:generator & optimizer ] -- target/machine code-->
+ * -->  [intermediate code:generator & optimizer -- intermediate representation --> machine code:generator & optimizer ] 
+ *
+ * --> target/machine code
  *
  * kotlin在编译后端自动生成set/get代码(PropertyCodegen)，修改类为final
  */

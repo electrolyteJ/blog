@@ -6,7 +6,7 @@ tag:
 - tools
 ---
 
-[module-manager-intellij-plugin](https://github.com/electrolyteJ/bundles-assembler/tree/main/module-manager-intellij-plugin)
+[module-assembler-intellij-plugin](https://github.com/big-frontend/module-assembler/blob/main/module-assembler-intellij-plugin/README.md)
 
 [ECTranslation](https://github.com/Skykai521/ECTranslation)
 

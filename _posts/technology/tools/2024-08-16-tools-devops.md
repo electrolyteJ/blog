@@ -8,18 +8,11 @@ tag:
 
 # 需求与管理
 
-# devops code/test 环节基础能力的搭建
-
-## 代码管理平台
-- gitlab 
-- github
-
-## 代码持续构建平台CI
-- jenkins
-- gitLab runner
- 
-## 产物管理平台
-- maven(aar/jar/zip)
+代码管理平台｜代码持续构建平台CI｜产物管理平台
+--｜--｜--｜
+github｜ github action｜github
+gitlab｜gitlab-runner｜gitlab 
+... ｜jenkins ｜ maven(aar/jar/zip)、蒲公英、firebase App Distribution、eas
 
 # 运维与部署
 

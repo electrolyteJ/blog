@@ -27,5 +27,4 @@ jobs:
           model: opencode/big-pickle
           use_github_token: true
           prompt: |
-           Title: ${{ github.event.issue.title }}
-           Body: ${{ github.event.issue.body }}
+           提问：${{ github.event.issue.title }}， ${{ github.event.issue.body }}

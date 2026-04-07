@@ -26,4 +26,4 @@ jobs:
         with:
           model: opencode/big-pickle
           use_github_token: true
-          prompt: github.event.issue.title
+          prompt: "Title: ${{ github.event.issue.title }}\n\nBody: ${{ github.event.issue.body }}"

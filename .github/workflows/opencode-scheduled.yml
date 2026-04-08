@@ -1,0 +1,40 @@
+name: Scheduled OpenCode Task
+
+on:
+  schedule:
+    - cron: "0 9 * * *" # Every day at 9am UTC
+
+jobs:
+  opencode:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Run OpenCode
+        uses: anomalyco/opencode/github@latest
+        env:
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          model: opencode/big-pickle
+          use_github_token: true
+          prompt: |
+            请每天上午 9 点生成 20 条最热科技新闻，并创建一个 GitHub issue。
+            Issue 标题格式为“<本月>月<今日>日热文”，例如“4 月 8 日热文”。
+            Issue 内容按下面格式输出：
+            xx 月 xx 日热文
+            1. [标题](链接)
+               > 内容简介
+            2. [标题](链接)
+               > 内容简介
+            ...
+            每条标题请使用 Markdown 链接形式，点击标题能跳转到具体的内容详情。
+            内容简介简明扼要，不超过一两句话。

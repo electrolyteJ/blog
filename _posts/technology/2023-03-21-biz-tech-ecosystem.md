@@ -16,7 +16,7 @@ tag:
 
 # 技术生态(Technology Ecosystem)
 
-指标|微信小程序|react native/expo|flutter｜cocos/unity|对比结果
+指标|微信小程序|react native/expo|flutter|cocos/unity|对比结果
 |---|---|---|---|---|---
 招聘需求|很多|很多|一般|NA|微信小程序最多这点毋庸置疑
 渲染方式|webview渲染/自渲染|平台渲染|skia自渲染|opengl渲染|自渲染> 平台渲染 > webview渲染

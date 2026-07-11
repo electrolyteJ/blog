@@ -17,7 +17,7 @@ tag:
 # 技术生态(Technology Ecosystem)
 
 指标|微信小程序|react native/expo|flutter|hapjs快应用|cocos/unity|对比结果
-|---|---|---|---|---|---
+|---|---|---|---|---|---|---
 招聘需求|很多|很多|一般|一般|很多|cocos/unity最多这点毋庸置疑
 渲染方式|webview渲染/自渲染|平台渲染|skia自渲染|平台渲染|opengl渲染|自渲染> 平台渲染 > webview渲染
 性能|较差|一般|很多| 一般|- |各家平台最大的差异在于渲染，而其也影响着性能

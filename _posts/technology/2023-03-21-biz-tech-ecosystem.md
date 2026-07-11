@@ -29,8 +29,21 @@ tag:
 ui一致性|很好|一般| 很好| 很好｜很好 |由于react native是依赖平台渲染所以ui存在差异，也是其特色，保持平台风格
 跨平台|移动/PC|移动/PC/Web|移动/PC/Web|-| - |大家都在跨端
 
-构建一个技术生态：需要 cli(工具链：编译、调试、打包)、ide、渲染引擎
+## 构建一个技术生态：需要 cli(工具链：编译、调试、打包)、ide、渲染引擎
 
+### 快应用
+- 快应用引擎：https://github.com/electrolyteJ/hapjs
+- 快应用 cli：https://github.com/hapjs-platform/hap-toolkit
+
+### flutter
+- flutter 引擎: https://github.com/flutter/flutter
+- flutter cli : https://github.com/flutter/flutter
+- flutter ide插件: https://github.com/flutter/flutter-intellij
+
+### cocos
+- cocos引擎： https://github.com/cocos/cocos4
+- cocos cli: https://github.com/cocos/cocos-cli
+- cocos creator/ pink
 
 # 商业生态(Business Ecosystem)
 

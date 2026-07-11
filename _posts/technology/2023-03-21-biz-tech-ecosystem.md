@@ -16,18 +16,21 @@ tag:
 
 # 技术生态(Technology Ecosystem)
 
-指标|微信小程序|react native/expo|flutter|cocos/unity|对比结果
+指标|微信小程序|react native/expo|flutter|hapjs快应用|cocos/unity|对比结果
 |---|---|---|---|---|---
-招聘需求|很多|很多|一般|-|微信小程序最多这点毋庸置疑
-渲染方式|webview渲染/自渲染|平台渲染|skia自渲染|opengl渲染|自渲染> 平台渲染 > webview渲染
-性能|较差|一般|很多| - |各家平台最大的差异在于渲染，而其也影响着性能
-开发者体验|很好|一般|很好| - |微信小程序与flutter都将生态做得很好，答疑开发工具等
-原生集成|较差|一般|很好| - |flutter原生集成工具更好
-共享代码、知识与开发者|很好|很好|很好| - |react native胜于flutter，在于reactjs除了在react natvie的使用还覆盖了服务端、前端
-社区|微信小程序社区|reactjs社区+react native社区|flutter社区| NA |都不错
-代码推送|支持|支持|不支持| - | react native在做得更好，即能支持热更新也可以实现热修复
-ui一致性|很好|一般| 很好| 很好 |由于react native是依赖平台渲染所以ui存在差异，也是其特色，保持平台风格
-跨平台|移动/PC|移动/PC/Web|移动/PC/Web| - |大家都在跨端
+招聘需求|很多|很多|一般|一般|很多|cocos/unity最多这点毋庸置疑
+渲染方式|webview渲染/自渲染|平台渲染|skia自渲染|平台渲染|opengl渲染|自渲染> 平台渲染 > webview渲染
+性能|较差|一般|很多| 一般|- |各家平台最大的差异在于渲染，而其也影响着性能
+开发者体验|很好|一般|很好| 一般|很好 |微信小程序与flutter都将生态做得很好，答疑开发工具等
+原生集成|较差|一般|很好| -|- |flutter原生集成工具更好
+共享代码、知识与开发者|很好|很好|很好|很好| 很好 |react native胜于flutter，在于reactjs除了在react natvie的使用还覆盖了服务端、前端
+社区|微信小程序社区|reactjs社区+react native社区|flutter社区|快应用社区 |各家的游戏社区 |都不错
+代码推送|支持|支持|不支持| 支持 |  支持｜react native在做得更好，即能支持热更新也可以实现热修复
+ui一致性|很好|一般| 很好| 很好｜很好 |由于react native是依赖平台渲染所以ui存在差异，也是其特色，保持平台风格
+跨平台|移动/PC|移动/PC/Web|移动/PC/Web|-| - |大家都在跨端
+
+构建一个技术生态：需要 cli(工具链：编译、调试、打包)、ide、渲染引擎
+
 
 # 商业生态(Business Ecosystem)
 

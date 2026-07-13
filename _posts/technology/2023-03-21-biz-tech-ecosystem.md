@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 应用分发的技术生态 与 商业生态
+title: 分发的技术生态 与 商业生态
 description: 技术生态与商业生态
 share: false
 comments: false
